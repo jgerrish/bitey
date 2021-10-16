@@ -1,0 +1,89 @@
+{
+    "registers": [
+	{
+	    "short_name": "A",
+	    "name": "Accumulator",
+	    "size": 8
+	},
+	{
+	    "short_name": "P",
+	    "name": "Processor Status Register",
+	    "size": 8
+	},
+	{
+	    "short_name": "PC",
+	    "name": "Program Counter",
+	    "size": 16
+	},
+	{
+	    "short_name": "S",
+	    "name": "Stack pointer",
+	    "size": 9
+	},
+	{
+	    "short_name": "X",
+	    "name": "Index register X",
+	    "size": 8
+	},
+	{
+	    "short_name": "Y",
+	    "name": "Index register Y",
+	    "size": 8
+	}
+    ],
+
+    "flags": [
+	{
+	    "short_name": "C",
+	    "name": "Carry",
+	    "bit_field_pos": 0
+	},
+	{
+	    "short_name": "Z",
+	    "name": "Zero Result",
+	    "bit_field_pos": 1
+	},
+	{
+	    "short_name": "I",
+	    "name": "Interrupt Disable",
+	    "bit_field_pos": 2
+	},
+	{
+	    "short_name": "D",
+	    "name": "Decimal Mode",
+	    "bit_field_pos": 3
+	},
+	{
+	    "short_name": "B",
+	    "name": "Break Command",
+	    "bit_field_pos": 4
+	},
+	{
+	    "name": "Expansion",
+	    "bit_field_pos": 5
+	},
+	{
+	    "short_name": "V",
+	    "name": "Overflow",
+	    "bit_field_pos": 6
+	},
+	{
+	    "short_name": "N",
+	    "name": "Negative Result",
+	    "bit_field_pos": 7
+	}
+    ],
+
+    "instructions": [
+	{
+	    "name": "LDA",
+	    "opcode": 173,
+	    "description": "Load Accumulator with Memory"
+	},
+	{
+	    "name": "STA",
+	    "opcode": 141,
+	    "description": "Store Accumulator in Memory"
+	}
+    ]
+}
