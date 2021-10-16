@@ -1,5 +1,7 @@
 # bitey #
 
+![python tests](https://github.com/jgerrish/bitey/actions/workflows/python-package.yml/badge.svg)
+
 Bitey is a 6502 CPU emulator.  It is currently not feature-complete,
 cycle-accurate or any of those things.  It's meant to be a simple
 clean emulator for a classic chipset.  It may possibly be expanded to
