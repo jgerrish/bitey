@@ -1,5 +1,3 @@
-import pytest
-
 from bitey.cpu.instruction import (
     Instruction,
     Instructions,

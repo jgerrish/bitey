@@ -1,5 +1,3 @@
-import pytest
-
 from bitey.cpu.flag import Flag, Flags, FlagsJSONDecoder
 
 

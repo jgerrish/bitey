@@ -1,5 +1,3 @@
-import pytest
-
 from bitey.cpu.register import (
     Register,
     Registers,

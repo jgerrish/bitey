@@ -1,5 +1,3 @@
-import pytest
-
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 from bitey.cpu.addressing_mode_factory import AddressingModeFactory
 
