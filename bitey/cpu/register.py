@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import json
-from json import JSONDecoder, JSONEncoder
+from json import JSONDecoder
 
 
 # dataclass generates __init__, __repr__ and other special methods for PEP526
@@ -66,9 +66,9 @@ class RegistersJSONDecoder(JSONDecoder):
     def decode(self, json_doc):
         j = json.loads(json_doc)
         if "registers" in j:
-            l = []
+            register_list = []
             rjd = RegisterJSONDecoder()
             for register in j["registers"]:
                 r = rjd.decode(register)
-                l.append(r)
-            return Registers(l)
+                register_list.append(r)
+            return Registers(register_list)

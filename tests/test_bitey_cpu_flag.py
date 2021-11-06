@@ -1,6 +1,6 @@
 import pytest
 
-from bitey.cpu.flag import Flag, Flags, FlagJSONDecoder, FlagsJSONDecoder
+from bitey.cpu.flag import Flag, Flags, FlagsJSONDecoder
 
 
 def test_cpu_flag_init():

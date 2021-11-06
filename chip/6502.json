@@ -78,11 +78,13 @@
 	{
 	    "name": "LDA",
 	    "opcode": 173,
+	    "addressing_mode": "absolute",
 	    "description": "Load Accumulator with Memory"
 	},
 	{
 	    "name": "STA",
 	    "opcode": 141,
+	    "addressing_mode": "absolute",
 	    "description": "Store Accumulator in Memory"
 	}
     ]

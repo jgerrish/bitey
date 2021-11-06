@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import json
-from json import JSONDecoder, JSONEncoder
+from json import JSONDecoder
 
 
 @dataclass
@@ -72,12 +72,12 @@ class FlagsJSONDecoder(JSONDecoder):
     def decode(self, json_doc):
         j = json.loads(json_doc)
         if "flags" in j:
-            l = []
+            flag_list = []
             rjd = FlagJSONDecoder()
             for flag in j["flags"]:
                 f = rjd.decode(flag)
                 # Only append the flag if all fields are present and the JSON
                 # is valid for the flag
                 if f:
-                    l.append(f)
-            return Flags(l, None)
+                    flag_list.append(f)
+            return Flags(flag_list, None)

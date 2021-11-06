@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import json
-from json import JSONDecoder, JSONEncoder
+from json import JSONDecoder
 
 
 @dataclass
@@ -14,6 +14,9 @@ class Instruction:
 
     "The instruction opcode"
     opcode: str
+
+    "The instruction addressing mode"
+    addressing_mode: str
 
     "A human-readable description of the instruction"
     description: str
@@ -46,10 +49,14 @@ class InstructionJSONDecoder(JSONDecoder):
         if (
             ("name" in json_doc)
             and ("opcode" in json_doc)
+            and ("addressing_mode" in json_doc)
             and ("description" in json_doc)
         ):
             return Instruction(
-                json_doc["name"], json_doc["opcode"], json_doc["description"]
+                json_doc["name"],
+                json_doc["opcode"],
+                json_doc["addressing_mode"],
+                json_doc["description"],
             )
         else:
             # Return None if the instruction JSON object is missing fields or invalid
@@ -64,12 +71,12 @@ class InstructionsJSONDecoder(JSONDecoder):
     def decode(self, json_doc):
         j = json.loads(json_doc)
         if "instructions" in j:
-            l = []
+            instruction_list = []
             ijd = InstructionJSONDecoder()
             for instruction in j["instructions"]:
                 i = ijd.decode(instruction)
                 # Only append the instruction if all fields are present and the JSON
                 # is valid for the instruction
                 if i:
-                    l.append(i)
-            return Instructions(l)
+                    instruction_list.append(i)
+            return Instructions(instruction_list)
