@@ -28,7 +28,7 @@ class AbsoluteAddressingMode(AddressingMode):
     """
 
     "The low-order byte"
-    adl: int
+    adl: int = 0
 
     "The high-order byte"
-    adh: int
+    adh: int = 0

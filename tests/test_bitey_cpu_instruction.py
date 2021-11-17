@@ -1,11 +1,25 @@
-from bitey.cpu.instruction import (
+from bitey.cpu.addressing_mode import (
+    AbsoluteAddressingMode,
+)
+
+from bitey.cpu.instruction.instruction import (
     Instruction,
     Instructions,
-    InstructionsJSONDecoder,
 )
 
 
 def test_cpu_instruction_init():
+    i = Instruction(
+        "LDA", 173, AbsoluteAddressingMode(), "Load Accumulator with Memory"
+    )
+    assert i.name == "LDA"
+    assert i.opcode == 173
+    assert i.addressing_mode == AbsoluteAddressingMode()
+    assert i.description == "Load Accumulator with Memory"
+
+
+def test_cpu_instruction_init_no_type_checking():
+    "We're not doing strict type checking yet, so this should pass"
     i = Instruction("LDA", 173, "absolute", "Load Accumulator with Memory")
     assert i.name == "LDA"
     assert i.opcode == 173
@@ -21,11 +35,3 @@ def test_cpu_instructions_init():
     print(instructions.instructions)
     lda = instructions.get_by_opcode(173)
     assert lda == i1
-
-
-def test_cpu_instructions_json_decoder():
-    f = open("chip/6502.json")
-    s = f.read()
-    i = InstructionsJSONDecoder()
-    instructions = i.decode(s)
-    assert len(instructions.instructions) == 2

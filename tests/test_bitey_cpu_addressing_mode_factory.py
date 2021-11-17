@@ -3,6 +3,10 @@ from bitey.cpu.addressing_mode_factory import AddressingModeFactory
 
 
 def test_cpu_addressing_mode_addressing_mode_map():
-    f = AddressingModeFactory()
-    am = f.get_mode_from_str("absolute")
+    am = AddressingModeFactory.get_mode_from_str("absolute")
     assert am == AbsoluteAddressingMode
+
+
+def test_cpu_addressing_mode_build():
+    am = AddressingModeFactory.build("absolute")
+    assert am == AbsoluteAddressingMode()

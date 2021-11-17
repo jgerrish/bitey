@@ -1,48 +1,19 @@
-from dataclasses import dataclass
 import json
 from json import JSONDecoder
 
+from bitey.cpu.instruction.instruction import (
+    Instructions,
+)
 
-@dataclass
-class Instruction:
-    """
-    A CPU instruction
-    """
-
-    "The name of the instruction"
-    name: str
-
-    "The instruction opcode"
-    opcode: str
-
-    "The instruction addressing mode"
-    addressing_mode: str
-
-    "A human-readable description of the instruction"
-    description: str
-
-
-@dataclass
-class Instructions:
-    """
-    The collection of instructions this processor supports
-    """
-
-    instructions: list[Instruction]
-
-    def __post_init__(self):
-        "Create a dictionary so we can access registers by opcode"
-        self.opcode_dict = {}
-        for i in self.instructions:
-            self.opcode_dict[i.opcode] = i
-
-    def get_by_opcode(self, opcode):
-        return self.opcode_dict[opcode]
+from bitey.cpu.addressing_mode_factory import AddressingModeFactory
+from bitey.cpu.instruction.instruction_factory import InstructionFactory
 
 
 class InstructionJSONDecoder(JSONDecoder):
     """
     Decode a register definition in JSON format
+    The instance generation logic is collected in here, it should be refactored
+    to the other classes.
     """
 
     def decode(self, json_doc):
@@ -52,12 +23,14 @@ class InstructionJSONDecoder(JSONDecoder):
             and ("addressing_mode" in json_doc)
             and ("description" in json_doc)
         ):
-            return Instruction(
-                json_doc["name"],
-                json_doc["opcode"],
-                json_doc["addressing_mode"],
-                json_doc["description"],
-            )
+            name = json_doc["name"]
+            opcode = json_doc["opcode"]
+            addressing_mode_str = json_doc["addressing_mode"]
+            description = json_doc["description"]
+            addressing_mode = AddressingModeFactory.build(addressing_mode_str)
+
+            return InstructionFactory.build(name, opcode, addressing_mode, description)
+
         else:
             # Return None if the instruction JSON object is missing fields or invalid
             return None
