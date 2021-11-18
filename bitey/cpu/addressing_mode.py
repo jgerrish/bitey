@@ -14,6 +14,40 @@ class ImpliedAddressingMode(AddressingMode):
     The address is encoded in the instruction
     """
 
+    def get_value(self, flags, registers, memory):
+        return None
+
+
+class ImmediateAddressingMode(AddressingMode):
+    """
+    Immediate addressing mode
+    The value is encoded as a constant in the next byte
+    """
+
+    def get_value(self, flags, registers, memory):
+        byte = memory.read(registers["PC"].value)
+        # TODO: Maybe wrap the flag with bounds checking too, read expected
+        # behavior
+        registers["PC"].value += 1
+
+        return byte
+
+
+class ZeroPageAddressingMode(AddressingMode):
+    """
+    Zero Page addressing mode
+    The address in Zero Page is encoded as a constant in the next byte
+    """
+
+    def get_value(self, flags, registers, memory):
+        address = memory.read(registers["PC"].value)
+        # TODO: Maybe wrap the flag with bounds checking too, read expected
+        # behavior
+        registers["PC"].value += 1
+
+        # TODO: Create exception API
+        assert address <= 0xFF
+        return memory.read(address)
 
 @dataclass
 class AbsoluteAddressingMode(AddressingMode):
@@ -32,3 +66,13 @@ class AbsoluteAddressingMode(AddressingMode):
 
     "The high-order byte"
     adh: int = 0
+
+    def get_value(self, flags, registers, memory):
+        self.adl = memory.read(registers["PC"].value)
+        # TODO: Maybe wrap the flag with bounds checking too, read expected
+        # behavior
+        registers["PC"].value += 1
+        self.adh = memory.read(registers["PC"].value)
+        registers["PC"].value += 1
+
+        return memory.read(memory.get_16bit_address(self.adl, self.adh))

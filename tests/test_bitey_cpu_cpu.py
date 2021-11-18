@@ -1,0 +1,93 @@
+from bitey.cpu.cpu import CPU, StackOverflow, StackUnderflow
+from bitey.cpu.instruction.instruction import Instructions
+from bitey.cpu.instruction.instruction import Instructions
+from bitey.cpu.instruction.instruction_json_decoder import (
+    InstructionsJSONDecoder,
+)
+from bitey.cpu.flag.flag import Flag, Flags, FlagsJSONDecoder
+from bitey.cpu.register import (
+    Register,
+    Registers,
+    RegistersJSONDecoder,
+)
+from bitey.memory.memory import Memory
+
+
+def build_cpu():
+    f = open("chip/6502.json")
+    chip_data = f.read()
+
+    cpu = CPU.build_from_json(chip_data)
+
+    return cpu
+
+def test_cpu_cpu_init():
+    cpu = build_cpu()
+
+    assert len(cpu.flags.flags) == 7
+    assert len(cpu.registers.registers) == 6
+    assert len(cpu.instructions.instructions) == 6
+
+
+def test_cpu_cpu_stack_init():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+
+    cpu.stack_init()
+    assert cpu.registers["S"].value == 0x01FF
+
+def test_cpu_cpu_stack_push():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    cpu.stack_push(memory, 3)
+    assert cpu.registers["S"].value == 0x01FE
+    assert memory.memory[0x01FF] == 3
+
+def test_cpu_cpu_stack_push_stack_overflow():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    cpu.registers["S"].value = 0x01FF - 0x0100
+    try:
+        cpu.stack_push(memory, 3)
+        assert False
+    except StackOverflow:
+        assert True
+
+def test_cpu_cpu_stack_push_stack_overflow():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    try:
+        cpu.stack_pop(memory)
+        assert False
+    except StackUnderflow:
+        assert True
+
+def test_cpu_cpu_stack_pop():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    cpu.stack_push(memory, 3)
+
+    value = cpu.stack_pop(memory)
+
+    assert value == 3
+    assert cpu.registers["S"].value == 0x01FF
+
+def test_cpu_cpu_stack_pull():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    cpu.stack_push(memory, 3)
+
+    value = cpu.stack_pull(memory)
+
+    assert value == 3
+    assert cpu.registers["S"].value == 0x01FF

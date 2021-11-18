@@ -6,5 +6,5 @@ from bitey.cpu.instruction.instruction import (
 
 @dataclass
 class STA(Instruction):
-    "The instruction opcode"
-    opcode: 141
+    "STA: Store Accumulator"
+

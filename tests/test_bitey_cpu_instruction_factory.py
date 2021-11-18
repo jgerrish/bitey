@@ -4,7 +4,7 @@ from bitey.cpu.instruction.instruction_factory import InstructionFactory
 from bitey.cpu.instruction.instruction_json_decoder import (
     InstructionsJSONDecoder,
 )
-
+from bitey.cpu.cpu import CPU, CPUJSONDecoder
 
 def test_cpu_instruction_map():
     inst = InstructionFactory.get_instruction_from_opcode(173)
@@ -14,12 +14,12 @@ def test_cpu_instruction_map():
 def test_cpu_builder():
     f = open("chip/6502.json")
     s = f.read()
-    i = InstructionsJSONDecoder()
-    instructions = i.decode(s)
-    assert len(instructions.instructions) == 2
+    cpu_decoder = CPUJSONDecoder()
+    cpu = cpu_decoder.decode(s)
+    assert len(cpu.instructions.instructions) == 6
 
-    inst = instructions.instructions[0]
+    inst = cpu.instructions.instructions[2]
     assert inst.name == "LDA"
-    assert inst.opcode == 173
-    assert inst.addressing_mode == AbsoluteAddressingMode()
+    assert inst.opcodes.opcodes[0].opcode == 173
+    assert inst.opcodes.opcodes[0].addressing_mode == AbsoluteAddressingMode()
     assert inst.description == "Load Accumulator with Memory"

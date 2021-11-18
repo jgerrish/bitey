@@ -19,6 +19,10 @@ class Register:
     "The size of the register in bits"
     size: int
 
+    "The value of the register"
+    value: int = 0
+
+
     def name(self):
         "The name of the register"
         return self.name
@@ -52,8 +56,25 @@ class RegisterJSONDecoder(JSONDecoder):
     """
 
     def decode(self, json_doc):
-        if ("short_name" in json_doc) and ("name" in json_doc) and ("size" in json_doc):
-            return Register(json_doc["short_name"], json_doc["name"], json_doc["size"])
+        if (
+                ("short_name" in json_doc)
+                and ("name" in json_doc)
+                and ("size" in json_doc)
+                and ("value" in json_doc)
+        ):
+            return Register(json_doc["short_name"],
+                            json_doc["name"],
+                            json_doc["size"],
+                            json_doc["value"])
+        elif (
+                ("short_name" in json_doc)
+                and ("name" in json_doc)
+                and ("size" in json_doc)
+        ):
+            return Register(json_doc["short_name"],
+                            json_doc["name"],
+                            json_doc["size"],
+                            0)
         else:
             return None
 
@@ -64,11 +85,13 @@ class RegistersJSONDecoder(JSONDecoder):
     """
 
     def decode(self, json_doc):
-        j = json.loads(json_doc)
-        if "registers" in j:
-            register_list = []
-            rjd = RegisterJSONDecoder()
-            for register in j["registers"]:
-                r = rjd.decode(register)
-                register_list.append(r)
-            return Registers(register_list)
+        parsed_json = json.loads(json_doc)
+        return self.decode_parsed(parsed_json)
+
+    def decode_parsed(self, parsed_json):
+        register_list = []
+        rjd = RegisterJSONDecoder()
+        for register in parsed_json:
+            r = rjd.decode(register)
+            register_list.append(r)
+        return Registers(register_list)

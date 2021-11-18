@@ -5,13 +5,12 @@ from bitey.cpu.instruction.instruction import (
 
 
 @dataclass
-class LDA(Instruction):
-    "LDA: Load Accumulator"
-
+class TXS(Instruction):
+    "TXS Transfer index X to stack pointer"
 
     def execute(self, registers, memory):
         "Execute the instruction"
-        set_flags()
+        return
 
     def set_flags(self, flags, registers):
-        flags["Z"].test_register_result(registers["A"])
+        return

@@ -1,16 +1,16 @@
-from bitey.cpu.flag import Flag, Flags, FlagsJSONDecoder
+from bitey.cpu.flag.flag import Flag, Flags, FlagsJSONDecoder
 
 
 def test_cpu_flag_init():
-    f = Flag("C", "Carry", 0)
+    f = Flag("C", "Carry", 0, False)
     assert f.short_name == "C"
     assert f.name == "Carry"
     assert f.bit_field_pos == 0
 
 
 def test_cpu_flags_init():
-    f1 = Flag("C", "Carry", 0)
-    f2 = Flag("Z", "Zero Result", 1)
+    f1 = Flag("C", "Carry", 0, False)
+    f2 = Flag("Z", "Zero Result", 1, False)
     flags = Flags([f1, f2], 0)
     assert len(flags.flags) == 2
     assert type(flags.data) == int
@@ -20,11 +20,22 @@ def test_cpu_flags_init():
 
 
 def test_cpu_flags_json_decoder():
-    f = open("chip/6502.json")
-    s = f.read()
+    s = '''
+    [
+	{
+	    "short_name": "C",
+	    "name": "Carry",
+	    "bit_field_pos": 0,
+	    "status": 0
+	},
+	{
+	    "short_name": "Z",
+	    "name": "Zero Result",
+	    "bit_field_pos": 1,
+	    "status": 0
+	}
+    ]
+    '''
     f = FlagsJSONDecoder()
     flags = f.decode(s)
-    assert len(flags.flags) == 7
-    # assert flags["A"] == Flag("A", 8)
-    # assert flags["X"] == Flag("X", 8)
-    # assert flags["Y"] == Flag("Y", 8)
+    assert len(flags.flags) == 2

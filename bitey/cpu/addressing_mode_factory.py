@@ -3,6 +3,9 @@ from typing import ClassVar
 from bitey.cpu.addressing_mode import (
     AddressingMode,
     AbsoluteAddressingMode,
+    ImmediateAddressingMode,
+    ImpliedAddressingMode,
+    ZeroPageAddressingMode,
 )
 
 
@@ -10,6 +13,9 @@ from bitey.cpu.addressing_mode import (
 class AddressingModeFactory:
     addressing_mode_map: ClassVar[dict[str, AddressingMode]] = {
         "absolute": AbsoluteAddressingMode,
+        "immediate": ImmediateAddressingMode,
+        "implied": ImpliedAddressingMode,
+        "zeropage": ZeroPageAddressingMode,
     }
 
     def build(addressing_mode):

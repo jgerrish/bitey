@@ -36,27 +36,32 @@
 	{
 	    "short_name": "C",
 	    "name": "Carry",
-	    "bit_field_pos": 0
+	    "bit_field_pos": 0,
+	    "status": 0
 	},
 	{
 	    "short_name": "Z",
 	    "name": "Zero Result",
-	    "bit_field_pos": 1
+	    "bit_field_pos": 1,
+	    "status": 0
 	},
 	{
 	    "short_name": "I",
 	    "name": "Interrupt Disable",
-	    "bit_field_pos": 2
+	    "bit_field_pos": 2,
+	    "status": 0
 	},
 	{
 	    "short_name": "D",
 	    "name": "Decimal Mode",
-	    "bit_field_pos": 3
+	    "bit_field_pos": 3,
+	    "status": 0
 	},
 	{
 	    "short_name": "B",
 	    "name": "Break Command",
-	    "bit_field_pos": 4
+	    "bit_field_pos": 4,
+	    "status": 0
 	},
 	{
 	    "name": "Expansion",
@@ -65,27 +70,85 @@
 	{
 	    "short_name": "V",
 	    "name": "Overflow",
-	    "bit_field_pos": 6
+	    "bit_field_pos": 6,
+	    "status": 0
 	},
 	{
 	    "short_name": "N",
 	    "name": "Negative Result",
-	    "bit_field_pos": 7
+	    "bit_field_pos": 7,
+	    "status": 0
 	}
     ],
 
     "instructions": [
 	{
+	    "name": "SEI",
+	    "description": "Set Interrupt Disable",
+	    "opcodes": [
+		{
+		    "opcode": 120,
+		    "addressing_mode": "implied"
+		}
+	    ]
+	},
+	{
+	    "name": "CLI",
+	    "description": "Clear Interrupt Disable",
+	    "opcodes": [
+		{
+		    "opcode": 88,
+		    "addressing_mode": "implied"
+		}
+	    ]
+	},
+	{
 	    "name": "LDA",
-	    "opcode": 173,
-	    "addressing_mode": "absolute",
-	    "description": "Load Accumulator with Memory"
+	    "description": "Load Accumulator with Memory",
+	    "opcodes": [
+		{
+		    "opcode": 173,
+		    "addressing_mode": "absolute"
+		}
+	    ]
 	},
 	{
 	    "name": "STA",
-	    "opcode": 141,
-	    "addressing_mode": "absolute",
-	    "description": "Store Accumulator in Memory"
+	    "description": "Store Accumulator in Memory",
+	    "opcodes": [
+		{
+		    "opcode": 141,
+		    "addressing_mode": "absolute"
+		}
+	    ]
+	},
+	{
+	    "name": "LDX",
+	    "description": "Load Index Register X From Memory",
+	    "opcodes": [
+		{
+		    "opcode": 162,
+		    "addressing_mode": "immediate"
+		},
+		{
+		    "opcode": 166,
+		    "addressing_mode": "zeropage"
+		},
+		{
+		    "opcode": 174,
+		    "addressing_mode": "absolute"
+		}
+	    ]
+	},
+	{
+	    "name": "TXS",
+	    "description": "Transfer index X to stack pointer",
+	    "opcodes": [
+		{
+		    "opcode": 154,
+		    "addressing_mode": "implied"
+		}
+	    ]
 	}
     ]
 }

@@ -25,6 +25,18 @@ class Flag:
     "If the flag is stored in a bitfield, which bit position is it"
     bit_field_pos: int
 
+    "Store the state of the register in a boolean flag"
+    status: bool
+
+
+    def set(self):
+        "Set this flag.  Set it to true."
+        self.status = True
+
+    def clear(self):
+        "Clear this flag.  Set it to False."
+        self.status = False
+
 
 @dataclass
 class Flags:
@@ -34,6 +46,7 @@ class Flags:
 
     flags: list[Flag]
     data: int
+
 
     def __post_init__(self):
         "Create a dictionary so we can access flags by short name"
@@ -55,9 +68,13 @@ class FlagJSONDecoder(JSONDecoder):
             ("short_name" in json_doc)
             and ("name" in json_doc)
             and ("bit_field_pos" in json_doc)
+            and ("status" in json_doc)
         ):
             return Flag(
-                json_doc["short_name"], json_doc["name"], json_doc["bit_field_pos"]
+                json_doc["short_name"],
+                json_doc["name"],
+                json_doc["bit_field_pos"],
+                json_doc["status"],
             )
         else:
             # Return None if the flag JSON object is missing fields or invalid
@@ -70,14 +87,16 @@ class FlagsJSONDecoder(JSONDecoder):
     """
 
     def decode(self, json_doc):
-        j = json.loads(json_doc)
-        if "flags" in j:
-            flag_list = []
-            rjd = FlagJSONDecoder()
-            for flag in j["flags"]:
-                f = rjd.decode(flag)
-                # Only append the flag if all fields are present and the JSON
-                # is valid for the flag
-                if f:
-                    flag_list.append(f)
-            return Flags(flag_list, None)
+        parsed_json = json.loads(json_doc)
+        return self.decode_parsed(parsed_json)
+
+    def decode_parsed(self, parsed_json):
+        flag_list = []
+        rjd = FlagJSONDecoder()
+        for flag in parsed_json:
+            f = rjd.decode(flag)
+            # Only append the flag if all fields are present and the JSON
+            # is valid for the flag
+            if f:
+                flag_list.append(f)
+        return Flags(flag_list, None)
