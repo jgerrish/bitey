@@ -32,7 +32,6 @@ class Computer:
         Load data into memory
         Loads data into memory at offset
         """
-        location = offset
         for byte in data:
             if offset < len(self.memory):
                 self.memory.write(offset, byte)
@@ -41,4 +40,4 @@ class Computer:
                 break
 
     def run(self):
-        cpu.execute_instruction()
+        self.cpu.execute_instruction()

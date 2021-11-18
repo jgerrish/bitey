@@ -1,10 +1,8 @@
 from bitey.cpu.instruction.lda import LDA
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 from bitey.cpu.instruction.instruction_factory import InstructionFactory
-from bitey.cpu.instruction.instruction_json_decoder import (
-    InstructionsJSONDecoder,
-)
-from bitey.cpu.cpu import CPU, CPUJSONDecoder
+from bitey.cpu.cpu import CPUJSONDecoder
+
 
 def test_cpu_instruction_map():
     inst = InstructionFactory.get_instruction_from_opcode(173)

@@ -1,6 +1,4 @@
 from bitey.computer.computer import Computer
-from bitey.cpu.cpu import CPU
-from bitey.memory.memory import Memory
 import json
 
 
@@ -11,6 +9,7 @@ def test_computer_computer_init():
         computer = Computer.build_from_json(chip_data)
 
         assert len(computer.memory.memory) == 65536
+
 
 def test_computer_computer_load():
     computer = None
@@ -32,6 +31,7 @@ def test_computer_computer_load():
         assert computer.memory.memory[0xFFFC] == memory_data["memory"][0]
         assert computer.memory.memory[0xFFFD] == memory_data["memory"][1]
         assert computer.memory.memory[0xFFFE] == 0
+
 
 def test_computer_computer_run():
     computer = None

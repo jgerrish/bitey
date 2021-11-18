@@ -1,15 +1,4 @@
 from bitey.cpu.cpu import CPU, StackOverflow, StackUnderflow
-from bitey.cpu.instruction.instruction import Instructions
-from bitey.cpu.instruction.instruction import Instructions
-from bitey.cpu.instruction.instruction_json_decoder import (
-    InstructionsJSONDecoder,
-)
-from bitey.cpu.flag.flag import Flag, Flags, FlagsJSONDecoder
-from bitey.cpu.register import (
-    Register,
-    Registers,
-    RegistersJSONDecoder,
-)
 from bitey.memory.memory import Memory
 
 
@@ -21,6 +10,7 @@ def build_cpu():
 
     return cpu
 
+
 def test_cpu_cpu_init():
     cpu = build_cpu()
 
@@ -31,10 +21,9 @@ def test_cpu_cpu_init():
 
 def test_cpu_cpu_stack_init():
     cpu = build_cpu()
-    memory = Memory(bytearray(65536))
-
     cpu.stack_init()
     assert cpu.registers["S"].value == 0x01FF
+
 
 def test_cpu_cpu_stack_push():
     cpu = build_cpu()
@@ -44,6 +33,7 @@ def test_cpu_cpu_stack_push():
     cpu.stack_push(memory, 3)
     assert cpu.registers["S"].value == 0x01FE
     assert memory.memory[0x01FF] == 3
+
 
 def test_cpu_cpu_stack_push_stack_overflow():
     cpu = build_cpu()
@@ -57,7 +47,8 @@ def test_cpu_cpu_stack_push_stack_overflow():
     except StackOverflow:
         assert True
 
-def test_cpu_cpu_stack_push_stack_overflow():
+
+def test_cpu_cpu_stack_push_stack_underflow():
     cpu = build_cpu()
     memory = Memory(bytearray(65536))
     cpu.stack_init()
@@ -67,6 +58,7 @@ def test_cpu_cpu_stack_push_stack_overflow():
         assert False
     except StackUnderflow:
         assert True
+
 
 def test_cpu_cpu_stack_pop():
     cpu = build_cpu()
@@ -79,6 +71,7 @@ def test_cpu_cpu_stack_pop():
 
     assert value == 3
     assert cpu.registers["S"].value == 0x01FF
+
 
 def test_cpu_cpu_stack_pull():
     cpu = build_cpu()

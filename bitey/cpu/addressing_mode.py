@@ -49,6 +49,7 @@ class ZeroPageAddressingMode(AddressingMode):
         assert address <= 0xFF
         return memory.read(address)
 
+
 @dataclass
 class AbsoluteAddressingMode(AddressingMode):
     """

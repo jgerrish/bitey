@@ -1,12 +1,6 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from bitey.cpu.instruction.opcode import (
-    Opcode,
-    Opcodes,
-    OpcodeJSONDecoder,
-    OpcodesJSONDecoder,
-)
 from bitey.cpu.instruction.instruction import Instruction
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.sei import SEI

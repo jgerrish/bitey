@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from bitey.cpu.addressing_mode import AddressingMode
-from bitey.cpu.instruction.opcode import Opcode, Opcodes
+from bitey.cpu.instruction.opcode import Opcodes
 
 
 @dataclass
@@ -8,6 +7,7 @@ class Instruction:
     """
     A CPU instruction
     """
+
     # TODO: Extend to allow multiple opcodes and addressing modes
 
     "The name of the instruction"

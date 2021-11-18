@@ -7,4 +7,3 @@ from bitey.cpu.instruction.instruction import (
 @dataclass
 class STA(Instruction):
     "STA: Store Accumulator"
-

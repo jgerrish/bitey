@@ -23,40 +23,40 @@ def test_cpu_registers_init():
 
 
 def test_cpu_registers_json_decoder():
-    s = '''
+    s = """
     [
-	{
-	    "short_name": "A",
-	    "name": "Accumulator",
-	    "size": 8
-	},
-	{
-	    "short_name": "P",
-	    "name": "Processor Status Register",
-	    "size": 8
-	},
-	{
-	    "short_name": "PC",
-	    "name": "Program Counter",
-	    "size": 16
-	},
-	{
-	    "short_name": "S",
-	    "name": "Stack pointer",
-	    "size": 9
-	},
-	{
-	    "short_name": "X",
-	    "name": "Index register X",
-	    "size": 8
-	},
-	{
-	    "short_name": "Y",
-	    "name": "Index register Y",
-	    "size": 8
-	}
+    {
+        "short_name": "A",
+        "name": "Accumulator",
+        "size": 8
+    },
+    {
+        "short_name": "P",
+        "name": "Processor Status Register",
+        "size": 8
+    },
+    {
+        "short_name": "PC",
+        "name": "Program Counter",
+        "size": 16
+    },
+    {
+        "short_name": "S",
+        "name": "Stack pointer",
+        "size": 9
+    },
+    {
+        "short_name": "X",
+        "name": "Index register X",
+        "size": 8
+    },
+    {
+        "short_name": "Y",
+        "name": "Index register Y",
+        "size": 8
+    }
     ]
-    '''
+    """
     r = RegistersJSONDecoder()
     registers = r.decode(s)
     assert len(registers.registers) == 6

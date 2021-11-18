@@ -5,31 +5,35 @@ from typing import ClassVar
 
 
 from bitey.cpu.addressing_mode import (
-    AbsoluteAddressingMode,
-    ImmediateAddressingMode,
+    # AbsoluteAddressingMode,
+    # ImmediateAddressingMode,
     ImpliedAddressingMode,
 )
 from bitey.cpu.instruction.instruction import Instruction, Instructions
 from bitey.cpu.instruction.instruction_json_decoder import (
     InstructionsJSONDecoder,
 )
-from bitey.cpu.instruction.cli import CLI
+
+# from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.sei import SEI
-from bitey.cpu.instruction.ldx import LDX
-from bitey.cpu.instruction.txs import TXS
+
+# from bitey.cpu.instruction.ldx import LDX
+# from bitey.cpu.instruction.txs import TXS
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
 from bitey.cpu.flag.flag import Flags, FlagsJSONDecoder
-from bitey.cpu.pin import Pin, Pins
+from bitey.cpu.pin import Pins
 from bitey.cpu.register import (
     Registers,
     RegistersJSONDecoder,
 )
+
 
 class StackOverflow(Exception):
     """
     Stack overflow exception
     Raised if a push would extend the stack beyond the size of the stack
     """
+
 
 class StackUnderflow(Exception):
     """
@@ -56,7 +60,7 @@ class CPU:
     The stack is automatically locatd in "Page One".  Page size is 0x0100
     """
     stack_size: ClassVar[int] = 0x0100
-    
+
     registers: Registers
 
     flags: Flags
@@ -91,7 +95,7 @@ class CPU:
         sei = SEI("SEI", opcodes, "Set Interrupt Disable")
         # TODO: Maybe refactor set_flags into the execute method
         sei.execute(self.flags, self.registers, memory)
-        #sei.set_flags(self.flags, self.registers)
+        # sei.set_flags(self.flags, self.registers)
 
         # Set the PC to 0xFFFC and 0xFFFD
         self.registers["PC"].value = memory.get_16bit_value(0xFFFC, 0xFFFD)
@@ -126,8 +130,8 @@ class CPU:
 
     def execute_instruction(self, memory):
         "Execute an instruction"
-        self.current_instruction.execute(registers, memory)
-        self.set_flags(instruction, flags, registers)
+        self.current_instruction.execute(self.registers, memory)
+        # self.set_flags(self.current_instruction, self.flags, self.registers)
 
     def set_flags(self, instruction, flags, registers):
         "Set flags depending on the instruction"
@@ -161,14 +165,16 @@ class CPU:
         # TODO: This can also be done by LDX and TXS instructions
         # But since an immediate LDX instruction can store a max value of 0xFF,
         # some sort of extra addition would be needed.
-        #ldx = LDX("LDX", 162, ImmediateAddressingMode,
-        #          "Load Index Register X From Memory")
-        #ldx = LDX("LDX", 166, ZeroPageAddressingMode,
-        #          "Load Index Register X From Memory")
-        ldx = LDX("LDX", Opcodes([Opcode(174, AbsoluteAddressingMode())]),
-                  "Load Index Register X From Memory")
-        txs = TXS("TXS", Opcodes([Opcode(154, ImpliedAddressingMode())]),
-                  "Transfer index X to stack pointer")
+        # ldx = LDX(
+        #     "LDX",
+        #     Opcodes([Opcode(174, AbsoluteAddressingMode())]),
+        #     "Load Index Register X From Memory",
+        # )
+        # txs = TXS(
+        #     "TXS",
+        #     Opcodes([Opcode(154, ImpliedAddressingMode())]),
+        #     "Transfer index X to stack pointer",
+        # )
 
         self.registers["S"].value = 0x01FF
 
@@ -224,7 +230,9 @@ class CPUJSONDecoder(JSONDecoder):
         instructions = None
         if "instructions" in parsed_json:
             instructions_decoder = InstructionsJSONDecoder()
-            instructions = instructions_decoder.decode_parsed(parsed_json["instructions"])
+            instructions = instructions_decoder.decode_parsed(
+                parsed_json["instructions"]
+            )
 
         cpu = CPU(registers, flags, instructions, Pins([]))
         return cpu

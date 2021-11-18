@@ -20,22 +20,22 @@ def test_cpu_flags_init():
 
 
 def test_cpu_flags_json_decoder():
-    s = '''
+    s = """
     [
-	{
-	    "short_name": "C",
-	    "name": "Carry",
-	    "bit_field_pos": 0,
-	    "status": 0
-	},
-	{
-	    "short_name": "Z",
-	    "name": "Zero Result",
-	    "bit_field_pos": 1,
-	    "status": 0
-	}
+    {
+        "short_name": "C",
+        "name": "Carry",
+        "bit_field_pos": 0,
+        "status": 0
+    },
+    {
+        "short_name": "Z",
+        "name": "Zero Result",
+        "bit_field_pos": 1,
+        "status": 0
+    }
     ]
-    '''
+    """
     f = FlagsJSONDecoder()
     flags = f.decode(s)
     assert len(flags.flags) == 2

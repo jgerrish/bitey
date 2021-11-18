@@ -7,6 +7,7 @@ class State(Enum):
     LOW = 1
     HIGH = 2
 
+
 @dataclass
 class Pin:
     """
@@ -35,7 +36,6 @@ class Pin:
     """
     state: State = State.LOW
 
-
     def set_high(self):
         self.state = State.HIGH
 
@@ -53,20 +53,22 @@ class RST(Pin):
     When the reset pin is low, the processor is in an uninitialized state.
     """
 
+
 class IRQ(Pin):
     """
     The IRQ pin
     When the IRQ line is low, an interrupt has been requested.
     Multiple lines may be connected to this pin.
     """
-    
+
+
 @dataclass
 class Pins:
     """
     The set of pins on the CPU
     """
-    pins: list[Pin]
 
+    pins: list[Pin]
 
     def __post_init__(self):
         "Create a dictionary so we can access pins by short name"

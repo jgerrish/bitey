@@ -8,10 +8,9 @@ from bitey.cpu.instruction.instruction import (
 class LDA(Instruction):
     "LDA: Load Accumulator"
 
-
-    def execute(self, registers, memory):
+    def execute(self, flags, registers, memory):
         "Execute the instruction"
-        set_flags()
+        self.set_flags(flags, registers)
 
     def set_flags(self, flags, registers):
         flags["Z"].test_register_result(registers["A"])

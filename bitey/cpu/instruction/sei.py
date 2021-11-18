@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-#from bitey.cpu.cpu import CPU
 from bitey.cpu.instruction.instruction import (
     Instruction,
 )

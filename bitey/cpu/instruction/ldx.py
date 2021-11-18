@@ -8,10 +8,11 @@ from bitey.cpu.instruction.instruction import (
 class LDX(Instruction):
     "LDX Load X with memory"
 
-
     def execute(self, flags, registers, memory):
         "Execute the instruction"
-        value = self.addressing_mode.get_value(memory)
+        # TODO: Implment this
+        # value = self.addressing_mode.get_value(memory)
+        # registers["X"].value = value
         self.set_flags(flags, registers)
 
         return

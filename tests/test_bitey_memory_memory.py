@@ -9,6 +9,7 @@ def test_memory_init():
     memory = Memory(2 ** 16)
     assert len(memory.memory) == 65536
 
+
 def test_memory_get_16bit_value():
     memory = Memory(2 ** 16)
     assert len(memory.memory) == 65536
@@ -18,7 +19,7 @@ def test_memory_get_16bit_value():
     memory.write(1, 0)
     value = memory.get_16bit_value(0, 1)
     assert value == 0
-    
+
     # Test zero adl
     memory.write(0, 0)
     memory.write(1, 3)
@@ -29,14 +30,15 @@ def test_memory_get_16bit_value():
     memory.write(0, 3)
     memory.write(1, 0)
     value = memory.get_16bit_value(0, 1)
-    assert value == 3    
-    
+    assert value == 3
+
     # Test other value
     memory.write(0, 10)
     memory.write(1, 3)
 
     value = memory.get_16bit_value(0, 1)
     assert value == 778
+
 
 def test_memory_memory_out_of_range():
     memory = Memory(2 ** 16)

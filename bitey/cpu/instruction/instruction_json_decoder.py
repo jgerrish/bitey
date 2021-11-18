@@ -1,18 +1,11 @@
 import json
 from json import JSONDecoder
 
-from bitey.cpu.instruction.opcode import (
-    Opcode,
-    Opcodes,
-    OpcodeJSONDecoder,
-    OpcodesJSONDecoder,
-)
-
+from bitey.cpu.instruction.opcode import OpcodesJSONDecoder
 from bitey.cpu.instruction.instruction import (
     Instructions,
 )
 
-from bitey.cpu.addressing_mode_factory import AddressingModeFactory
 from bitey.cpu.instruction.instruction_factory import InstructionFactory
 
 
@@ -48,6 +41,7 @@ class InstructionsJSONDecoder(JSONDecoder):
     """
     Decode a list of register definitions in JSON format
     """
+
     # TODO: Define this format formally
     # TODO: Extend to allow multiple address modes in the instruction definitions
 

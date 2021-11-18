@@ -8,7 +8,6 @@ from bitey.cpu.instruction.instruction import (
 class CLI(Instruction):
     "CLI Clear Interrupt Disable"
 
-
     def execute(self, flags, registers, memory):
         "Execute the instruction"
         self.set_flags(flags, registers)

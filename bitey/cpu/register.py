@@ -22,7 +22,6 @@ class Register:
     "The value of the register"
     value: int = 0
 
-
     def name(self):
         "The name of the register"
         return self.name
@@ -57,24 +56,25 @@ class RegisterJSONDecoder(JSONDecoder):
 
     def decode(self, json_doc):
         if (
-                ("short_name" in json_doc)
-                and ("name" in json_doc)
-                and ("size" in json_doc)
-                and ("value" in json_doc)
+            ("short_name" in json_doc)
+            and ("name" in json_doc)
+            and ("size" in json_doc)
+            and ("value" in json_doc)
         ):
-            return Register(json_doc["short_name"],
-                            json_doc["name"],
-                            json_doc["size"],
-                            json_doc["value"])
+            return (
+                Register(
+                    json_doc["short_name"],
+                    json_doc["name"],
+                    json_doc["size"],
+                    json_doc["value"],
+                ),
+            )
         elif (
-                ("short_name" in json_doc)
-                and ("name" in json_doc)
-                and ("size" in json_doc)
+            ("short_name" in json_doc) and ("name" in json_doc) and ("size" in json_doc)
         ):
-            return Register(json_doc["short_name"],
-                            json_doc["name"],
-                            json_doc["size"],
-                            0)
+            return Register(
+                json_doc["short_name"], json_doc["name"], json_doc["size"], 0
+            )
         else:
             return None
 

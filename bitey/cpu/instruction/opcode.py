@@ -20,10 +20,10 @@ class Opcode:
     "The instruction addressing mode"
     addressing_mode: AddressingMode
 
-
     def execute(self, flags, registers, memory):
         "Execute the opcode"
-        value = self.addressing_mode.get_value(flags, registers, memory)
+        # TODO: Implement this
+        # value = self.addressing_mode.get_value(flags, registers, memory)
         self.set_flags(flags, registers)
 
         return
@@ -31,8 +31,8 @@ class Opcode:
     def set_flags(self, flags, registers):
         flags["Z"].test_register_result(registers["X"])
         return
-        
-    
+
+
 @dataclass
 class Opcodes:
     """
@@ -71,7 +71,9 @@ class OpcodeJSONDecoder(JSONDecoder):
 
     def decode_parsed(self, parsed_json):
         if ("opcode" in parsed_json) and ("addressing_mode" in parsed_json):
-            addressing_mode = AddressingModeFactory.build(parsed_json["addressing_mode"])
+            addressing_mode = AddressingModeFactory.build(
+                parsed_json["addressing_mode"]
+            )
             return Opcode(parsed_json["opcode"], addressing_mode)
         else:
             # Return None if the opcode JSON object is missing fields or invalid

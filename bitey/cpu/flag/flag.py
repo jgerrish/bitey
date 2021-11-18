@@ -28,7 +28,6 @@ class Flag:
     "Store the state of the register in a boolean flag"
     status: bool
 
-
     def set(self):
         "Set this flag.  Set it to true."
         self.status = True
@@ -46,7 +45,6 @@ class Flags:
 
     flags: list[Flag]
     data: int
-
 
     def __post_init__(self):
         "Create a dictionary so we can access flags by short name"
@@ -70,11 +68,17 @@ class FlagJSONDecoder(JSONDecoder):
             and ("bit_field_pos" in json_doc)
             and ("status" in json_doc)
         ):
+            status = False
+            if json_doc["status"] == 0:
+                status = False
+            elif json_doc["status"] == 1:
+                status = True
+
             return Flag(
                 json_doc["short_name"],
                 json_doc["name"],
                 json_doc["bit_field_pos"],
-                json_doc["status"],
+                status,
             )
         else:
             # Return None if the flag JSON object is missing fields or invalid

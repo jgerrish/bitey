@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
+
 class MemoryOutOfRange(Exception):
     "Attempt to access memory beyond the size of the memory"
+
 
 @dataclass
 class Memory:
@@ -48,7 +50,7 @@ class Memory:
         adh is the high byte
         """
         return adl + (adh << 8)
-        
+
     def get_16bit_value(self, adl_address, adh_address):
         """
         Get a 16bit value from memory.
