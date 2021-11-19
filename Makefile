@@ -1,9 +1,10 @@
 PIPENV=pipenv
 
 all: test lint
+#PYTEST_OPTS = --capture=no
 
 test:
-	$(PIPENV) run python -m pytest
+	$(PIPENV) run python -m pytest $(PYTEST_OPTS)
 
 lint:
 	$(PIPENV) run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

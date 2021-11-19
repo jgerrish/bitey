@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from bitey.cpu.instruction.instruction import (
     Instruction,
+    UntestedInstruction,
 )
 
 
@@ -8,12 +9,13 @@ from bitey.cpu.instruction.instruction import (
 class LDX(Instruction):
     "LDX Load X with memory"
 
-    def execute(self, flags, registers, memory):
+    def execute(self, cpu, memory):
         "Execute the instruction"
-        # TODO: Implment this
-        # value = self.addressing_mode.get_value(memory)
-        # registers["X"].value = value
-        self.set_flags(flags, registers)
+        raise UntestedInstruction
+
+        value = self.addressing_mode.get_value(memory)
+        cpu.registers["X"].value = value
+        self.set_flags(cpu.flags, cpu.registers)
 
         return
 

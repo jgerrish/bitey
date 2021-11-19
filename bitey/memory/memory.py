@@ -9,6 +9,19 @@ class MemoryOutOfRange(Exception):
 class Memory:
     """
     Random Access Memory
+
+    The standard layout for the 6500 series is:
+    0x0000 - 0x00FF Zero Page and indirect addressing space
+    0x0100 - 0x01FF Stack and absolute addressing space
+    0x0200 - 0x3FFF RAM
+    0x4000 - 0x7FFF I/O
+    0x8000 - 0xFFF9 Program Storage / ROM
+    0xFFFA          Vector low address for NMI
+    0xFFFB          Vector high address for NMI
+    0xFFFC          Vector low address for RESET
+    0xFFFD          Vector high address for RESET
+    0xFFFE          Vector low address for IRQ + BRK
+    0xFFFF          Vector high address for IRQ + BRK
     """
 
     memory: bytearray()

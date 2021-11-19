@@ -2,13 +2,33 @@ from dataclasses import dataclass
 from bitey.cpu.instruction.opcode import Opcodes
 
 
+class UnimplementedInstruction(Exception):
+    "The instruction is unimplemented"
+
+
+class IncompleteInstruction(Exception):
+    "The instruction is incomplete"
+
+
+class UntestedInstruction(Exception):
+    "The instruction is untested"
+
+
 @dataclass
 class Instruction:
     """
     A CPU instruction
+
+    A CPU instruction is a class responsible for executing an
+    instruction and updating any flags depending on the status.
+
+    Instructions should not normally advance the PC.
     """
 
     # TODO: Extend to allow multiple opcodes and addressing modes
+    # TODO: Building individual instrutions is a pain, there
+    #       needs to be a better way to integrate the JSON description
+    #       and the builder code
 
     name: str
     "The name of the instruction"

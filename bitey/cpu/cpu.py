@@ -14,7 +14,7 @@ from bitey.cpu.instruction.instruction_json_decoder import (
     InstructionsJSONDecoder,
 )
 
-# from bitey.cpu.instruction.cli import CLI
+from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.sei import SEI
 
 # from bitey.cpu.instruction.ldx import LDX
@@ -80,24 +80,18 @@ class CPU:
 
     def reset(self, memory):
         "Reset the CPU"
-        # Phase One startup:
-        #   TODO: Initialize the stack
-        #   TODO: LDX of the stack value and TXS
-        # Phase Two startup:
-        #   TODO: Some initialization programs here for data devices
-        #   TODO: CLI to enable interrupts
-        #   TODO: Initialize the decimal mode flag
-        #   TODO: Start the user's program
 
         # Disable interrupts
+        # TODO: The flags need to be initialized to some valid
+        # boolean state before running this
+        self.flags.data = 0
+
         # TODO: Use a different builder for this
         opcodes = Opcodes([Opcode(120, ImpliedAddressingMode)])
         sei = SEI("SEI", opcodes, "Set Interrupt Disable")
-        # TODO: Maybe refactor set_flags into the execute method
-        sei.execute(self.flags, self.registers, memory)
-        # sei.set_flags(self.flags, self.registers)
+        sei.execute(self, memory)
 
-        # Set the PC to 0xFFFC and 0xFFFD
+        # Set the PC to the value at 0xFFFC and 0xFFFD
         self.registers["PC"].value = memory.get_16bit_value(0xFFFC, 0xFFFD)
 
         # TODO: Verify, this may not be in the reference
@@ -112,6 +106,20 @@ class CPU:
 
         # Initialize the stack
         self.stack_init()
+
+        # TODO: Initialize data devices
+
+        # TODO: CLI to enable interrupts
+        opcodes = Opcodes([Opcode(88, ImpliedAddressingMode)])
+        cli = CLI("CLI", opcodes, "Clear Interrupt Disable")
+        cli.execute(self, memory)
+
+        # TODO: Initialize the decimal mode
+        # For now, test with all flags initialized to zero
+        # This is dependent on the application,
+        self.flags.data = 0
+
+        #   TODO: Start the user's program
 
     def build_from_json(json_data):
         decoder = CPUJSONDecoder()
@@ -130,13 +138,10 @@ class CPU:
 
     def execute_instruction(self, memory):
         "Execute an instruction"
-        self.current_instruction.execute(self.registers, memory)
-        # self.set_flags(self.current_instruction, self.flags, self.registers)
+        self.current_instruction.execute(self, memory)
 
     def set_flags(self, instruction, flags, registers):
         "Set flags depending on the instruction"
-        # TODO: This function may need to be refactored, order changed depending
-        # on other things
         instruction.set_flags(flags, registers)
 
     def stack_init(self):
@@ -164,7 +169,8 @@ class CPU:
         #
         # TODO: This can also be done by LDX and TXS instructions
         # But since an immediate LDX instruction can store a max value of 0xFF,
-        # some sort of extra addition would be needed.
+        # some sort of extra addition would be needed, or an absolute
+        # mode version
         # ldx = LDX(
         #     "LDX",
         #     Opcodes([Opcode(174, AbsoluteAddressingMode())]),
@@ -188,6 +194,20 @@ class CPU:
 
         self.registers["S"].value = self.registers["S"].value - 1
 
+    def stack_push_address(self, memory, address):
+        """
+        Push a 16-bit address on the stack
+        Addresses are stored by storing the high byte first and then
+        the low byte.
+        For example, if the stack is empty, storing PC will store:
+        0x01FF: the high byte of the PC
+        0x01FE: the low byte of the PC
+        """
+        adh = (address & 0xFF00) >> 8
+        adl = address & 0x00FF
+        self.stack_push(memory, adh)
+        self.stack_push(memory, adl)
+
     def stack_pop(self, memory):
         "Pop a  value off the stack"
         # TODO: These stack routines may be wrong, we may need to add 0x0100
@@ -201,10 +221,29 @@ class CPU:
 
         return memory.read(stack_pointer)
 
+    def stack_pop_address(self, memory):
+        """
+        Pop a 16-bit address from the stack.
+
+        Addresses are stored by storing the high byte first and then
+        the low byte.
+        For example, if the stack is empty, storing PC will store:
+        0x01FF: the high byte of the PC
+        0x01FE: the low byte of the PC
+        """
+        adl = self.stack_pop(memory)
+        adh = self.stack_pop(memory)
+        address = (adh << 8) | adl
+
+        return address
+
     def stack_pull(self, memory):
         # TODO: These stack routines may be wrong, we may need to add 0x0100
         # to the contents of the stack pointer to get the memory address
         return self.stack_pop(memory)
+
+    def stack_pull_address(self, memory):
+        return self.stack_pop_address(memory)
 
 
 class CPUJSONDecoder(JSONDecoder):

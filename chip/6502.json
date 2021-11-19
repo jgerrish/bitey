@@ -83,6 +83,16 @@
 
     "instructions": [
 	{
+	    "name": "BRK",
+	    "description": "Force Break",
+	    "opcodes": [
+		{
+		    "opcode": 0,
+		    "addressing_mode": "implied"
+		}
+	    ]
+	},
+	{
 	    "name": "SEI",
 	    "description": "Set Interrupt Disable",
 	    "opcodes": [

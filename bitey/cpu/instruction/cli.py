@@ -8,9 +8,9 @@ from bitey.cpu.instruction.instruction import (
 class CLI(Instruction):
     "CLI Clear Interrupt Disable"
 
-    def execute(self, flags, registers, memory):
+    def execute(self, cpu, memory):
         "Execute the instruction"
-        self.set_flags(flags, registers)
+        self.set_flags(cpu.flags, cpu.registers)
         return
 
     # Maybe this should be executed by the instruction, not the CPU
