@@ -10,23 +10,23 @@ class Flag:
     Examples can include the carry flag and overflow flag
     """
 
+    short_name: str
     """
     The short name of the flag
     Usually this is a single character such as C for the carry flag
     """
-    short_name: str
 
+    name: str
     """
     The name of the flag
     For example, Carry for the carry flag
     """
-    name: str
 
-    "If the flag is stored in a bitfield, which bit position is it"
     bit_field_pos: int
+    "If the flag is stored in a bitfield, which bit position is it"
 
-    "Store the state of the register in a boolean flag"
     status: bool
+    "Store the state of the register in a boolean flag"
 
     def set(self):
         "Set this flag.  Set it to true."

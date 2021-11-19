@@ -11,8 +11,10 @@ class Computer:
     """
 
     cpu: CPU
+    "The CPU for the computer"
 
     memory: Memory
+    "The memory for the processor"
 
     def __post_init__(self):
         """

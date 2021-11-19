@@ -12,15 +12,17 @@ class Register:
     Base class to represent a register
     """
 
-    "The short name of the register, for example A"
     short_name: str
-    "The name of the register, for example Accumulator"
-    name: str
-    "The size of the register in bits"
-    size: int
+    "The short name of the register, for example A"
 
-    "The value of the register"
+    name: str
+    "The name of the register, for example Accumulator"
+
+    size: int
+    "The size of the register in bits"
+
     value: int = 0
+    "The value of the register"
 
     def name(self):
         "The name of the register"

@@ -14,11 +14,11 @@ class Opcode:
     addressing mode
     """
 
-    "The instruction opcode"
     opcode: str
+    "The instruction opcode"
 
-    "The instruction addressing mode"
     addressing_mode: AddressingMode
+    "The instruction addressing mode"
 
     def execute(self, flags, registers, memory):
         "Execute the opcode"

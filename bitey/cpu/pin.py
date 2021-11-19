@@ -22,19 +22,19 @@ class Pin:
     of the processor.
     """
 
-    "Name of the pin"
     name: str = ""
+    "Name of the pin"
 
-    "Short name of the pin"
     short_name: str = ""
+    "Short name of the pin"
 
+    state: State = State.LOW
     """
     State of the pin, low or high
     Default to low, so the processor is in reset mode.
     Some other pins may need to be broght high to be in a normal state,
     such as the IRQ pin.
     """
-    state: State = State.LOW
 
     def set_high(self):
         self.state = State.HIGH

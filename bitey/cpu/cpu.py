@@ -49,17 +49,17 @@ class CPU:
     TODO: Refactor using a builder pattern
     """
 
+    stack_start: ClassVar[int] = 0x01FF
     """
     Start of the stack
     This location is "Page One"
     """
-    stack_start: ClassVar[int] = 0x01FF
 
+    stack_size: ClassVar[int] = 0x0100
     """
     Maximum stack size
     The stack is automatically locatd in "Page One".  Page size is 0x0100
     """
-    stack_size: ClassVar[int] = 0x0100
 
     registers: Registers
 

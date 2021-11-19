@@ -10,14 +10,14 @@ class Instruction:
 
     # TODO: Extend to allow multiple opcodes and addressing modes
 
-    "The name of the instruction"
     name: str
+    "The name of the instruction"
 
-    "The instruction opcodes"
     opcodes: Opcodes
+    "The instruction opcodes"
 
-    "A human-readable description of the instruction"
     description: str
+    "A human-readable description of the instruction"
 
 
 @dataclass

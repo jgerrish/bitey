@@ -11,8 +11,8 @@ class Memory:
     Random Access Memory
     """
 
-    "The memory"
     memory: bytearray()
+    "The memory"
 
     def __init__(self, size=0):
         "Initialize the memory to size bytes"
