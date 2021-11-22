@@ -25,6 +25,7 @@ class BRK(Instruction):
     def execute(self, cpu, memory):
         "Execute the instruction"
 
+        # super().execute(cpu, memory)
         # Push the instruction after the next on the stack
         pc = cpu.registers["PC"].value
         cpu.stack_push_address(memory, pc + 2)

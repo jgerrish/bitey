@@ -83,32 +83,541 @@
 
     "instructions": [
 	{
+	    "name": "ADC",
+	    "description": "Add Memory to Accumulator with Carry",
+	    "opcodes": [
+		{
+		    "opcode": 105,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 101,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 117,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 109,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 125,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 121,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 97,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 113,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "AND",
+	    "description": "AND Memory with Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 41,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 37,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 53,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 45,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 61,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 57,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 33,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 49,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "ASL",
+	    "description": "Shift Left One Bit (Memory or Accumulator)",
+	    "opcodes": [
+		{
+		    "opcode": 10,
+		    "addressing_mode": "accumulator",
+		    "bytes": 1
+		},
+		{
+		    "opcode": 6,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 22,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 14,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 30,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "BCC",
+	    "description": "Branch on Carry Clear",
+	    "opcodes": [
+		{
+		    "opcode": 144,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BCS",
+	    "description": "Branch on Carry Set",
+	    "opcodes": [
+		{
+		    "opcode": 176,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BEQ",
+	    "description": "Branch on Result Zero",
+	    "opcodes": [
+		{
+		    "opcode": 240,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BIT",
+	    "description": "Test Bits in Memory with Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 36,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 44,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "BMI",
+	    "description": "Branch on Result Minus",
+	    "opcodes": [
+		{
+		    "opcode": 48,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BNE",
+	    "description": "Branch on Result Not Zero",
+	    "opcodes": [
+		{
+		    "opcode": 208,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BPL",
+	    "description": "Branch on Rsult Plus",
+	    "opcodes": [
+		{
+		    "opcode": 16,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
 	    "name": "BRK",
 	    "description": "Force Break",
 	    "opcodes": [
 		{
 		    "opcode": 0,
-		    "addressing_mode": "implied"
+		    "addressing_mode": "implied",
+		    "bytes": 1
 		}
 	    ]
 	},
 	{
-	    "name": "SEI",
-	    "description": "Set Interrupt Disable",
+	    "name": "BVC",
+	    "description": "Branch on Overflow Clear",
 	    "opcodes": [
 		{
-		    "opcode": 120,
-		    "addressing_mode": "implied"
+		    "opcode": 80,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "BVS",
+	    "description": "Branch on Overflow Set",
+	    "opcodes": [
+		{
+		    "opcode": 112,
+		    "addressing_mode": "relative",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "CLC",
+	    "description": "Clear Carry Flag",
+	    "opcodes": [
+		{
+		    "opcode": 24,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "CLD",
+	    "description": "Clear Decimal Mode",
+	    "opcodes": [
+		{
+		    "opcode": 216,
+		    "addressing_mode": "implied",
+		    "bytes": 1
 		}
 	    ]
 	},
 	{
 	    "name": "CLI",
-	    "description": "Clear Interrupt Disable",
+	    "description": "Clear Interrupt Disable Bit",
 	    "opcodes": [
 		{
 		    "opcode": 88,
-		    "addressing_mode": "implied"
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "CLV",
+	    "description": "Clear Overflow Flag",
+	    "opcodes": [
+		{
+		    "opcode": 184,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "CMP",
+	    "description": "Compare Memory and Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 201,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 197,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 213,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 205,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 221,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 217,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 193,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 209,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "CPX",
+	    "description": "Compare Memory and Index X",
+	    "opcodes": [
+		{
+		    "opcode": 224,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 228,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 236,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "CPY",
+	    "description": "Compare Memory and Index Y",
+	    "opcodes": [
+		{
+		    "opcode": 192,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 196,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 204,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "DEC",
+	    "description": "Decrement Memory by One",
+	    "opcodes": [
+		{
+		    "opcode": 198,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 214,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 206,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 222,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "DEX",
+	    "description": "Decrement Index X by One",
+	    "opcodes": [
+		{
+		    "opcode": 202,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "DEY",
+	    "description": "Decrement Index Y by One",
+	    "opcodes": [
+		{
+		    "opcode": 136,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "EOR",
+	    "description": "Exclusive OR Memory with Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 73,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 69,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 85,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 77,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 93,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 89,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 65,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 81,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "INC",
+	    "description": "Increment Memory by One",
+	    "opcodes": [
+		{
+		    "opcode": 230,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 246,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 238,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 254,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "INX",
+	    "description": "Increment Index X by One",
+	    "opcodes": [
+		{
+		    "opcode": 232,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "INY",
+	    "description": "Increment Index Y by One",
+	    "opcodes": [
+		{
+		    "opcode": 200,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "JMP",
+	    "description": "Jump to New Location",
+	    "opcodes": [
+		{
+		    "opcode": 76,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 108,
+		    "addressing_mode": "absolute_indirect",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "JSR",
+	    "description": "Jump to New Location Saving Return Address",
+	    "opcodes": [
+		{
+		    "opcode": 32,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
 		}
 	    ]
 	},
@@ -117,8 +626,401 @@
 	    "description": "Load Accumulator with Memory",
 	    "opcodes": [
 		{
+		    "opcode": 169,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 165,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 181,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
 		    "opcode": 173,
-		    "addressing_mode": "absolute"
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 189,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 185,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 161,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 177,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "LDX",
+	    "description": "Load Index X with Memory",
+	    "opcodes": [
+		{
+		    "opcode": 162,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 166,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 182,
+		    "addressing_mode": "zeropage_y",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 174,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 190,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "LDY",
+	    "description": "Load Index Y with Memory",
+	    "opcodes": [
+		{
+		    "opcode": 160,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 164,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 180,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 172,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 188,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "LSR",
+	    "description": "Right Right One Bit (Memory or Accumulator)",
+	    "opcodes": [
+		{
+		    "opcode": 74,
+		    "addressing_mode": "accumulator",
+		    "bytes": 1
+		},
+		{
+		    "opcode": 70,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 86,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 78,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 94,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "NOP",
+	    "description": "No Operation",
+	    "opcodes": [
+		{
+		    "opcode": 234,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "ORA",
+	    "description": "OR Memory with Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 9,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 5,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 21,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 13,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 29,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 25,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 1,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 17,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "PHA",
+	    "description": "Push Accumulator on Stack",
+	    "opcodes": [
+		{
+		    "opcode": 72,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "PHP",
+	    "description": "Push Processor Status on Stack",
+	    "opcodes": [
+		{
+		    "opcode": 8,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "PLA",
+	    "description": "Pull Accumulator from Stack",
+	    "opcodes": [
+		{
+		    "opcode": 104,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "PLP",
+	    "description": "Pull Processor Status from Stack",
+	    "opcodes": [
+		{
+		    "opcode": 40,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "ROL",
+	    "description": "Rotate One Bit Left (Memory or Accumulator)",
+	    "opcodes": [
+		{
+		    "opcode": 42,
+		    "addressing_mode": "accumulator",
+		    "bytes": 1
+		},
+		{
+		    "opcode": 38,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 54,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 46,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 62,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "ROR",
+	    "description": "Rotate One Bit Right (Memory or Accumulator)",
+	    "opcodes": [
+		{
+		    "opcode": 106,
+		    "addressing_mode": "accumulator",
+		    "bytes": 1
+		},
+		{
+		    "opcode": 102,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 118,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 110,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 126,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "RTI",
+	    "description": "Return from Interrupt",
+	    "opcodes": [
+		{
+		    "opcode": 64,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "RTS",
+	    "description": "Return from Subroutine",
+	    "opcodes": [
+		{
+		    "opcode": 96,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "SBC",
+	    "description": "Subtract Memory from Accumulator with Borrow",
+	    "opcodes": [
+		{
+		    "opcode": 233,
+		    "addressing_mode": "immediate",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 229,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 245,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 237,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 253,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 249,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 225,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 241,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
+		}
+	    ]
+	},
+	{
+	    "name": "SEC",
+	    "description": "Set Carry Flag",
+	    "opcodes": [
+		{
+		    "opcode": 56,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "SED",
+	    "description": "Set Decimal Mode",
+	    "opcodes": [
+		{
+		    "opcode": 248,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "SEI",
+	    "description": "Set Interrupt Disable Status",
+	    "opcodes": [
+		{
+		    "opcode": 120,
+		    "addressing_mode": "implied",
+		    "bytes": 1
 		}
 	    ]
 	},
@@ -127,36 +1029,147 @@
 	    "description": "Store Accumulator in Memory",
 	    "opcodes": [
 		{
+		    "opcode": 133,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 149,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
 		    "opcode": 141,
-		    "addressing_mode": "absolute"
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 157,
+		    "addressing_mode": "absolute_x",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 153,
+		    "addressing_mode": "absolute_y",
+		    "bytes": 3
+		},
+		{
+		    "opcode": 129,
+		    "addressing_mode": "indirect_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 145,
+		    "addressing_mode": "indirect_y",
+		    "bytes": 2
 		}
 	    ]
 	},
 	{
-	    "name": "LDX",
-	    "description": "Load Index Register X From Memory",
+	    "name": "STX",
+	    "description": "Store Index X in Memory",
 	    "opcodes": [
 		{
-		    "opcode": 162,
-		    "addressing_mode": "immediate"
+		    "opcode": 134,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
 		},
 		{
-		    "opcode": 166,
-		    "addressing_mode": "zeropage"
+		    "opcode": 150,
+		    "addressing_mode": "zeropage_y",
+		    "bytes": 2
 		},
 		{
-		    "opcode": 174,
-		    "addressing_mode": "absolute"
+		    "opcode": 142,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "STY",
+	    "description": "Store Index Y in Memory",
+	    "opcodes": [
+		{
+		    "opcode": 132,
+		    "addressing_mode": "zeropage",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 148,
+		    "addressing_mode": "zeropage_x",
+		    "bytes": 2
+		},
+		{
+		    "opcode": 140,
+		    "addressing_mode": "absolute",
+		    "bytes": 3
+		}
+	    ]
+	},
+	{
+	    "name": "TAX",
+	    "description": "Transfer Accumulator to Index X",
+	    "opcodes": [
+		{
+		    "opcode": 170,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "TAY",
+	    "description": "Transfer Accumulator to Index Y",
+	    "opcodes": [
+		{
+		    "opcode": 168,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "TSX",
+	    "description": "Transfer Stack Pointer to Index X",
+	    "opcodes": [
+		{
+		    "opcode": 186,
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "TXA",
+	    "description": "Transfer Index X to Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 138,
+		    "addressing_mode": "implied",
+		    "bytes": 1
 		}
 	    ]
 	},
 	{
 	    "name": "TXS",
-	    "description": "Transfer index X to stack pointer",
+	    "description": "Transfer Index X to Stack Pointer",
 	    "opcodes": [
 		{
 		    "opcode": 154,
-		    "addressing_mode": "implied"
+		    "addressing_mode": "implied",
+		    "bytes": 1
+		}
+	    ]
+	},
+	{
+	    "name": "TYA",
+	    "description": "Transfer Index Y to Accumulator",
+	    "opcodes": [
+		{
+		    "opcode": 152,
+		    "addressing_mode": "implied",
+		    "bytes": 1
 		}
 	    ]
 	}

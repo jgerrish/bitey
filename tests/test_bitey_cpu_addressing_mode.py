@@ -1,8 +1,15 @@
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
+    AbsoluteXAddressingMode,
+    AbsoluteYAddressingMode,
     ImmediateAddressingMode,
     ImpliedAddressingMode,
+    IndexedIndirectAddressingMode,
+    IndirectIndexedAddressingMode,
     ZeroPageAddressingMode,
+    ZeroPageXAddressingMode,
+    ZeroPageYAddressingMode,
+    RelativeAddressingMode,
 )
 from bitey.computer.computer import Computer
 
@@ -16,19 +23,19 @@ def build_computer():
     return None
 
 
-def test_cpu_addressing_mode_implied_addressing_mode():
+def test_cpu_addressing_mode_implied_get_value():
     iam = ImpliedAddressingMode()
     assert type(iam) == ImpliedAddressingMode
     assert iam.get_value(None, None, None) is None
 
 
-def test_cpu_addressing_mode_absolute_addressing_mode():
+def test_cpu_addressing_mode_absolute_get_value():
     computer = build_computer()
-    computer.memory.write(11, 0x10)
+    computer.memory.write(0x0B, 0x10)
     computer.memory.write(12, 0x20)
     computer.memory.write(0x2010, 0x33)
 
-    computer.cpu.registers["PC"].value = 11
+    computer.cpu.registers["PC"].value = 0x0B
 
     aam = AbsoluteAddressingMode()
     assert type(aam) == AbsoluteAddressingMode
@@ -41,12 +48,12 @@ def test_cpu_addressing_mode_absolute_addressing_mode():
     assert computer.cpu.registers["PC"].value == 13
 
 
-def test_cpu_addressing_mode_immediate_addressing_mode():
+def test_cpu_addressing_mode_immediate_get_value():
     computer = build_computer()
-    computer.memory.write(11, 0x10)
+    computer.memory.write(0x0B, 0x10)
     computer.memory.write(12, 0x20)
 
-    computer.cpu.registers["PC"].value = 11
+    computer.cpu.registers["PC"].value = 0x0B
 
     iam = ImmediateAddressingMode()
     assert type(iam) == ImmediateAddressingMode
@@ -55,12 +62,12 @@ def test_cpu_addressing_mode_immediate_addressing_mode():
     assert computer.cpu.registers["PC"].value == 12
 
 
-def test_cpu_addressing_mode_zeropage_addressing_mode():
+def test_cpu_addressing_mode_zeropage_get_value():
     computer = build_computer()
-    computer.memory.write(11, 0x10)
+    computer.memory.write(0x0B, 0x10)
     computer.memory.write(0x10, 0x33)
 
-    computer.cpu.registers["PC"].value = 11
+    computer.cpu.registers["PC"].value = 0x0B
 
     zpam = ZeroPageAddressingMode()
     assert type(zpam) == ZeroPageAddressingMode
@@ -68,3 +75,343 @@ def test_cpu_addressing_mode_zeropage_addressing_mode():
     value = zpam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
     assert value == 0x33
     assert computer.cpu.registers["PC"].value == 12
+
+
+def test_cpu_addressing_mode_zeropagex_get_value():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x10, 0x33)
+    computer.memory.write(0x51, 0xC1)
+
+    computer.cpu.registers["PC"].value = 0x0B
+
+    # set the X register
+    computer.cpu.registers["X"].value = 0x41
+
+    zpxam = ZeroPageXAddressingMode()
+    assert type(zpxam) == ZeroPageXAddressingMode
+
+    value = zpxam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert value == 0xC1
+    assert computer.cpu.registers["PC"].value == 12
+
+
+def test_cpu_addressing_mode_zeropagex_get_value_wrap():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x10, 0x33)
+    computer.memory.write(0x06, 0xC1)
+
+    computer.cpu.registers["PC"].value = 0x0B
+
+    # set the X register
+    computer.cpu.registers["X"].value = 0xF5
+
+    zpxam = ZeroPageXAddressingMode()
+    assert type(zpxam) == ZeroPageXAddressingMode
+
+    value = zpxam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert value == 0xC1
+    assert computer.cpu.registers["PC"].value == 12
+
+
+def test_cpu_addressing_mode_zeropagey_get_value():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x10, 0x33)
+    computer.memory.write(0x51, 0xC1)
+
+    computer.cpu.registers["PC"].value = 0x0B
+
+    # set the Y register
+    computer.cpu.registers["Y"].value = 0x41
+
+    zpyam = ZeroPageYAddressingMode()
+    assert type(zpyam) == ZeroPageYAddressingMode
+
+    value = zpyam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert value == 0xC1
+    assert computer.cpu.registers["PC"].value == 12
+
+
+def test_cpu_addressing_mode_zeropagey_get_value_wrap():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x10, 0x33)
+    computer.memory.write(0x06, 0xC1)
+
+    computer.cpu.registers["PC"].value = 0x0B
+
+    # set the Y register
+    computer.cpu.registers["Y"].value = 0xF5
+
+    zpyam = ZeroPageYAddressingMode()
+    assert type(zpyam) == ZeroPageYAddressingMode
+
+    value = zpyam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert value == 0xC1
+    assert computer.cpu.registers["PC"].value == 12
+
+
+def test_cpu_addressing_mode_relative_get_value():
+    computer = build_computer()
+    computer.memory.write(0xA0, 0x10)
+
+    computer.cpu.registers["PC"].value = 0xA0
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0xB1
+
+
+def test_cpu_addressing_mode_relative_get_value_negative():
+    computer = build_computer()
+    computer.memory.write(0x70, 0xB0)
+
+    computer.cpu.registers["PC"].value = 0x10
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x11
+
+
+def test_cpu_addressing_mode_relative_get_value_negative_page_crossing():
+    computer = build_computer()
+    computer.memory.write(0x70, 0xB0)
+
+    computer.cpu.registers["PC"].value = 0x10
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x11
+
+
+def test_cpu_addressing_mode_relative_get_value_page_crossing():
+    computer = build_computer()
+    computer.memory.write(0xA0, 0x60)
+
+    computer.cpu.registers["PC"].value = 0xA0
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x101
+
+
+def test_cpu_addressing_mode_relative_get_value_gt_16_bit():
+    computer = build_computer()
+    computer.memory.write(0xFFC0, 0x60)
+
+    computer.cpu.registers["PC"].value = 0xFFC0
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x0022
+
+
+def test_cpu_addressing_mode_relative_get_value_lt_zero():
+    computer = build_computer()
+    computer.memory.write(0x0003, 0x80)
+
+    computer.cpu.registers["PC"].value = 0x0003
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0xFF83
+
+
+def test_cpu_addressing_mode_indirect_indexed():
+    computer = build_computer()
+    # Zero Page ADL
+    computer.memory.write(0x10, 0x70)
+    # Zero Page ADH
+    computer.memory.write(0x11, 0x0B)
+    # Final address
+    computer.memory.write(0x0B75, 0x73)
+
+    computer.cpu.registers["PC"].value = 0x10
+    computer.cpu.registers["Y"].value = 0x05
+
+    am = IndirectIndexedAddressingMode()
+    assert type(am) == IndirectIndexedAddressingMode
+
+    value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x73
+
+
+def test_cpu_addressing_mode_indirect_indexed_page_rollover():
+    computer = build_computer()
+    # Zero Page ADL
+    computer.memory.write(0x10, 0x70)
+    # Zero Page ADH
+    computer.memory.write(0x11, 0xFF)
+    # Final address
+    computer.memory.write(0x000A, 0x73)
+
+    computer.cpu.registers["PC"].value = 0x10
+    computer.cpu.registers["Y"].value = 0x99
+
+    am = IndirectIndexedAddressingMode()
+    assert type(am) == IndirectIndexedAddressingMode
+
+    value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x73
+
+
+def test_cpu_addressing_mode_indexed_indirect():
+    computer = build_computer()
+    # Zero Page ADL
+    computer.memory.write(0x14, 0x70)
+    # Zero Page ADH
+    computer.memory.write(0x15, 0x0B)
+    # Final address
+    computer.memory.write(0x0B70, 0x73)
+
+    computer.cpu.registers["PC"].value = 0x10
+    computer.cpu.registers["X"].value = 0x04
+
+    am = IndexedIndirectAddressingMode()
+    assert type(am) == IndexedIndirectAddressingMode
+
+    value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0x73
+
+
+def test_cpu_addressing_mode_absolute_x():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+    computer.memory.write(0x2015, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["X"].value = 0x05
+
+    axam = AbsoluteXAddressingMode()
+    assert type(axam) == AbsoluteXAddressingMode
+
+    value = axam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert axam.adl == 0x10
+    assert axam.adh == 0x20
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_x_page_crossing():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+    computer.memory.write(0x2105, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["X"].value = 0xF5
+
+    axam = AbsoluteXAddressingMode()
+    assert type(axam) == AbsoluteXAddressingMode
+
+    value = axam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert axam.adl == 0x10
+    assert axam.adh == 0x20
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_x_eom_wrap():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0xFF)
+    computer.memory.write(0x0006, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["X"].value = 0xF5
+
+    axam = AbsoluteXAddressingMode()
+    assert type(axam) == AbsoluteXAddressingMode
+
+    value = axam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert axam.adl == 0x10
+    assert axam.adh == 0xFF
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_y():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+    computer.memory.write(0x2023, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["Y"].value = 0x13
+
+    ayam = AbsoluteYAddressingMode()
+    assert type(ayam) == AbsoluteYAddressingMode
+
+    value = ayam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert ayam.adl == 0x10
+    assert ayam.adh == 0x20
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_y_page_crossing():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+    computer.memory.write(0x2105, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["Y"].value = 0xF5
+
+    ayam = AbsoluteYAddressingMode()
+    assert type(ayam) == AbsoluteYAddressingMode
+
+    value = ayam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert ayam.adl == 0x10
+    assert ayam.adh == 0x20
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_y_eom_wrap():
+    computer = build_computer()
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0xFF)
+    computer.memory.write(0x0006, 0x33)
+
+    computer.cpu.registers["PC"].value = 0x0B
+    computer.cpu.registers["Y"].value = 0xF5
+
+    ayam = AbsoluteYAddressingMode()
+    assert type(ayam) == AbsoluteYAddressingMode
+
+    value = ayam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    assert ayam.adl == 0x10
+    assert ayam.adh == 0xFF
+
+    assert value == 0x33
+    assert computer.cpu.registers["PC"].value == 13

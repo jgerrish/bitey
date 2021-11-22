@@ -16,7 +16,7 @@ def test_cpu_cpu_init():
 
     assert len(cpu.flags.flags) == 7
     assert len(cpu.registers.registers) == 6
-    assert len(cpu.instructions.instructions) == 7
+    assert len(cpu.instructions.instructions) == 56
 
 
 def test_cpu_cpu_stack_init():

@@ -1,5 +1,10 @@
 from dataclasses import dataclass
+import logging
 from bitey.cpu.instruction.opcode import Opcodes
+
+
+class UndocumentedInstruction(Exception):
+    "This instruction is undocumented or invalid"
 
 
 class UnimplementedInstruction(Exception):
@@ -39,6 +44,33 @@ class Instruction:
     description: str
     "A human-readable description of the instruction"
 
+    def __post_init__(self):
+        self.logger = logging.getLogger("bitey")
+
+    def execute(self, cpu, memory):
+        "Execute the instruction"
+        # TODO: There needs to be some refactoring around
+        # Instruction and Opcode.
+        # In particular, how should Instruction know which opcode
+        # to execute
+        # The current design idea:
+        # Instructions loads instruction and opcode informaton from JSON
+        # and provides an index to look up opcodes.
+        # The InstructionFactory accepts an opcode and returns an
+        # instruction wired up to execute that opcode
+        self.logger.debug("Executing instruction: {}".format(self))
+
+        # TODO
+        # self.execute_opcode()
+
+        raise UnimplementedInstruction
+
+    def get_opcode(self, opcode):
+        return self.opcodes[opcode]
+
+    def short_str(self):
+        return "{}".format(self.name)
+
 
 @dataclass
 class Instructions:
@@ -55,5 +87,11 @@ class Instructions:
             for opcode in instruction.opcodes:
                 self.opcode_dict[opcode.opcode] = instruction
 
+    def __iter__(self):
+        return iter(self.instructions)
+
     def get_by_opcode(self, opcode):
-        return self.opcode_dict[opcode]
+        if opcode in self.opcode_dict:
+            return self.opcode_dict[opcode]
+        else:
+            raise UndocumentedInstruction

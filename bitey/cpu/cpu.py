@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import json
+import logging
 from json import JSONDecoder
 from typing import ClassVar
 
@@ -76,11 +77,15 @@ class CPU:
         Called after the generated __init__ method
         Initialize the processor.
         """
+        self.logger = logging.getLogger("bitey")
+        # TODO: Research best practices around logging and module namespaces
+        self.registers.set_logger(self.logger)
         return
 
     def reset(self, memory):
         "Reset the CPU"
 
+        # self.logger.debug("Resetting CPU")
         # Disable interrupts
         # TODO: The flags need to be initialized to some valid
         # boolean state before running this
@@ -102,7 +107,7 @@ class CPU:
         self.registers["P"].value = 0xFF
 
         # Load the first instruction
-        self.load_instruction(memory)
+        self.get_next_instruction(memory)
 
         # Initialize the stack
         self.stack_init()
@@ -122,22 +127,36 @@ class CPU:
         #   TODO: Start the user's program
 
     def build_from_json(json_data):
+        logger = logging.getLogger("bitey")
         decoder = CPUJSONDecoder()
+        logger.debug("Building CPU")
         cpu = decoder.decode(json_data)
 
         return cpu
 
-    def load_instruction(self, memory):
-        self.current_instruction = self.get_next_instruction(memory)
-        # TODO: May need to refactor this for immediate addressing mode or other
-        # models
-        self.registers["PC"].value += 1
-
     def get_next_instruction(self, memory):
-        return self.registers["PC"].value
+        self.current_instruction = self.load_instruction(memory)
+        self.registers["PC"].inc()
+
+    def load_instruction(self, memory):
+        "Load the instruction pointed to by the PC from memory"
+        self.logger.debug(
+            "Loading instruction at {}".format(self.registers["PC"].value)
+        )
+        return memory.read(self.registers["PC"].value)
+
+    def decode_instruction(self, memory):
+        "Decode the current instruction"
+        # TODO: refactor this, figure out how to build cleaner
+        inst = self.instructions.get_by_opcode(self.current_instruction)
+        opcode = inst.get_opcode(self.current_instruction)
+        # self.logger.debug("Decoded {}".format(inst.short_str()))
+
+        return (inst, opcode)
 
     def execute_instruction(self, memory):
         "Execute an instruction"
+        self.logger.debug("Executing instruction")
         self.current_instruction.execute(self, memory)
 
     def set_flags(self, instruction, flags, registers):

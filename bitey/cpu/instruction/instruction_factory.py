@@ -28,9 +28,13 @@ class InstructionFactory:
         # TODO: Refactor this
         if len(opcodes.opcodes) > 0:
             opcode = opcodes.opcodes[0].opcode
-            return InstructionFactory.get_instruction_from_opcode(opcode)(
-                name, opcodes, description
-            )
+            try:
+                return InstructionFactory.get_instruction_from_opcode(opcode)(
+                    name, opcodes, description
+                )
+            except UnimplementedInstruction:
+                # Use the base class for the instruction
+                return Instruction(name, opcodes, description)
         else:
             return None
 

@@ -1,5 +1,5 @@
 from bitey.cpu.instruction.lda import LDA
-from bitey.cpu.addressing_mode import ImpliedAddressingMode
+from bitey.cpu.addressing_mode import AccumulatorAddressingMode
 from bitey.cpu.instruction.instruction_factory import InstructionFactory
 from bitey.cpu.cpu import CPUJSONDecoder
 
@@ -14,10 +14,10 @@ def test_cpu_builder():
     s = f.read()
     cpu_decoder = CPUJSONDecoder()
     cpu = cpu_decoder.decode(s)
-    assert len(cpu.instructions.instructions) == 7
+    assert len(cpu.instructions.instructions) == 56
 
     inst = cpu.instructions.instructions[2]
-    assert inst.name == "CLI"
-    assert inst.opcodes.opcodes[0].opcode == 88
-    assert inst.opcodes.opcodes[0].addressing_mode == ImpliedAddressingMode()
-    assert inst.description == "Clear Interrupt Disable"
+    assert inst.name == "ASL"
+    assert inst.opcodes.opcodes[0].opcode == 10
+    assert inst.opcodes.opcodes[0].addressing_mode == AccumulatorAddressingMode()
+    assert inst.description == "Shift Left One Bit (Memory or Accumulator)"

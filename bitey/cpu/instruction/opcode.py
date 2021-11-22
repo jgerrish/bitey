@@ -23,13 +23,12 @@ class Opcode:
     def execute(self, flags, registers, memory):
         "Execute the opcode"
         # TODO: Implement this
-        # value = self.addressing_mode.get_value(flags, registers, memory)
+        # value = self.addressing_mode.get_value(flags, registers, memory
         self.set_flags(flags, registers)
 
         return
 
     def set_flags(self, flags, registers):
-        flags["Z"].test_register_result(registers["X"])
         return
 
 

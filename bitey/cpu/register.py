@@ -3,6 +3,10 @@ import json
 from json import JSONDecoder
 
 
+class RegisterOverflowException(Exception):
+    "The Register was incremented past it's size"
+
+
 # dataclass generates __init__, __repr__ and other special methods for PEP526
 # defined member variables
 # __init__ parameters are defined in order of member variable definition
@@ -32,6 +36,24 @@ class Register:
         "The size of the register in bits"
         return self.size
 
+    def inc(self):
+        """
+        Increment the register.
+        Throws an exception if it goes beyond the limit.
+        """
+        if (self.value + 1) >= (2 ** self.size):
+            raise RegisterOverflowException
+
+        self.logger.debug("Incrementing register {}".format(self.name))
+        self.value += 1
+
+    def add(self, amt):
+        if (self.value + amt) >= (2 ** self.size):
+            raise Exception
+
+        self.logger.debug("Incrementing register {} by {}".format(self.name, amt))
+        self.value += amt
+
 
 @dataclass
 class Registers:
@@ -49,6 +71,11 @@ class Registers:
 
     def __getitem__(self, i):
         return self.regs[i]
+
+    def set_logger(self, logger):
+        self.logger = logger
+        for register in self.registers:
+            register.logger = logger
 
 
 class RegisterJSONDecoder(JSONDecoder):

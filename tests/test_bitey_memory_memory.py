@@ -71,3 +71,38 @@ def test_memory_memory_out_of_range():
         assert False
     except MemoryOutOfRange:
         assert True
+
+
+def test_memory_memory_read_range():
+    memory = Memory(2 ** 16)
+    assert len(memory.memory) == 65536
+
+    # Try at beginning of memory
+    try:
+        # Get two bytes
+        memory.read_range(0, 2)
+        assert True
+    except MemoryOutOfRange:
+        assert False
+
+    # Try before valid memory
+    try:
+        # Get two bytes
+        memory.read_range(-1, 1)
+        assert False
+    except MemoryOutOfRange:
+        assert True
+
+    # Try at end of memory
+    try:
+        memory.read_range(65534, 65536)
+        assert True
+    except MemoryOutOfRange:
+        assert False
+
+    # Try after valid memory
+    try:
+        memory.read_range(65535, 65537)
+        assert False
+    except MemoryOutOfRange:
+        assert True

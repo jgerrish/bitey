@@ -45,6 +45,19 @@ class Memory:
         else:
             raise MemoryOutOfRange
 
+    def read_range(self, start, end):
+        """
+        Return a range of bytes.
+        The start and end match Python slice meaning.
+        The range includes the start location but not the end location.
+        e.g. start=0, end=1 returns one byte in read_range.
+        Raise an exception if the memory access is out of range.
+        """
+        if (start < 0) or (end > len(self.memory)):
+            raise MemoryOutOfRange
+        else:
+            return self.memory[start:end]
+
     def write(self, address, value):
         """
         Write a value in memory
@@ -70,7 +83,7 @@ class Memory:
         Compute a 16-bit value from two consecutive bytes in memory.
         This can be used to build a 16-bit address for example.
         """
-        adl = self.memory[adl_address]
-        adh = self.memory[adh_address]
+        adl = self.read(adl_address)
+        adh = self.read(adh_address)
 
         return self.get_16bit_address(adl, adh)
