@@ -1,4 +1,5 @@
-from bitey.cpu.cpu import CPU, StackOverflow, StackUnderflow
+from bitey.cpu.addressing_mode import AccumulatorAddressingMode
+from bitey.cpu.cpu import CPU, CPUJSONDecoder, StackOverflow, StackUnderflow
 from bitey.memory.memory import Memory
 
 
@@ -11,12 +12,26 @@ def build_cpu():
     return cpu
 
 
+def test_cpu_builder():
+    f = open("chip/6502.json")
+    s = f.read()
+    cpu_decoder = CPUJSONDecoder()
+    cpu = cpu_decoder.decode(s)
+    assert len(cpu.instruction_set.instructions) == 56
+
+    inst = cpu.instruction_set.instructions[2]
+    assert inst.name == "ASL"
+    assert inst.opcodes.opcodes[0].opcode == 10
+    assert inst.opcodes.opcodes[0].addressing_mode == AccumulatorAddressingMode()
+    assert inst.description == "Shift Left One Bit (Memory or Accumulator)"
+
+
 def test_cpu_cpu_init():
     cpu = build_cpu()
 
     assert len(cpu.flags.flags) == 7
     assert len(cpu.registers.registers) == 6
-    assert len(cpu.instructions.instructions) == 56
+    assert len(cpu.instruction_set.instructions) == 56
 
 
 def test_cpu_cpu_stack_init():

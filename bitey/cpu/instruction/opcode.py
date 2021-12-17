@@ -14,7 +14,7 @@ class Opcode:
     addressing mode
     """
 
-    opcode: str
+    opcode: int
     "The instruction opcode"
 
     addressing_mode: AddressingMode
@@ -23,7 +23,7 @@ class Opcode:
     def execute(self, flags, registers, memory):
         "Execute the opcode"
         # TODO: Implement this
-        # value = self.addressing_mode.get_value(flags, registers, memory
+        # value = self.addressing_mode.get_value(flags, registers, memory)
         self.set_flags(flags, registers)
 
         return
@@ -41,7 +41,7 @@ class Opcodes:
     opcodes: list[Opcode]
 
     def __post_init__(self):
-        "Create a dictionary so we can access opcodes by short name"
+        "Create a dictionary so we can access opcodes by opcode"
         self.opcode_dict = {}
         for opcode in self.opcodes:
             self.opcode_dict[opcode.opcode] = opcode

@@ -1,4 +1,6 @@
 from bitey.cpu.flag.flag import Flag, Flags, FlagsJSONDecoder
+from bitey.cpu.flag.zero_flag import ZeroFlag
+from bitey.cpu.register import Register
 
 
 def test_cpu_flag_init():
@@ -160,3 +162,16 @@ def test_cpu_flags_json_decoder():
     f = FlagsJSONDecoder()
     flags = f.decode(s)
     assert len(flags.flags) == 2
+
+
+def test_cpu_flags_zero_flag():
+    z = ZeroFlag("Z", "Zero Result", 1, 0)
+    assert not z.status
+
+    a_register = Register("A", "Accumulator", 8, 0)
+
+    assert a_register.value == 0
+    assert a_register == 0
+    z.test_register_result(a_register)
+
+    assert z.status

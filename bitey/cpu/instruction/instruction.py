@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from bitey.cpu.instruction.opcode import Opcodes
+from bitey.cpu.instruction.opcode import Opcode, Opcodes
 
 
 class UndocumentedInstruction(Exception):
@@ -38,10 +38,10 @@ class Instruction:
     name: str
     "The name of the instruction"
 
-    opcodes: Opcodes
+    opcode: Opcode = None
     "The instruction opcodes"
 
-    description: str
+    description: str = None
     "A human-readable description of the instruction"
 
     def __post_init__(self):
@@ -73,12 +73,102 @@ class Instruction:
 
 
 @dataclass
+class InstructionClass:
+    """
+    A class of CPU instructions
+
+    An Instruction is an individual instruction with a specific opcode
+
+    An InstructionClass is a set of related opcodes gathered under a
+    common instruction name.  The opcodes may specify different
+    addressing modes or other things, but the instruction execution is
+    essentially the same.
+
+    An Instruction has an individual opcode associated with it.
+    An InstructionClass has a set of opcodes associated with it.
+    """
+
+    name: str
+    "The name of the instruction"
+
+    instruction: Instruction
+    "The actual Instruction class"
+
+    opcodes: Opcodes
+    "The instruction opcodes"
+
+    description: str = None
+    "A human-readable description of the instruction"
+
+    def __post_init__(self):
+        self.logger = logging.getLogger("bitey")
+        # Build the instruction database
+        self.instructions = {}
+        for opcode in self.opcodes:
+            self.instructions[opcode.opcode] = Instruction(
+                self.name, opcode, self.description
+            )
+
+    def execute(self, cpu, memory):
+        "Execute the instruction"
+        self.logger.debug("Executing instruction: {}".format(self))
+
+        # TODO
+        # self.execute_opcode()
+
+        raise UnimplementedInstruction
+
+    def get_opcode_by_opcode(self, opcode):
+        """
+        Get by an opcode
+        The opcode argument is an integer
+        """
+        return self.opcodes[opcode]
+
+    def get_instruction_by_opcode(self, opcode):
+        """
+        Build an Instruction given an opcode
+        The opcode argument is an integer
+        """
+        return self.instructions[opcode]
+
+    def short_str(self):
+        return "{}".format(self.name)
+
+
+@dataclass
 class Instructions:
     """
-    The collection of instructions this processor supports
+    A set of instructions
     """
 
     instructions: list[Instruction]
+
+    def __post_init__(self):
+        "Create a dictionary so we can access instructions by opcode"
+        self.opcode_dict = {}
+        for instruction in self.instructions:
+            self.opcode_dict[instruction.opcode.opcode] = instruction
+
+    def __iter__(self):
+        return iter(self.instructions)
+
+    def get_by_opcode(self, opcode):
+        if opcode in self.opcode_dict:
+            return self.opcode_dict[opcode]
+        else:
+            raise UndocumentedInstruction
+
+
+@dataclass
+class InstructionSet:
+    """
+    The collection of instructions this processor supports
+    This is essentially a list of InstructionClasses
+    OR it could be a list of Instructions
+    """
+
+    instructions: list[InstructionClass]
 
     def __post_init__(self):
         "Create a dictionary so we can access instructions by opcode"
@@ -93,5 +183,12 @@ class Instructions:
     def get_by_opcode(self, opcode):
         if opcode in self.opcode_dict:
             return self.opcode_dict[opcode]
+        else:
+            raise UndocumentedInstruction
+
+    def get_instruction_by_opcode(self, opcode):
+        if opcode in self.opcode_dict:
+            # TODO: Refactor
+            return self.opcode_dict[opcode].get_instruction_by_opcode(opcode)
         else:
             raise UndocumentedInstruction

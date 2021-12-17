@@ -51,8 +51,15 @@ class Register:
         if (self.value + amt) >= (2 ** self.size):
             raise Exception
 
-        self.logger.debug("Incrementing register {} by {}".format(self.name, amt))
+        # self.logger.debug("Incrementing register {} by {}".format(self.name, amt))
         self.value += amt
+
+    def __eq__(self, value):
+        """
+        Implment equality so we can compare this register's value
+        to other integer values without directly accessing .value
+        """
+        return self.value == value
 
 
 @dataclass

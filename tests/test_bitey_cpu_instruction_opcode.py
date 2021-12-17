@@ -1,9 +1,17 @@
 from bitey.cpu.addressing_mode import ImpliedAddressingMode
 
 from bitey.cpu.instruction.opcode import (
+    Opcode,
     OpcodeJSONDecoder,
     OpcodesJSONDecoder,
 )
+
+
+def test_cpu_instruction_opcode_init():
+    opcode = Opcode(0, ImpliedAddressingMode())
+
+    assert opcode.opcode == 0
+    assert opcode.addressing_mode == ImpliedAddressingMode()
 
 
 def test_cpu_instruction_opcode_json_decoder():

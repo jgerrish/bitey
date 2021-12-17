@@ -17,6 +17,14 @@ def test_cpu_register_init():
     assert r.value == 0
 
 
+def test_cpu_register_eq():
+    r = Register("A", "Accumulator", 8, 0)
+    assert r == 0
+
+    r = Register("A", "Accumulator", 8, 7)
+    assert r == 7
+
+
 def test_cpu_registers_init():
     r1 = Register("A", "Accumulator", 8, 0)
     r2 = Register("X", "Index register X", 8, 0)

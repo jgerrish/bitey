@@ -39,6 +39,10 @@ https://www.syntiac.com/fpga64.html
 I haven't examined all of these, but I'm pointing them out for those
 who are more interested in a more formal approach.
 
+The instruction database was completed with the help of the following set by kirbyUK:
+https://gist.github.com/kirbyUK/1a0797e19f54c1e35e67ce7b385b323e
+
+
 # Install #
 
 pipenv was used to setup dependencies.  Feel free to use your Python

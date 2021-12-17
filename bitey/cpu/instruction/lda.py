@@ -12,7 +12,7 @@ class LDA(Instruction):
     def execute(self, cpu, memory):
         "Execute the instruction"
         raise IncompleteInstruction
-        self.set_flags(cpu.flags, cpu.registers)
+        # self.set_flags(cpu.flags, cpu.registers)
 
     def set_flags(self, flags, registers):
         flags["Z"].test_register_result(registers["A"])

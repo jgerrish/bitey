@@ -10,10 +10,8 @@ from bitey.cpu.addressing_mode import (
     # ImmediateAddressingMode,
     ImpliedAddressingMode,
 )
-from bitey.cpu.instruction.instruction import Instruction, Instructions
-from bitey.cpu.instruction.instruction_json_decoder import (
-    InstructionsJSONDecoder,
-)
+from bitey.cpu.instruction.instruction import Instruction, InstructionSet
+from bitey.cpu.instruction.instruction_json_decoder import InstructionSetJSONDecoder
 
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.sei import SEI
@@ -66,7 +64,7 @@ class CPU:
 
     flags: Flags
 
-    instructions: Instructions
+    instruction_set: InstructionSet
 
     pins: Pins
 
@@ -85,7 +83,7 @@ class CPU:
     def reset(self, memory):
         "Reset the CPU"
 
-        # self.logger.debug("Resetting CPU")
+        self.logger.debug("Resetting CPU")
         # Disable interrupts
         # TODO: The flags need to be initialized to some valid
         # boolean state before running this
@@ -148,11 +146,13 @@ class CPU:
     def decode_instruction(self, memory):
         "Decode the current instruction"
         # TODO: refactor this, figure out how to build cleaner
-        inst = self.instructions.get_by_opcode(self.current_instruction)
-        opcode = inst.get_opcode(self.current_instruction)
-        # self.logger.debug("Decoded {}".format(inst.short_str()))
+        # TODO: Add tests for this
+        instruction = self.instruction_set.get_instruction_by_opcode(
+            self.current_instruction
+        )
+        self.logger.debug("Decoded {}".format(instruction.short_str()))
 
-        return (inst, opcode)
+        return instruction
 
     def execute_instruction(self, memory):
         "Execute an instruction"
@@ -285,12 +285,12 @@ class CPUJSONDecoder(JSONDecoder):
             registers_decoder = RegistersJSONDecoder()
             registers = registers_decoder.decode_parsed(parsed_json["registers"])
 
-        instructions = None
+        instruction_set = None
         if "instructions" in parsed_json:
-            instructions_decoder = InstructionsJSONDecoder()
-            instructions = instructions_decoder.decode_parsed(
+            instruction_set_decoder = InstructionSetJSONDecoder()
+            instruction_set = instruction_set_decoder.decode_parsed(
                 parsed_json["instructions"]
             )
 
-        cpu = CPU(registers, flags, instructions, Pins([]))
+        cpu = CPU(registers, flags, instruction_set, Pins([]))
         return cpu
