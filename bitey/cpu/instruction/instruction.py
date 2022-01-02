@@ -60,9 +60,27 @@ class Instruction:
         # instruction wired up to execute that opcode
         self.logger.debug("Executing instruction: {}".format(self))
 
-        # TODO
         # self.execute_opcode()
+        # The instruction execution pattern is as follows:
+        # First the base class execute method is called
+        # Then the operand value is loaded from memory, based on the
+        # addressing mode
+        # Then the subclass instruction_execute is called if it exists
+        if self.opcode is not None:
+            value = self.opcode.addressing_mode.get_value(
+                cpu.flags, cpu.registers, memory
+            )
 
+            self.instruction_execute(cpu, memory, value)
+        else:
+            raise UnimplementedInstruction
+
+    def instruction_execute(self, cpu, memory, value):
+        """
+        Specific instruction subclasses should implement this
+        method with their instruction code.
+        Value is the value based on the addressing mode.
+        """
         raise UnimplementedInstruction
 
     def get_opcode(self, opcode):

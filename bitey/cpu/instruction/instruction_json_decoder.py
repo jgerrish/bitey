@@ -31,7 +31,6 @@ class InstructionJSONDecoder(JSONDecoder):
             else:
                 opcode = None
 
-            print("opcode: {}".format(opcode))
             return InstructionFactory.build(name, opcode, description)
 
         else:

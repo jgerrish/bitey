@@ -47,7 +47,16 @@ class Register:
         self.logger.debug("Incrementing register {}".format(self.name))
         self.value += 1
 
+    def get(self):
+        "Get the register's value"
+        return self.value
+
+    def set(self, value):
+        "Set the register's value"
+        self.value = value
+
     def add(self, amt):
+        "Add an amount to the register's value"
         if (self.value + amt) >= (2 ** self.size):
             raise Exception
 

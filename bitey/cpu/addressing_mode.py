@@ -314,7 +314,7 @@ class IndirectIndexedAddressingMode(AddressingMode):
         adl = zero_page_address
         # TODO: Test for case we go beyond the page boundary
         # Wrap-around is assumed
-        adh = (zero_page_address + 1)
+        adh = zero_page_address + 1
 
         address = memory.get_16bit_value(adl, adh)
         address += registers["Y"].value

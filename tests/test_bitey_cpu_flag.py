@@ -1,4 +1,5 @@
-from bitey.cpu.flag.flag import Flag, Flags, FlagsJSONDecoder
+from bitey.cpu.flag.flag import Flag, Flags
+from bitey.cpu.flag.flag_json_decoder import FlagsJSONDecoder
 from bitey.cpu.flag.zero_flag import ZeroFlag
 from bitey.cpu.register import Register
 

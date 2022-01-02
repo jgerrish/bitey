@@ -1,6 +1,5 @@
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
-    ImmediateAddressingMode,
     ImpliedAddressingMode,
     ZeroPageAddressingMode,
 )
@@ -16,7 +15,6 @@ from bitey.cpu.instruction.instruction import (
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
-from bitey.cpu.instruction.lda import LDA
 from bitey.cpu.instruction.sei import SEI
 
 
@@ -171,24 +169,3 @@ def test_cpu_instruction_sei():
     i1 = SEI("SEI", i1_opcode, "Set Interrupt Disable")
     i1.execute(computer.cpu, computer.memory)
     assert flags["I"].status is True
-
-
-def test_cpu_instruction_lda():
-    computer = build_computer()
-    flags = computer.cpu.flags
-    assert flags["Z"].status is False
-
-    # The reset code in the CPU loads the first instruction and
-    # increments the PC by one
-    # TODO: These tests should be simplified to not rely on that
-    assert computer.cpu.registers["PC"].value == 1
-
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
-    i1 = LDA("LDA", i1_opcode, "Load Accumulator with Memory")
-    try:
-        i1.execute(computer.cpu, computer.memory)
-        assert False
-        assert flags["Z"].status is False
-        # assert flags["Z"].status is True
-    except IncompleteInstruction:
-        assert True

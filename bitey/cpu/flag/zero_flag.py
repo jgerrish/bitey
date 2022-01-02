@@ -15,7 +15,7 @@ class ZeroFlag(Flag):
         Reset the flag if the result is non-zero
         """
 
-        if register == 0:
+        if register.get() == 0:
             self.status = True
         else:
             self.status = False

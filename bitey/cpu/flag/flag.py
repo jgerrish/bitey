@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-import json
-from json import JSONDecoder
 
 
 @dataclass
@@ -91,55 +89,3 @@ class Flags:
         # Clear the bit
         bit = 2 ** self[flag].bit_field_pos
         self.data = self.data & (0xFF - bit)
-
-
-class FlagJSONDecoder(JSONDecoder):
-    """
-    Decode a register definition in JSON format
-    """
-
-    def decode(self, json_doc):
-        if (
-            ("short_name" in json_doc)
-            and ("name" in json_doc)
-            and ("bit_field_pos" in json_doc)
-            and ("status" in json_doc)
-        ):
-            status = False
-            if json_doc["status"] == 0:
-                status = False
-            elif json_doc["status"] == 1:
-                status = True
-
-            return Flag(
-                json_doc["short_name"],
-                json_doc["name"],
-                json_doc["bit_field_pos"],
-                status,
-            )
-        else:
-            # Return None if the flag JSON object is missing fields or invalid
-            return None
-
-
-class FlagsJSONDecoder(JSONDecoder):
-    """
-    Decode a list of register definitions in JSON format
-    """
-
-    def decode(self, json_doc):
-        parsed_json = json.loads(json_doc)
-        return self.decode_parsed(parsed_json)
-
-    def decode_parsed(self, parsed_json):
-        flag_list = []
-        rjd = FlagJSONDecoder()
-        for flag in parsed_json:
-            f = rjd.decode(flag)
-            # Only append the flag if all fields are present and the JSON
-            # is valid for the flag
-            if f:
-                flag_list.append(f)
-        # TODO: Some things should be initialized to certain values
-        # Make sure setting the flags byte to zero on start is ok
-        return Flags(flag_list, None)

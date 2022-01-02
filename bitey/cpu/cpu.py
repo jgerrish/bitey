@@ -19,7 +19,8 @@ from bitey.cpu.instruction.sei import SEI
 # from bitey.cpu.instruction.ldx import LDX
 # from bitey.cpu.instruction.txs import TXS
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
-from bitey.cpu.flag.flag import Flags, FlagsJSONDecoder
+from bitey.cpu.flag.flag import Flags
+from bitey.cpu.flag.flag_json_decoder import FlagsJSONDecoder
 from bitey.cpu.pin import Pins
 from bitey.cpu.register import (
     Registers,
