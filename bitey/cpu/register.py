@@ -41,6 +41,8 @@ class Register:
         Increment the register.
         Throws an exception if it goes beyond the limit.
         """
+        # TODO: Maybe wrap the flag with bounds checking too, read expected
+        # behavior
         if (self.value + 1) >= (2 ** self.size):
             raise RegisterOverflowException
 

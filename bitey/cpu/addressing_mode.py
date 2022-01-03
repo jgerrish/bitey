@@ -55,8 +55,6 @@ class AbsoluteAddressingMode(AddressingMode):
 
     def get_address(self, flags, registers, memory):
         self.adl = memory.read(registers["PC"].value)
-        # TODO: Maybe wrap the flag with bounds checking too, read expected
-        # behavior
         registers["PC"].inc()
         self.adh = memory.read(registers["PC"].value)
         registers["PC"].inc()
