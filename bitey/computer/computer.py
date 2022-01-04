@@ -3,6 +3,7 @@ import logging
 
 from bitey.logger import setup_logger
 from bitey.cpu.cpu import CPU
+from bitey.cpu.instruction.instruction import UndocumentedInstruction
 from bitey.memory.memory import Memory
 
 
@@ -51,3 +52,63 @@ class Computer:
 
     def run(self):
         self.cpu.execute_instruction()
+
+    def parse(self):
+        """
+        Parse the next instruction.
+        Returns a tuple with the decoded instruction along with the bytes
+        consumed.
+
+        This is a destructive operation since it changes the Program
+        Counter.
+        """
+        consumed = 0
+        instruction = None
+
+        try:
+            self.cpu.get_next_instruction(self.memory)
+            instruction = self.cpu.decode_instruction(self.memory)
+            addressing_mode = instruction.opcode.addressing_mode
+            consumed = addressing_mode.bytes
+        except UndocumentedInstruction:
+            self.logger.debug(
+                "Found undocumented instruction at address 0x{0:02x}".format(
+                    self.cpu.registers["PC"].value - 1
+                )
+            )
+            consumed = 1
+
+        return (instruction, consumed)
+
+    def disassemble(self):
+        """
+        Disassemble the Memory associated with this Computer instance
+        See the disassembler example in the examples directory for
+        how to use this.
+
+        Return a string of the disassembly.
+
+        This is a destructive operation, since it changes the
+        Program Counter.
+
+        It might make more sense to include this as a method on
+        Memory, but it uses and tests the existing execution machinery.
+        """
+        total_consumed = 0
+        self.cpu.registers["PC"].value = 0
+        lines = []
+
+        while total_consumed < len(self.memory):
+            result = ""
+            (instruction, consumed) = self.parse()
+            data = self.memory.read_range(total_consumed, total_consumed + consumed)
+            inst_bytes = " ".join(["{:02x}".format(x) for x in data])
+            result += "{:04x}  {:<8}  ".format(total_consumed, inst_bytes)
+            if instruction is not None:
+                result += instruction.assembly_str(self)
+            else:
+                result += "{}".format("INV")
+            lines.append(result)
+            total_consumed += consumed
+
+        return "\n".join(lines)

@@ -87,7 +87,24 @@ class Instruction:
         return self.opcodes[opcode]
 
     def short_str(self):
+        "The short name of the instruction, e.g. NOP"
         return "{}".format(self.name)
+
+    def assembly_str(self, computer):
+        """
+        The string representing the disassembled instruction
+        e.g. INC  0xCC
+        It doesn't include the instruction address
+        It requires a Computer argument, to print the instruction
+        operand.
+        """
+        inst_str = self.opcode.addressing_mode.get_inst_str(
+            computer.cpu.flags, computer.cpu.registers, computer.memory
+        )
+        if inst_str != "":
+            return "{}  {}".format(self.short_str(), inst_str)
+        else:
+            return "{}".format(self.short_str())
 
 
 @dataclass
@@ -205,6 +222,9 @@ class InstructionSet:
             raise UndocumentedInstruction
 
     def get_instruction_by_opcode(self, opcode):
+        """
+        Get an instruction by it's opcode
+        """
         if opcode in self.opcode_dict:
             # TODO: Refactor
             return self.opcode_dict[opcode].get_instruction_by_opcode(opcode)

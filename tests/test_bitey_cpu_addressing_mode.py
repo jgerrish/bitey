@@ -171,28 +171,42 @@ def test_cpu_addressing_mode_relative_get_value_negative():
     computer = build_computer()
     computer.memory.write(0x70, 0xB0)
 
-    computer.cpu.registers["PC"].value = 0x10
+    computer.cpu.registers["PC"].value = 0x70
 
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
     value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
-    assert value == 0x11
+    assert value == 0x21
+
+
+def test_cpu_addressing_mode_relative_get_value_negative_lt_zero():
+    computer = build_computer()
+    computer.memory.write(0x20, 0xB0)
+
+    computer.cpu.registers["PC"].value = 0x20
+
+    rel = RelativeAddressingMode()
+    assert type(rel) == RelativeAddressingMode
+
+    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == 0xFFD0
 
 
 def test_cpu_addressing_mode_relative_get_value_negative_page_crossing():
     computer = build_computer()
     computer.memory.write(0x70, 0xB0)
 
-    computer.cpu.registers["PC"].value = 0x10
+    computer.cpu.registers["PC"].value = 0x70
 
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
     value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
-    assert value == 0x11
+    assert value == 0x21
 
 
 def test_cpu_addressing_mode_relative_get_value_page_crossing():

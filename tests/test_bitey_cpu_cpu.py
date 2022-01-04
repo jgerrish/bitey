@@ -1,5 +1,7 @@
-from bitey.cpu.addressing_mode import AccumulatorAddressingMode
+from bitey.cpu.addressing_mode import AccumulatorAddressingMode, ImpliedAddressingMode
 from bitey.cpu.cpu import CPU, CPUJSONDecoder, StackOverflow, StackUnderflow
+from bitey.cpu.instruction.instruction import Instruction
+from bitey.cpu.instruction.opcode import Opcode
 from bitey.memory.memory import Memory
 
 
@@ -32,6 +34,19 @@ def test_cpu_cpu_init():
     assert len(cpu.flags.flags) == 7
     assert len(cpu.registers.registers) == 6
     assert len(cpu.instruction_set.instructions) == 56
+
+
+def test_cpu_cpu_decode_instruction():
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    assert cpu.registers["PC"].value == 0x00
+    # CLI
+    memory.write(0, 0x58)
+    cpu.get_next_instruction(memory)
+    instruction = cpu.decode_instruction(memory)
+    opcode = Opcode(0x58, ImpliedAddressingMode())
+    expected_instruction = Instruction("CLI", opcode, "Clear Interrupt Disable Bit")
+    assert instruction == expected_instruction
 
 
 def test_cpu_cpu_stack_init():

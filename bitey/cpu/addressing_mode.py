@@ -25,7 +25,6 @@ class AddressingMode:
         return None
 
     def get_inst_str(self, flags, registers, memory):
-        # self.logger.debug("ugh")
         address = self.get_address(flags, registers, memory)
         if address is not None:
             return "${0:02x}".format(address)
@@ -473,10 +472,9 @@ class RelativeAddressingMode(AddressingMode):
 
     def get_value(self, flags, registers, memory):
         offset = memory.read(registers["PC"].value)
-
         if offset > 0x7F:
             # Calculate two's complement to get negative value
-            offset = ~offset + 1
+            offset = -((0xFF - offset) + 1)
         # TODO: update flags
 
         registers["PC"].inc()

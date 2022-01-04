@@ -1,7 +1,16 @@
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
+    AbsoluteXAddressingMode,
+    AbsoluteYAddressingMode,
+    AccumulatorAddressingMode,
+    ImmediateAddressingMode,
     ImpliedAddressingMode,
+    IndexedIndirectAddressingMode,
+    IndirectIndexedAddressingMode,
+    RelativeAddressingMode,
     ZeroPageAddressingMode,
+    ZeroPageXAddressingMode,
+    ZeroPageYAddressingMode,
 )
 from bitey.computer.computer import Computer
 from bitey.cpu.cpu import CPU
@@ -15,6 +24,7 @@ from bitey.cpu.instruction.instruction import (
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
+from bitey.cpu.instruction.lda import LDA
 from bitey.cpu.instruction.sei import SEI
 
 
@@ -75,6 +85,96 @@ def test_cpu_instruction_set_init():
     assert instruction_set.instructions[0].name == "LDA"
     assert len(instruction_set.instructions[0].opcodes) == 2
     assert instruction_set.instructions[0].description == "Load Accumulator with Memory"
+
+
+def test_cpu_instruction_short_str():
+    opcode = Opcode(0x58, ImpliedAddressingMode())
+    cli = CLI("CLI", opcode, "Clear Interrupt Disable")
+    assert cli.short_str() == "CLI"
+
+
+def test_cpu_instruction_assembly_str():
+    computer = build_computer()
+
+    # Set the X register
+    computer.cpu.registers["X"].set(0x4A)
+
+    # Set the Y register
+    computer.cpu.registers["Y"].set(0xEC)
+
+    # Implied mode CLI instruction
+    computer.memory.write(0x00, 0x58)
+    opcode = Opcode(0x58, ImpliedAddressingMode())
+    cli = CLI("CLI", opcode, "Clear Interrupt Disable")
+    assert cli.assembly_str(computer) == "CLI"
+
+    # Immediate mode LDA
+    computer.memory.write(0x01, 0xA9)
+    opcode = Opcode(0xA9, ImmediateAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  #$a9"
+
+    # ZeroPage mode LDA
+    computer.memory.write(0x02, 0x99)
+    opcode = Opcode(0xA5, ZeroPageAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  $99"
+
+    # Absolute addressing mode LDA
+    computer.memory.write(0x03, 0x5C)
+    computer.memory.write(0x04, 0xB4)
+    opcode = Opcode(0xAD, AbsoluteAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  $b45c"
+
+    # Accumulator addressing mode
+    opcode = Opcode(0x0A, AccumulatorAddressingMode())
+    asl = Instruction("ASL", opcode, "Shift Left One Bit (Memory or Accumulator")
+    assert asl.assembly_str(computer) == "ASL"
+
+    # AbsoluteX addressing mode
+    computer.memory.write(0x05, 0x0F)
+    computer.memory.write(0x06, 0xF7)
+    opcode = Opcode(0xBD, AbsoluteXAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  $f70f,X"
+
+    # AbsoluteY addressing mode
+    computer.memory.write(0x07, 0x13)
+    computer.memory.write(0x08, 0x16)
+    opcode = Opcode(0xB9, AbsoluteYAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  $1613,Y"
+
+    # IndexedIndirect addressing mode
+    computer.memory.write(0x09, 0x30)
+    opcode = Opcode(0xA1, IndexedIndirectAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  ($30,X)"
+
+    # IndirectIndexed addressing mode
+    computer.memory.write(0x0A, 0x4C)
+    opcode = Opcode(0xB1, IndirectIndexedAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  ($4c),Y"
+
+    # ZeroPageX addressing mode
+    computer.memory.write(0x0B, 0xAC)
+    opcode = Opcode(0xB5, ZeroPageXAddressingMode())
+    lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    assert lda.assembly_str(computer) == "LDA  $ac,X"
+
+    # ZeroPageY addressing mode
+    computer.memory.write(0x0C, 0xEC)
+    opcode = Opcode(0xB1, ZeroPageYAddressingMode())
+    lda = Instruction("LDX", opcode, "Load Index X with Memory")
+    assert lda.assembly_str(computer) == "LDX  $ec,Y"
+
+    # Relative addressing mode
+    computer.memory.write(0x0D, 0xA3)
+    opcode = Opcode(0xB0, RelativeAddressingMode())
+    lda = Instruction("BCS", opcode, "Branch on Carry Set")
+    assert lda.assembly_str(computer) == "BCS  $ffb0"
 
 
 def read_flags():

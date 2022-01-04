@@ -56,7 +56,12 @@ $ pipenv shell
 
 # Running #
 
-$ python -m bitey.app
+The examples directory includes examples of using the library.
+
+For example, to disassemble code:
+
+$ PYTHONPATH=. pipenv run python examples/disassembler.py BINFILE
+
 
 # Development #
 
