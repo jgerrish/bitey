@@ -278,7 +278,7 @@
 	},
 	{
 	    "name": "BPL",
-	    "description": "Branch on Rsult Plus",
+	    "description": "Branch on Result Plus",
 	    "opcodes": [
 		{
 		    "opcode": 16,
