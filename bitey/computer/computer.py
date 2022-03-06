@@ -97,7 +97,7 @@ class Computer:
         Memory, but it uses and tests the existing execution machinery.
         """
         total_consumed = 0
-        self.cpu.registers["PC"].value = 0
+        self.cpu.registers["PC"].set(0x00)
         lines = []
 
         while total_consumed < len(self.memory):

@@ -6,7 +6,7 @@ from bitey.cpu.instruction.instruction import Instruction
 class RTS(Instruction):
     "RTS: Return from Subroutine"
 
-    def instruction_execute(self, cpu, memory, value):
+    def instruction_execute(self, cpu, memory, value, address=None):
         """
         Execute the instruction, getting the return address from the stack
         and jumping there.

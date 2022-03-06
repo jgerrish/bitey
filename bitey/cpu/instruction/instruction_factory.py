@@ -9,6 +9,12 @@ from bitey.cpu.instruction.instruction import (
 )
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
+from bitey.cpu.instruction.dec import DEC
+from bitey.cpu.instruction.dec import DEX
+from bitey.cpu.instruction.dec import DEY
+from bitey.cpu.instruction.inc import INC
+from bitey.cpu.instruction.inc import INX
+from bitey.cpu.instruction.inc import INY
 from bitey.cpu.instruction.jsr import JSR
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.lda import LDA
@@ -26,10 +32,22 @@ class InstructionFactory:
         88: CLI,
         96: RTS,
         120: SEI,
+        136: DEY,
         141: STA,
         154: TXS,
         162: LDX,
         173: LDA,
+        198: DEC,
+        200: INY,
+        202: DEX,
+        206: DEC,
+        214: DEC,
+        222: DEC,
+        230: INC,
+        232: INX,
+        238: INC,
+        246: INC,
+        254: INC,
     }
 
     def __post_init__(self):
@@ -71,10 +89,22 @@ class InstructionClassFactory:
         88: CLI,
         96: RTS,
         120: SEI,
+        136: DEY,
         141: STA,
         154: TXS,
         162: LDX,
         173: LDA,
+        198: DEC,
+        200: INY,
+        202: DEX,
+        206: DEC,
+        214: DEC,
+        222: DEC,
+        230: INC,
+        232: INX,
+        238: INC,
+        246: INC,
+        254: INC,
         # 0: (InstructionClass, BRK),
         # 88: (InstructionClass, CLI),
         # 120: (InstructionClass, SEI),
@@ -100,8 +130,6 @@ class InstructionClassFactory:
                 inst = InstructionClassFactory.get_instruction_class_from_opcode(
                     opcode
                 )(name, opcodes, description)
-                # ic = InstructionClass(name, inst, opcodes, description)
-                # InstructionClassFactory.logger.debug("InstructionClass: {}".format(ic))
                 return InstructionClass(name, inst, opcodes, description)
             except UnimplementedInstruction:
                 # Use the base class for the instruction

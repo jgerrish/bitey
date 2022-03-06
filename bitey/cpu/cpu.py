@@ -144,6 +144,7 @@ class CPU:
         Increments the PC
         """
         self.current_opcode = self.load_opcode(memory)
+        self.logger.debug("get_next_instruction opcode: {}".format(self.current_opcode))
         self.registers["PC"].inc()
         self.current_instruction = self.decode_opcode(self.current_opcode)
 

@@ -77,15 +77,18 @@ class Instruction:
         # addressing mode
         # Then the subclass instruction_execute is called if it exists
         if self.opcode is not None:
-            value = self.opcode.addressing_mode.get_value(
+            self.logger.debug("addressing mode: {}".format(self.opcode.addressing_mode))
+            (address, value) = self.opcode.addressing_mode.get_value(
                 cpu.flags, cpu.registers, memory
             )
 
-            self.instruction_execute(cpu, memory, value)
+            self.logger.debug("address: {}, value: {}".format(address, value))
+
+            self.instruction_execute(cpu, memory, value, address)
         else:
             raise UnimplementedInstruction
 
-    def instruction_execute(self, cpu, memory, value):
+    def instruction_execute(self, cpu, memory, value, address=None):
         """
         Specific instruction subclasses should implement this
         method with their instruction code.
@@ -158,6 +161,7 @@ class InstructionClass:
             if self.instruction:
                 # If self.instruction is set, then this is a subclassed instruction
                 # We modify the already existing instruction
+                # This is wrong
                 self.instruction.opcode = opcode
                 self.instructions[opcode.opcode] = self.instruction
             else:
@@ -249,8 +253,16 @@ class InstructionSet:
         Get an instruction by its opcode
         """
         if opcode in self.opcode_dict:
-            # TODO: This is better now, but it's still two lookups.  We should only need
-            # one lookup
-            return self.opcode_dict[opcode].get_instruction_by_opcode(opcode)
+            # This isn't good
+            # More fail
+            # TODO: Rebuild it
+            instruction_class = self.opcode_dict[opcode]
+            instruction = instruction_class.instruction
+            if instruction is None:
+                instruction = instruction_class.get_instruction_by_opcode(opcode)
+            else:
+                instruction.opcode = instruction_class.opcodes[opcode]
+
+            return instruction
         else:
             raise UndocumentedInstruction

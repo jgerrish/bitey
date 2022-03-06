@@ -9,7 +9,7 @@ from bitey.cpu.instruction.instruction import (
 class JSR(Instruction):
     "JSR: Jump to New Location Saving Return Address"
 
-    def instruction_execute(self, cpu, memory, value):
+    def instruction_execute(self, cpu, memory, value, address=None):
         """
         Execute the instruction, saving the current address and jumping to
         the new location

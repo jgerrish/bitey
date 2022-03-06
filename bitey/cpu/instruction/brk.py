@@ -22,7 +22,7 @@ class BRK(Instruction):
     maskable_interrupt_vector: ClassVar[tuple] = (0xFFFE, 0xFFFF)
     "The location in memory storing the interrupt vector routine address"
 
-    def execute(self, cpu, memory):
+    def instruction_execute(self, cpu, memory, value=None, address=None):
         "Execute the instruction"
 
         # super().execute(cpu, memory)

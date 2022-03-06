@@ -64,4 +64,5 @@ def test_computer_computer_disassemble():
     computer.memory = Memory(bytearray(1))
     computer.memory.write(0x00, 0x18)
 
+    computer.cpu.registers["PC"].set(0x00)
     assert computer.disassemble() == "0000  18        CLC"

@@ -59,7 +59,7 @@ def test_cpu_register_pc_no_exception_on_8bit_inc():
         assert r.value == 0xFF
 
 
-def test_cpu_register_pc_throws_exception_on_16bit_inc_overflow():
+def test_cpu_register_pc_wraps_on_16bit_inc_overflow():
     setup_logger()
     r = Register("PC", "Program Counter", 16, 0xFFFF)
     r.logger = logging.getLogger("bitey")
@@ -67,9 +67,10 @@ def test_cpu_register_pc_throws_exception_on_16bit_inc_overflow():
     assert r.value == 0xFFFF
     try:
         r.inc()
-        assert False
-    except RegisterOverflowException:
         assert True
+        assert r.value == 0x0000
+    except RegisterOverflowException:
+        assert False
         assert r.value == 0xFFFF
 
 

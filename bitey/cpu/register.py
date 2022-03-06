@@ -49,14 +49,28 @@ class Register(Watcher):
     def inc(self):
         """
         Increment the register.
-        Throws an exception if it goes beyond the limit.
+        If it wraps, usually the Z flag is set.
         """
         # TODO: Maybe wrap the flag with bounds checking too, read expected
         # behavior
         if (self.value + 1) >= (2 ** self.size):
-            raise RegisterOverflowException
+            self.value = 0x00
+            # raise RegisterOverflowException
+        else:
+            self.value += 1
 
-        self.value += 1
+    def dec(self):
+        """
+        Decrement the register.
+        If it wraps, usually the Z flag is set.
+        """
+        # TODO: Maybe wrap the flag with bounds checking too, read expected
+        # behavior
+        if (self.value - 1) < 0:
+            self.value = (2 ** self.size) - 1
+            # raise RegisterOverflowException
+        else:
+            self.value -= 1
 
     def get(self):
         """

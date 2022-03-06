@@ -9,7 +9,7 @@ from bitey.cpu.instruction.instruction import (
 class LDA(Instruction):
     "LDA: Load Accumulator"
 
-    def instruction_execute(self, cpu, memory, value):
+    def instruction_execute(self, cpu, memory, value, address=None):
         "Execute the instruction, load the accumulator with the value"
         if value is not None:
             cpu.registers["A"].set(value)
