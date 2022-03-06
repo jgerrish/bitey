@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import logging
 from typing import ClassVar
 
 
@@ -13,6 +14,9 @@ class AddressingMode:
     The number of bytes an instruction with this addressing mode takes,
     including the instruction itself.
     """
+
+    def __post_init__(self):
+        self.logger = logging.getLogger("bitey.cpu.addressing_mode")
 
     def get_value(self, flags, registers, memory):
         return
@@ -53,9 +57,9 @@ class AbsoluteAddressingMode(AddressingMode):
     bytes: ClassVar[int] = 3
 
     def get_address(self, flags, registers, memory):
-        self.adl = memory.read(registers["PC"].value)
+        self.adl = memory.read(registers["PC"].get())
         registers["PC"].inc()
-        self.adh = memory.read(registers["PC"].value)
+        self.adh = memory.read(registers["PC"].get())
         registers["PC"].inc()
 
         return memory.get_16bit_address(self.adl, self.adh)

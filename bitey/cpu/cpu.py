@@ -14,7 +14,8 @@ from bitey.cpu.instruction.instruction import Instruction, InstructionSet
 from bitey.cpu.instruction.instruction_json_decoder import InstructionSetJSONDecoder
 
 from bitey.cpu.instruction.cli import CLI
-from bitey.cpu.instruction.sei import SEI
+
+# from bitey.cpu.instruction.sei import SEI
 
 # from bitey.cpu.instruction.ldx import LDX
 # from bitey.cpu.instruction.txs import TXS
@@ -76,13 +77,17 @@ class CPU:
         Called after the generated __init__ method
         Initialize the processor.
         """
-        self.logger = logging.getLogger("bitey")
+        self.logger = logging.getLogger("bitey.cpu.cpu")
         # TODO: Research best practices around logging and module namespaces
         self.registers.set_logger(self.logger)
         return
 
     def reset(self, memory):
-        "Reset the CPU"
+        """
+        Reset the CPU
+        Reset the CPU, setting up the stack and other initial values.
+        This loads the first instruction and increments the PC to the next instruction.
+        """
 
         self.logger.debug("Resetting CPU")
         # Disable interrupts
@@ -92,8 +97,8 @@ class CPU:
 
         # TODO: Use a different builder for this
         opcodes = Opcodes([Opcode(120, ImpliedAddressingMode)])
-        sei = SEI("SEI", opcodes, "Set Interrupt Disable")
-        sei.execute(self, memory)
+        # sei = SEI("SEI", opcodes, "Set Interrupt Disable")
+        # sei.execute(self, memory)
 
         # Set the PC to the value at 0xFFFC and 0xFFFD
         self.registers["PC"].value = memory.get_16bit_value(0xFFFC, 0xFFFD)
@@ -105,7 +110,7 @@ class CPU:
         self.registers["Y"].value = 0xFF
         self.registers["P"].value = 0xFF
 
-        # Load the first instruction
+        # Load the first instruction and increment the PC
         self.get_next_instruction(memory)
 
         # Initialize the stack
@@ -134,24 +139,27 @@ class CPU:
         return cpu
 
     def get_next_instruction(self, memory):
-        self.current_instruction = self.load_instruction(memory)
+        """
+        Load and decode the next instruction
+        Increments the PC
+        """
+        self.current_opcode = self.load_opcode(memory)
         self.registers["PC"].inc()
+        self.current_instruction = self.decode_opcode(self.current_opcode)
 
-    def load_instruction(self, memory):
-        "Load the instruction pointed to by the PC from memory"
-        self.logger.debug(
-            "Loading instruction at {}".format(self.registers["PC"].value)
-        )
-        return memory.read(self.registers["PC"].value)
+        return self.current_instruction
 
-    def decode_instruction(self, memory):
-        "Decode the current instruction"
+    def load_opcode(self, memory):
+        "Load the opcode pointed to by the PC from memory"
+        self.logger.debug("Loading opcode at {}".format(self.registers["PC"].get()))
+        return memory.read(self.registers["PC"].get())
+
+    def decode_opcode(self, opcode):
+        "Decode the current opcode"
         # TODO: refactor this, figure out how to build cleaner
         # TODO: Add tests for this
-        instruction = self.instruction_set.get_instruction_by_opcode(
-            self.current_instruction
-        )
-        self.logger.debug("Decoded {}".format(instruction.short_str()))
+        instruction = self.instruction_set.get_instruction_by_opcode(opcode)
+        self.logger.debug("Decoded {}".format(instruction))
 
         return instruction
 

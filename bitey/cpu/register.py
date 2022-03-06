@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import json
 from json import JSONDecoder
 
+from bitey.watcher import Watcher
+
 
 class RegisterOverflowException(Exception):
     "The Register was incremented past it's size"
@@ -11,9 +13,10 @@ class RegisterOverflowException(Exception):
 # defined member variables
 # __init__ parameters are defined in order of member variable definition
 @dataclass
-class Register:
+class Register(Watcher):
     """
-    Base class to represent a register
+    Class to represent a register
+    Register's subclass the Watcher class and send updates when their value changes
     """
 
     short_name: str
@@ -27,6 +30,13 @@ class Register:
 
     value: int = 0
     "The value of the register"
+
+    def __post_init__(self):
+        # Subclasses must explicitly call the base class __init__ method
+        # __post_init__ is called after other initialization
+        # We don't want to make Watcher a dataclass since users of Register
+        # don't need to know about Watcher's data
+        super().__init__()
 
     def name(self):
         "The name of the register"
@@ -46,16 +56,22 @@ class Register:
         if (self.value + 1) >= (2 ** self.size):
             raise RegisterOverflowException
 
-        self.logger.debug("Incrementing register {}".format(self.name))
         self.value += 1
 
     def get(self):
-        "Get the register's value"
+        """
+        Get the register's value
+        This getter should be used as the only way to get a register's value
+        """
         return self.value
 
     def set(self, value):
-        "Set the register's value"
+        """
+        Set the register's value
+        This setter should be used as the only way to change the register's value
+        """
         self.value = value
+        self.update()
 
     def add(self, amt):
         "Add an amount to the register's value"

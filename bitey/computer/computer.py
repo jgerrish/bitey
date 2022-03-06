@@ -29,6 +29,9 @@ class Computer:
         self.cpu.reset(self.memory)
 
     def build_from_json(json_data):
+        """
+        Build a computer from a JSON representation
+        """
         setup_logger()
         logger = logging.getLogger("bitey")
         logger.debug("Building computer")
@@ -66,8 +69,7 @@ class Computer:
         instruction = None
 
         try:
-            self.cpu.get_next_instruction(self.memory)
-            instruction = self.cpu.decode_instruction(self.memory)
+            instruction = self.cpu.get_next_instruction(self.memory)
             addressing_mode = instruction.opcode.addressing_mode
             consumed = addressing_mode.bytes
         except UndocumentedInstruction:

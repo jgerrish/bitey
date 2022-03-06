@@ -6,6 +6,10 @@ def setup_logger():
     logger = logging.getLogger("bitey")
     logger.setLevel(logging.DEBUG)
 
+    # create file handler which logs even debug messages
+    fh = logging.FileHandler("bitey.log")
+    fh.setLevel(logging.DEBUG)
+
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -15,8 +19,12 @@ def setup_logger():
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
+    # Add formatter to file handler
+    fh.setFormatter(formatter)
+
     # add formatter to ch
     ch.setFormatter(formatter)
 
-    # add ch to logger
+    # add the handlers to the logger
+    logger.addHandler(fh)
     logger.addHandler(ch)

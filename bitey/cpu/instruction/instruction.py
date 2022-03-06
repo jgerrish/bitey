@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 import logging
+
+# from bitey.cpu.instruction.instruction_factory import InstructionFactory
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
 
 
@@ -45,10 +47,18 @@ class Instruction:
     "A human-readable description of the instruction"
 
     def __post_init__(self):
-        self.logger = logging.getLogger("bitey")
+        self.logger = logging.getLogger("bitey.cpu.instruction")
 
     def execute(self, cpu, memory):
-        "Execute the instruction"
+        """
+        Execute the instruction
+        The execute method does not advance the instruction pointer to the next instruction
+        unless the instruction itself modifies the PC.
+
+        execute Gets the addressing mode and loads the value to operate on.
+
+        Subclasses should implement instruction_execute for custom instruction code."
+        """
         # TODO: There needs to be some refactoring around
         # Instruction and Opcode.
         # In particular, how should Instruction know which opcode
@@ -136,13 +146,25 @@ class InstructionClass:
     "A human-readable description of the instruction"
 
     def __post_init__(self):
-        self.logger = logging.getLogger("bitey")
+        """
+        Build the tables for opcode lookup
+        """
+        self.logger = logging.getLogger(
+            "bitey.cpu.instruction.instruction.InstructionClass"
+        )
         # Build the instruction database
         self.instructions = {}
         for opcode in self.opcodes:
-            self.instructions[opcode.opcode] = Instruction(
-                self.name, opcode, self.description
-            )
+            if self.instruction:
+                # If self.instruction is set, then this is a subclassed instruction
+                # We modify the already existing instruction
+                self.instruction.opcode = opcode
+                self.instructions[opcode.opcode] = self.instruction
+            else:
+                # If self.instruction is not set, build a generic one
+                self.instructions[opcode.opcode] = Instruction(
+                    self.name, opcode, self.description
+                )
 
     def execute(self, cpu, memory):
         "Execute the instruction"
@@ -207,6 +229,7 @@ class InstructionSet:
 
     def __post_init__(self):
         "Create a dictionary so we can access instructions by opcode"
+        self.logger = logging.getLogger("bitey.cpu.instruction.instruction")
         self.opcode_dict = {}
         for instruction in self.instructions:
             for opcode in instruction.opcodes:
@@ -223,10 +246,11 @@ class InstructionSet:
 
     def get_instruction_by_opcode(self, opcode):
         """
-        Get an instruction by it's opcode
+        Get an instruction by its opcode
         """
         if opcode in self.opcode_dict:
-            # TODO: Refactor
+            # TODO: This is better now, but it's still two lookups.  We should only need
+            # one lookup
             return self.opcode_dict[opcode].get_instruction_by_opcode(opcode)
         else:
             raise UndocumentedInstruction

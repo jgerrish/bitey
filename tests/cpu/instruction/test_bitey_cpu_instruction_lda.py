@@ -31,7 +31,7 @@ def init_computer():
     # The reset code in the CPU loads the first instruction and
     # increments the PC by one
     # TODO: These tests should be simplified to not rely on that
-    assert computer.cpu.registers["PC"].value == 1
+    assert computer.cpu.registers["PC"].get() == 1
 
     return computer
 

@@ -96,6 +96,9 @@ def test_cpu_instruction_short_str():
 def test_cpu_instruction_assembly_str():
     computer = build_computer()
 
+    # Set the PC
+    computer.cpu.registers["PC"].set(0x00)
+
     # Set the X register
     computer.cpu.registers["X"].set(0x4A)
 
@@ -112,12 +115,14 @@ def test_cpu_instruction_assembly_str():
     computer.memory.write(0x01, 0xA9)
     opcode = Opcode(0xA9, ImmediateAddressingMode())
     lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    computer.cpu.registers["PC"].inc()
     assert lda.assembly_str(computer) == "LDA  #$a9"
 
     # ZeroPage mode LDA
     computer.memory.write(0x02, 0x99)
     opcode = Opcode(0xA5, ZeroPageAddressingMode())
     lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    computer.cpu.registers["PC"].set(0x02)
     assert lda.assembly_str(computer) == "LDA  $99"
 
     # Absolute addressing mode LDA
@@ -125,6 +130,7 @@ def test_cpu_instruction_assembly_str():
     computer.memory.write(0x04, 0xB4)
     opcode = Opcode(0xAD, AbsoluteAddressingMode())
     lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    computer.cpu.registers["PC"].set(0x03)
     assert lda.assembly_str(computer) == "LDA  $b45c"
 
     # Accumulator addressing mode
@@ -137,6 +143,7 @@ def test_cpu_instruction_assembly_str():
     computer.memory.write(0x06, 0xF7)
     opcode = Opcode(0xBD, AbsoluteXAddressingMode())
     lda = LDA("LDA", opcode, "Load Accumulator with Memory")
+    computer.cpu.registers["PC"].set(0x05)
     assert lda.assembly_str(computer) == "LDA  $f70f,X"
 
     # AbsoluteY addressing mode
@@ -209,7 +216,7 @@ def test_cpu_instruction_brk():
     # The reset code in the CPU loads the first instruction and
     # increments the PC by one
     # TODO: These tests should be simplified to not rely on that
-    assert computer.cpu.registers["PC"].value == 1
+    assert computer.cpu.registers["PC"].value == 0x01
 
     i1_opcode = Opcode(0, ImpliedAddressingMode())
     i1 = BRK("BRK", i1_opcode, "Force Break")

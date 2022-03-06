@@ -1,4 +1,5 @@
 import logging
+from bitey.listener import Listener
 from bitey.logger import setup_logger
 
 from bitey.cpu.register import (
@@ -116,3 +117,17 @@ def test_cpu_registers_json_decoder():
     assert registers["S"] == Register("S", "Stack pointer", 9, 0)
     assert registers["X"] == Register("X", "Index register X", 8, 0)
     assert registers["Y"] == Register("Y", "Index register Y", 8, 0)
+
+
+def assert_register_equals(register, value):
+    "Assert a register equals a value"
+    assert register.get() == value
+
+
+def test_cpu_register_watcher():
+    "Test that we get callbacks when a register changes"
+    register = Register("A", "Accumulator", 8, 0)
+    listener = Listener()
+    register.register(listener)
+    listener.register_callback(lambda register: assert_register_equals(register, 10))
+    register.set(10)
