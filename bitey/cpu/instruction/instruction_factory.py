@@ -7,6 +7,7 @@ from bitey.cpu.instruction.instruction import (
     InstructionClass,
     UnimplementedInstruction,
 )
+from bitey.cpu.instruction.beq import BEQ
 from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
@@ -50,6 +51,7 @@ class InstructionFactory:
         232: INX,
         234: NOP,
         238: INC,
+        240: BEQ,
         246: INC,
         254: INC,
     }
@@ -109,15 +111,9 @@ class InstructionClassFactory:
         232: INX,
         234: NOP,
         238: INC,
+        240: BEQ,
         246: INC,
         254: INC,
-        # 0: (InstructionClass, BRK),
-        # 88: (InstructionClass, CLI),
-        # 120: (InstructionClass, SEI),
-        # 141: (InstructionClass, STA),
-        # 154: (InstructionClass, TXS),
-        # 162: (InstructionClass, LDX),
-        # 173: (InstructionClass, LDA),
     }
 
     logger: ClassVar = logging.getLogger("bitey.cpu.instruction.instruction_factory")

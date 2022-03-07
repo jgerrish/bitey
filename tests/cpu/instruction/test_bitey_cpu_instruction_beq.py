@@ -12,8 +12,8 @@ def build_computer():
     return None
 
 
-def test_cpu_instruction_bne_zero_flag_false():
-    "Test BNE when zero flag is False"
+def test_cpu_instruction_beq_zero_flag_false():
+    "Test BEQ when zero flag is False"
     computer = build_computer()
 
     computer.cpu.registers["X"].set(0x02)
@@ -21,8 +21,8 @@ def test_cpu_instruction_bne_zero_flag_false():
 
     # DEX
     computer.memory.write(0x00, 0xCA)
-    # BNE to relative address -2 (the DEX instruction)
-    computer.memory.write(0x01, 0xD0)
+    # BEQ to relative address -2 (the DEX instruction)
+    computer.memory.write(0x01, 0xF0)
     computer.memory.write(0x02, 0xFD)
     # NOP
     computer.memory.write(0x03, 0xEA)
@@ -32,12 +32,12 @@ def test_cpu_instruction_bne_zero_flag_false():
 
     assert computer.cpu.flags["Z"].status is False
 
-    # BNE should have jumped back to the top of the loop
-    assert computer.cpu.registers["PC"].get() == 0x00
+    # BEQ should continue to the next instruction
+    assert computer.cpu.registers["PC"].get() == 0x03
 
 
-def test_cpu_instruction_bne_zero_flag_true():
-    "Test BNE when zero flag is True"
+def test_cpu_instruction_beq_zero_flag_true():
+    "Test BEQ when zero flag is True"
     computer = build_computer()
 
     computer.cpu.registers["X"].set(0x01)
@@ -45,8 +45,8 @@ def test_cpu_instruction_bne_zero_flag_true():
 
     # DEX
     computer.memory.write(0x00, 0xCA)
-    # BNE to relative address -2 (the DEX instruction)
-    computer.memory.write(0x01, 0xD0)
+    # BEQ to relative address -2 (the DEX instruction)
+    computer.memory.write(0x01, 0xF0)
     computer.memory.write(0x02, 0xFD)
     # NOP
     computer.memory.write(0x03, 0xEA)
@@ -56,5 +56,5 @@ def test_cpu_instruction_bne_zero_flag_true():
 
     assert computer.cpu.flags["Z"].status is True
 
-    # BNE should not jump
-    assert computer.cpu.registers["PC"].get() == 0x03
+    # BEQ should jump
+    assert computer.cpu.registers["PC"].get() == 0x00
