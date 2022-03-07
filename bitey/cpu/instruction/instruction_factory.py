@@ -7,6 +7,7 @@ from bitey.cpu.instruction.instruction import (
     InstructionClass,
     UnimplementedInstruction,
 )
+from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.dec import DEC
@@ -16,6 +17,7 @@ from bitey.cpu.instruction.inc import INC
 from bitey.cpu.instruction.inc import INX
 from bitey.cpu.instruction.inc import INY
 from bitey.cpu.instruction.jsr import JSR
+from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.lda import LDA
 from bitey.cpu.instruction.sta import STA
@@ -41,10 +43,12 @@ class InstructionFactory:
         200: INY,
         202: DEX,
         206: DEC,
+        208: BNE,
         214: DEC,
         222: DEC,
         230: INC,
         232: INX,
+        234: NOP,
         238: INC,
         246: INC,
         254: INC,
@@ -98,10 +102,12 @@ class InstructionClassFactory:
         200: INY,
         202: DEX,
         206: DEC,
+        208: BNE,
         214: DEC,
         222: DEC,
         230: INC,
         232: INX,
+        234: NOP,
         238: INC,
         246: INC,
         254: INC,

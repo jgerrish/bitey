@@ -141,3 +141,44 @@ def test_cpu_cpu_stack_pop_address():
     address = cpu.stack_pop_address(memory)
 
     assert address == 0x2010
+
+
+def test_cpu_cpu_step_one():
+    "Test stepping through one instruction"
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    # Two LDX instructions
+    memory.write(0x00, 0xE8)
+    memory.write(0x01, 0xE8)
+
+    cpu.registers["PC"].set(0x00)
+    cpu.registers["X"].set(0x00)
+
+    cpu.step(memory)
+
+    assert cpu.registers["PC"].get() == 0x01
+    assert cpu.current_instruction.short_str() == "INX"
+    assert cpu.registers["X"].get() == 0x01
+
+
+def test_cpu_cpu_step_two():
+    "Test stepping through two instructions"
+    cpu = build_cpu()
+    memory = Memory(bytearray(65536))
+    cpu.stack_init()
+
+    # Three LDX instructions
+    memory.write(0x00, 0xE8)
+    memory.write(0x01, 0xE8)
+    memory.write(0x02, 0xE8)
+
+    cpu.registers["PC"].set(0x00)
+    cpu.registers["X"].set(0x00)
+
+    cpu.step(memory, 2)
+
+    assert cpu.registers["PC"].get() == 0x02
+    assert cpu.current_instruction.short_str() == "INX"
+    assert cpu.registers["X"].get() == 0x02

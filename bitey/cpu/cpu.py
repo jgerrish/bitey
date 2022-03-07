@@ -169,6 +169,15 @@ class CPU:
         self.logger.debug("Executing instruction")
         self.current_instruction.execute(self, memory)
 
+    def step(self, memory, count=1):
+        """
+        Execute the next count instructions, stepping into any subroutine calls
+        Steps through one instruction if count isn't specified
+        """
+        for i in range(count):
+            self.get_next_instruction(memory)
+            self.execute_instruction(memory)
+
     def set_flags(self, instruction, flags, registers):
         "Set flags depending on the instruction"
         instruction.set_flags(flags, registers)

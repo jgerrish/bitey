@@ -162,7 +162,9 @@ def test_cpu_addressing_mode_relative_get_value():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0xB1
 
@@ -176,7 +178,9 @@ def test_cpu_addressing_mode_relative_get_value_negative():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0x21
 
@@ -190,7 +194,9 @@ def test_cpu_addressing_mode_relative_get_value_negative_lt_zero():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0xFFD0
 
@@ -204,7 +210,9 @@ def test_cpu_addressing_mode_relative_get_value_negative_page_crossing():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0x21
 
@@ -218,7 +226,9 @@ def test_cpu_addressing_mode_relative_get_value_page_crossing():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0x101
 
@@ -232,7 +242,9 @@ def test_cpu_addressing_mode_relative_get_value_gt_16_bit():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0x0022
 
@@ -246,7 +258,9 @@ def test_cpu_addressing_mode_relative_get_value_lt_zero():
     rel = RelativeAddressingMode()
     assert type(rel) == RelativeAddressingMode
 
-    value = rel.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    (addr, value) = rel.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert value == 0xFF83
 
@@ -268,7 +282,7 @@ def test_cpu_addressing_mode_indirect_indexed():
 
     value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
-    assert value == (0xb75, 0x73)
+    assert value == (0xB75, 0x73)
 
 
 def test_cpu_addressing_mode_indirect_indexed_page_rollover():
@@ -308,7 +322,7 @@ def test_cpu_addressing_mode_indexed_indirect():
 
     value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
-    assert value == (0x0b70, 0x73)
+    assert value == (0x0B70, 0x73)
 
 
 def test_cpu_addressing_mode_absolute_x():

@@ -503,11 +503,11 @@ class RelativeAddressingMode(AddressingMode):
         effective_address = registers["PC"].get() + offset
 
         # TODO: Verify that this is correct
-        return effective_address % 0xFFFF
+        return (None, effective_address % 0xFFFF)
 
     def get_inst_str(self, flags, registers, memory):
         "Return the address as an effective address"
-        address = self.get_value(flags, registers, memory)
+        (tmp, address) = self.get_value(flags, registers, memory)
         if address is not None:
             return "${0:04x}".format(address)
         else:
