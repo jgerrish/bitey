@@ -489,7 +489,8 @@ def test_cpu_addressing_mode_absolute_indirect_get_instr_str():
 
     aiam = AbsoluteIndirectAddressingMode()
 
-    inst_str = aiam.get_inst_str(computer.cpu.flags, computer.cpu.registers, computer.memory)
+    inst_str = aiam.get_inst_str(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
 
     assert inst_str == "($0005)"
-
