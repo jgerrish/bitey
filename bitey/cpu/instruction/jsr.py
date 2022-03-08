@@ -17,8 +17,8 @@ class JSR(Instruction):
         # We store the next PC address on the stack
         # JSR is always an absolute addressing mode instruction, so it's always three
         # bytes
-        if value is not None:
+        if address is not None:
             cpu.stack_push_address(memory, cpu.registers["PC"].get())
-            cpu.registers["PC"].set(value)
+            cpu.registers["PC"].set(address)
         else:
             raise IncompleteInstruction

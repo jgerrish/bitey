@@ -54,6 +54,15 @@ class AbsoluteAddressingMode(AddressingMode):
     The second byte contains the low-order byte of the effective address
     The effective address contains the data
     The third byte contains the high-order byte of the effective address
+
+
+    The following absolute JMP command would jump to the NOP instruction
+
+    0x0000  0x4C  JMP
+    0x0001  0x12
+    0x0002  0x34
+    ...
+    0x3412  NOP
     """
 
     adl: int = 0
@@ -112,6 +121,61 @@ class AccumulatorAddressingMode(AddressingMode):
 @dataclass
 class AbsoluteIndirectAddressingMode(AddressingMode):
     bytes: ClassVar[int] = 3
+
+    """
+    Absolute Indirectaddressing mode
+    Absolute Indirect addressing is a three-byte instruction
+    The address is encoded in the next two bytes after the opcode
+    The first byte contains the opcode
+    The second byte contains the low-order byte of an address
+    that contains the effective address
+    The third byte contains the high-order byte of an address that contains
+    the effective address
+    The effective address points to the actual location
+
+
+    The following absolute indirect JMP command would jump to the NOP instruction
+
+    0x0000  0x6C  JMP
+    0x0001  0x12
+    0x0002  0x34
+    ...
+    0x3412  0x15
+    0x3413  0x34
+    ...
+    0x3415  0xEA  NOP
+    """
+
+    adl: int = 0
+    "The low-order byte"
+
+    adh: int = 0
+    "The high-order byte"
+
+    bytes: ClassVar[int] = 3
+
+    def get_address(self, flags, registers, memory):
+        self.adl = memory.read(registers["PC"].get())
+        registers["PC"].inc()
+        self.adh = memory.read(registers["PC"].get())
+        registers["PC"].inc()
+
+        address_to_address = memory.get_16bit_address(self.adl, self.adh)
+        self.adl = memory.read(address_to_address)
+        self.adh = memory.read(address_to_address + 1)
+        effective_address = memory.get_16bit_address(self.adl, self.adh)
+        return effective_address
+
+    def get_value(self, flags, registers, memory):
+        address = self.get_address(flags, registers, memory)
+        return (address, memory.read(address))
+
+    def get_inst_str(self, flags, registers, memory):
+        address = self.get_address(flags, registers, memory)
+        if address is not None:
+            return "${0:04x}".format(address)
+        else:
+            return ""
 
 
 @dataclass

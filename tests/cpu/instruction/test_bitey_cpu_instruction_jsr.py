@@ -24,14 +24,10 @@ def test_build_cpu_instruction_jsr():
 
     # Pointer to the address containing the address of the subroutine
     # (absolute addressing mode)
-    computer.memory.write(0x01, 0xA0)
+    computer.memory.write(0x01, 0x05)
     computer.memory.write(0x02, 0x00)
     # The next instruction that RTS returns to
     computer.memory.write(0x03, 0x60)
-
-    # The subroutine address
-    computer.memory.write(0xA0, 0x05)
-    computer.memory.write(0xA1, 0x00)
 
     # The subroutine, just a RTS
     computer.memory.write(0x05, 0x69)
@@ -64,14 +60,10 @@ def test_cpu_instruction_jsr():
 
     # Pointer to the address containing the address of the subroutine
     # (absolute addressing mode)
-    computer.memory.write(0x01, 0xA0)
+    computer.memory.write(0x01, 0x05)
     computer.memory.write(0x02, 0x00)
     # The next instruction that RTS returns to
     computer.memory.write(0x03, 0x60)
-
-    # The subroutine address
-    computer.memory.write(0xA0, 0x05)
-    computer.memory.write(0xA1, 0x00)
 
     # The subroutine, just a RTS
     computer.memory.write(0x05, 0x69)

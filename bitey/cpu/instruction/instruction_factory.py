@@ -17,6 +17,7 @@ from bitey.cpu.instruction.dec import DEY
 from bitey.cpu.instruction.inc import INC
 from bitey.cpu.instruction.inc import INX
 from bitey.cpu.instruction.inc import INY
+from bitey.cpu.instruction.jmp import JMP
 from bitey.cpu.instruction.jsr import JSR
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.sei import SEI
@@ -33,7 +34,9 @@ class InstructionFactory:
         0: BRK,
         32: JSR,
         88: CLI,
+        76: JMP,
         96: RTS,
+        108: JMP,
         120: SEI,
         136: DEY,
         141: STA,
@@ -93,7 +96,9 @@ class InstructionClassFactory:
         0: BRK,
         32: JSR,
         88: CLI,
+        76: JMP,
         96: RTS,
+        108: JMP,
         120: SEI,
         136: DEY,
         141: STA,

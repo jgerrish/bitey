@@ -1,5 +1,6 @@
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
+    AbsoluteIndirectAddressingMode,
     AbsoluteXAddressingMode,
     AbsoluteYAddressingMode,
     ImmediateAddressingMode,
@@ -32,7 +33,7 @@ def test_cpu_addressing_mode_implied_get_value():
 def test_cpu_addressing_mode_absolute_get_value():
     computer = build_computer()
     computer.memory.write(0x0B, 0x10)
-    computer.memory.write(12, 0x20)
+    computer.memory.write(0x0C, 0x20)
     computer.memory.write(0x2010, 0x33)
 
     computer.cpu.registers["PC"].set(0x0B)
@@ -45,6 +46,35 @@ def test_cpu_addressing_mode_absolute_get_value():
     assert aam.adh == 0x20
 
     assert value == (0x2010, 0x33)
+    assert computer.cpu.registers["PC"].get() == 0x0D
+
+
+def test_cpu_addressing_mode_absolute_indirect_get_value():
+    computer = build_computer()
+
+    # Pointer to the pointer to the effective address
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+
+    # Pointer to the effective address
+    computer.memory.write(0x2010, 0x33)
+    computer.memory.write(0x2011, 0x55)
+
+    computer.memory.write(0x5533, 0x11)
+
+    computer.cpu.registers["PC"].set(0x0B)
+
+    aam = AbsoluteIndirectAddressingMode()
+    assert type(aam) == AbsoluteIndirectAddressingMode
+
+    value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    # adl and adh are the effective address low and high bytes
+    # not the original address (PC + 1, PC + 2)
+    assert aam.adl == 0x33
+    assert aam.adh == 0x55
+
+    assert value == (0x5533, 0x11)
     assert computer.cpu.registers["PC"].get() == 0x0D
 
 
