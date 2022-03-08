@@ -173,7 +173,7 @@ class AbsoluteIndirectAddressingMode(AddressingMode):
     def get_inst_str(self, flags, registers, memory):
         address = self.get_address(flags, registers, memory)
         if address is not None:
-            return "${0:04x}".format(address)
+            return "(${0:04x})".format(address)
         else:
             return ""
 

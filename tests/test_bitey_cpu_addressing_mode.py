@@ -473,3 +473,23 @@ def test_cpu_addressing_mode_absolute_y_eom_wrap():
 
     assert value == 0x33
     assert computer.cpu.registers["PC"].value == 13
+
+
+def test_cpu_addressing_mode_absolute_indirect_get_instr_str():
+    computer = build_computer()
+    # Pointer to the address containing the effective address
+    computer.memory.write(0x01, 0xA0)
+    computer.memory.write(0x02, 0x00)
+
+    # The pointer to the effective address
+    computer.memory.write(0xA0, 0x05)
+    computer.memory.write(0xA1, 0x00)
+
+    computer.cpu.registers["PC"].set(0x01)
+
+    aiam = AbsoluteIndirectAddressingMode()
+
+    inst_str = aiam.get_inst_str(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert inst_str == "($0005)"
+
