@@ -219,7 +219,8 @@ class AbsoluteXAddressingMode(AddressingMode):
         address += registers["X"].get()
 
         # Wrap at end of memory
-        address = address % 0xFFFF
+        # address = address % 0xFFFF
+        address = address % 0x10000
 
         return address
 
@@ -277,12 +278,14 @@ class AbsoluteYAddressingMode(AddressingMode):
         address += registers["Y"].get()
 
         # Wrap at end of memory
-        address = address % 0xFFFF
+        # address = address % 0xFFFF
+        address = address % 0x10000
 
         return address
 
     def get_value(self, flags, registers, memory):
-        return memory.read(self.get_address(flags, registers, memory))
+        address = self.get_address(flags, registers, memory)
+        return (address, memory.read(address))
 
     def get_inst_str(self, flags, registers, memory):
         # address = self.get_address(flags, registers, memory)
@@ -399,7 +402,7 @@ class IndirectIndexedAddressingMode(AddressingMode):
         address += registers["Y"].get()
 
         # TODO: Verify wrapping is the correct behavior
-        address = address % 0xFFFF
+        address = address % 0x10000
 
         return address
 
@@ -498,14 +501,14 @@ class ZeroPageXAddressingMode(AddressingMode):
 
         address += registers["X"].get()
         # wrap on values > 0xFF
-        address = address % 0xFF
+        address = address % 0x100
 
         return address
 
     def get_value(self, flags, registers, memory):
         address = self.get_address(flags, registers, memory)
 
-        return memory.read(address)
+        return (address, memory.read(address))
 
     def get_inst_str(self, flags, registers, memory):
         address = memory.read(registers["PC"].get())
@@ -530,9 +533,9 @@ class ZeroPageYAddressingMode(AddressingMode):
 
         address += registers["Y"].get()
         # wrap on values > 0xFF
-        address = address % 0xFF
+        address = address % 0x100
 
-        return memory.read(address)
+        return (address, memory.read(address))
 
     def get_inst_str(self, flags, registers, memory):
         address = memory.read(registers["PC"].get())
@@ -555,7 +558,8 @@ class RelativeAddressingMode(AddressingMode):
 
     bytes: ClassVar[int] = 2
 
-    def get_value(self, flags, registers, memory):
+    def get_address(self, flags, registers, memory):
+        "Get the effective address"
         offset = memory.read(registers["PC"].get())
         if offset > 0x7F:
             # Calculate two's complement to get negative value
@@ -566,12 +570,15 @@ class RelativeAddressingMode(AddressingMode):
 
         effective_address = registers["PC"].get() + offset
 
-        # TODO: Verify that this is correct
-        return (None, effective_address % 0xFFFF)
+        return effective_address % 0x10000
+
+    def get_value(self, flags, registers, memory):
+        address = self.get_address(flags, registers, memory)
+        return (address, memory.read(address))
 
     def get_inst_str(self, flags, registers, memory):
         "Return the address as an effective address"
-        (tmp, address) = self.get_value(flags, registers, memory)
+        (address, value) = self.get_value(flags, registers, memory)
         if address is not None:
             return "${0:04x}".format(address)
         else:

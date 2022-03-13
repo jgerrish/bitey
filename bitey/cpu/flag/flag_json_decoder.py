@@ -4,17 +4,19 @@ from json import JSONDecoder
 from typing import ClassVar
 
 from bitey.cpu.flag.flag import Flag, Flags
+from bitey.cpu.flag.negative_flag import NegativeFlag
 from bitey.cpu.flag.zero_flag import ZeroFlag
 
 
 @dataclass
 class FlagJSONDecoder(JSONDecoder):
     flag_map: ClassVar[dict[str, Flag]] = {
+        "N": NegativeFlag,
         "Z": ZeroFlag,
     }
 
     """
-    Decode a register definition in JSON format
+    Decode a flag definition in JSON format
     """
 
     def decode(self, json_doc):
@@ -55,7 +57,7 @@ class FlagJSONDecoder(JSONDecoder):
 
 class FlagsJSONDecoder(JSONDecoder):
     """
-    Decode a list of register definitions in JSON format
+    Decode a list of flag definitions in JSON format
     """
 
     def decode(self, json_doc):

@@ -7,7 +7,7 @@ from bitey.cpu.addressing_mode import (
 from bitey.computer.computer import Computer
 from bitey.cpu.instruction.instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
-from bitey.cpu.instruction.lda import LDA
+from bitey.cpu.instruction.ld import LDA
 
 
 def build_computer():
@@ -47,7 +47,9 @@ def init_memory(memory, init_list):
         memory.write(item[0], item[1])
 
 
-def execute_instruction(computer, opcode, expected_a_register, expected_z_flag):
+def execute_instruction(
+    computer, opcode, expected_a_register, expected_z_flag, expected_n_flag
+):
     "Execute the instruction based on an opcode"
     flags = computer.cpu.flags
     i1 = LDA("LDA", opcode, "Load Accumulator with Memory")
@@ -56,6 +58,7 @@ def execute_instruction(computer, opcode, expected_a_register, expected_z_flag):
         i1.execute(computer.cpu, computer.memory)
         assert computer.cpu.registers["A"] == expected_a_register
         assert flags["Z"].status is expected_z_flag
+        assert flags["N"].status is expected_n_flag
     except IncompleteInstruction:
         assert False
 
@@ -67,7 +70,7 @@ def test_cpu_instruction_lda_immediate():
     init_memory(computer.memory, [(1, 0x2B)])
 
     i1_opcode = Opcode(169, ImmediateAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x2B, False)
+    execute_instruction(computer, i1_opcode, 0x2B, False, False)
 
 
 def test_cpu_instruction_lda_immediate_zero():
@@ -77,7 +80,27 @@ def test_cpu_instruction_lda_immediate_zero():
     init_memory(computer.memory, [(1, 0x00)])
 
     i1_opcode = Opcode(169, ImmediateAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x00, True)
+    execute_instruction(computer, i1_opcode, 0x00, True, False)
+
+
+def test_cpu_instruction_lda_immediate_nonnegative():
+    "Test LDA in immediate addressing mode that doesn't load a negative number"
+    computer = init_computer()
+
+    init_memory(computer.memory, [(1, 0b01111111)])
+
+    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    execute_instruction(computer, i1_opcode, 0b01111111, False, False)
+
+
+def test_cpu_instruction_lda_immediate_zero_negative():
+    "Test LDA in immediate addressing mode that loads a negative number"
+    computer = init_computer()
+
+    init_memory(computer.memory, [(1, 0b10000000)])
+
+    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    execute_instruction(computer, i1_opcode, 0b10000000, False, True)
 
 
 def test_cpu_instruction_lda_zeropage():
@@ -87,7 +110,7 @@ def test_cpu_instruction_lda_zeropage():
     init_memory(computer.memory, [(0x01, 0x2B), (0x2B, 0x55)])
 
     i1_opcode = Opcode(165, ZeroPageAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x55, False)
+    execute_instruction(computer, i1_opcode, 0x55, False, False)
 
 
 def test_cpu_instruction_lda_zeropage_zero():
@@ -97,7 +120,7 @@ def test_cpu_instruction_lda_zeropage_zero():
     init_memory(computer.memory, [(0x01, 0x2B), (0x2B, 0x00)])
 
     i1_opcode = Opcode(169, ZeroPageAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x00, True)
+    execute_instruction(computer, i1_opcode, 0x00, True, False)
 
 
 def test_cpu_instruction_lda_absolute():
@@ -108,7 +131,7 @@ def test_cpu_instruction_lda_absolute():
     init_memory(computer.memory, [(0x01, 0x60), (0x02, 0xEE), (0xEE60, 0x20)])
 
     i1_opcode = Opcode(173, AbsoluteAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x20, False)
+    execute_instruction(computer, i1_opcode, 0x20, False, False)
 
 
 def test_cpu_instruction_lda_absolute_zero():
@@ -119,4 +142,4 @@ def test_cpu_instruction_lda_absolute_zero():
     init_memory(computer.memory, [(0x01, 0x60), (0x02, 0xEE), (0xEE60, 0x00)])
 
     i1_opcode = Opcode(173, AbsoluteAddressingMode())
-    execute_instruction(computer, i1_opcode, 0x00, True)
+    execute_instruction(computer, i1_opcode, 0x00, True, False)

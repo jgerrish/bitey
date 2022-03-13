@@ -25,7 +25,7 @@ class Computer:
         Initialize the computer
         """
         setup_logger()
-        self.logger = logging.getLogger("bitey")
+        self.logger = logging.getLogger("bitey.computer.computer.Computer")
         self.cpu.reset(self.memory)
 
     def build_from_json(json_data):
@@ -33,7 +33,7 @@ class Computer:
         Build a computer from a JSON representation
         """
         setup_logger()
-        logger = logging.getLogger("bitey")
+        logger = logging.getLogger("bitey.computer.computer.Computer")
         logger.debug("Building computer")
         cpu = CPU.build_from_json(json_data)
         logger.debug("Allocating memory")

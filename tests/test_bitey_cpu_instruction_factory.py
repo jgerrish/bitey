@@ -1,5 +1,5 @@
 from bitey.cpu.instruction.opcode import Opcode
-from bitey.cpu.instruction.lda import LDA
+from bitey.cpu.instruction.ld import LDA
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 from bitey.cpu.instruction.instruction_factory import InstructionFactory
 

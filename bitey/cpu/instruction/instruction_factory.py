@@ -19,12 +19,15 @@ from bitey.cpu.instruction.inc import INX
 from bitey.cpu.instruction.inc import INY
 from bitey.cpu.instruction.jmp import JMP
 from bitey.cpu.instruction.jsr import JSR
+from bitey.cpu.instruction.ld import LDA
+from bitey.cpu.instruction.ld import LDX
+from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.sei import SEI
-from bitey.cpu.instruction.lda import LDA
-from bitey.cpu.instruction.sta import STA
+from bitey.cpu.instruction.st import STA
+from bitey.cpu.instruction.st import STX
+from bitey.cpu.instruction.st import STY
 from bitey.cpu.instruction.txs import TXS
-from bitey.cpu.instruction.ldx import LDX
 from bitey.cpu.instruction.rts import RTS
 
 
@@ -38,11 +41,32 @@ class InstructionFactory:
         96: RTS,
         108: JMP,
         120: SEI,
+        129: STA,
+        132: STY,
+        133: STA,
+        134: STX,
         136: DEY,
+        140: STY,
         141: STA,
+        142: STX,
+        145: STA,
+        148: STY,
+        149: STA,
+        150: STX,
+        153: STA,
         154: TXS,
+        157: STA,
+        160: LDY,
         162: LDX,
+        164: LDY,
+        166: LDX,
+        172: LDY,
         173: LDA,
+        174: LDX,
+        180: LDY,
+        182: LDX,
+        188: LDY,
+        190: LDX,
         198: DEC,
         200: INY,
         202: DEX,
@@ -100,11 +124,32 @@ class InstructionClassFactory:
         96: RTS,
         108: JMP,
         120: SEI,
+        129: STA,
+        132: STY,
+        133: STA,
+        134: STX,
         136: DEY,
+        140: STY,
         141: STA,
+        142: STX,
+        145: STA,
+        148: STY,
+        149: STA,
+        150: STX,
+        153: STA,
         154: TXS,
+        157: STA,
+        160: LDY,
         162: LDX,
+        164: LDY,
+        166: LDX,
+        172: LDY,
         173: LDA,
+        174: LDX,
+        180: LDY,
+        182: LDX,
+        188: LDY,
+        190: LDX,
         198: DEC,
         200: INY,
         202: DEX,

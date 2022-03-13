@@ -11,5 +11,5 @@ class BNE(Instruction):
     """
 
     def instruction_execute(self, cpu, memory, value, address=None):
-        if cpu.flags["Z"].status is not True:
-            cpu.registers["PC"].set(value)
+        if (address is not None) and (cpu.flags["Z"].status is not True):
+            cpu.registers["PC"].set(address)

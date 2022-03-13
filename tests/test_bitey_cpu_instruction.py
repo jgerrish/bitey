@@ -24,7 +24,7 @@ from bitey.cpu.instruction.instruction import (
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
-from bitey.cpu.instruction.lda import LDA
+from bitey.cpu.instruction.ld import LDA
 from bitey.cpu.instruction.sei import SEI
 
 
@@ -181,7 +181,7 @@ def test_cpu_instruction_assembly_str():
     computer.memory.write(0x0D, 0xA3)
     opcode = Opcode(0xB0, RelativeAddressingMode())
     lda = Instruction("BCS", opcode, "Branch on Carry Set")
-    assert lda.assembly_str(computer) == "BCS  $ffb0"
+    assert lda.assembly_str(computer) == "BCS  $ffb1"
 
 
 def read_flags():
