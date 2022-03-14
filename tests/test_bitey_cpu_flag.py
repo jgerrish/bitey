@@ -177,6 +177,7 @@ def test_cpu_flags_zero_flag():
 
     assert z.status
 
+
 def test_cpu_flags_zero_flag_updates_flags():
     "Test that updating the zero flag updates the flags bit field"
     s = """
@@ -213,6 +214,7 @@ def test_cpu_flags_zero_flag_updates_flags():
     assert zero_flag.status
 
     assert (flags.data & 0b00000010) == 0b00000010
+
 
 def test_cpu_flags_negative_flag_updates_flags():
     "Test that updating the negative flag updates the flags bit field"
@@ -291,6 +293,7 @@ def test_cpu_flags_flags_set_updates_zero_flag():
 
     assert (flags.data & 0b00000010) == 0b00000010
 
+
 def test_cpu_flags_flags_set_updates_negative_flag():
     "Test that updating the negative flag updates the flags bit field"
     s = """
@@ -326,6 +329,6 @@ def test_cpu_flags_flags_set_updates_negative_flag():
 
     flags.set("N")
 
-    assert negative_flag.status == True
+    assert negative_flag.status
 
     assert (flags.data & 0b10000000) == 0b10000000
