@@ -17,6 +17,6 @@ class BreakCommand(Flag):
         """
 
         if register == 0:
-            self.status = True
+            self.set()
         else:
-            self.status = False
+            self.clear()
