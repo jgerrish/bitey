@@ -16,6 +16,6 @@ class ZeroFlag(Flag):
         """
 
         if register.get() == 0:
-            self.status = True
+            self.set()
         else:
-            self.status = False
+            self.clear()

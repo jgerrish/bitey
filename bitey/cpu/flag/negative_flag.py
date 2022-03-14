@@ -17,6 +17,6 @@ class NegativeFlag(Flag):
         """
 
         if (register.get() & 0x80) != 0:
-            self.status = True
+            self.set()
         else:
-            self.status = False
+            self.clear()

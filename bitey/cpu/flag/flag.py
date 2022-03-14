@@ -64,7 +64,7 @@ class Flags:
         for f in self.flags:
             f.flags = self
 
-        # self.data = 0
+        self.data = 0
 
     def __getitem__(self, i):
         return self.flag_dict[i]
@@ -75,7 +75,10 @@ class Flags:
         self.set_bit(flag)
 
     def set_bit(self, flag):
-        "Set a flag bit in the flags byte"
+        """
+        Set a flag bit in the flags byte
+        This is a private method
+        """
         bit = 2 ** self[flag].bit_field_pos
         self.data = self.data | bit
 
@@ -85,7 +88,10 @@ class Flags:
         self.clear_bit(flag)
 
     def clear_bit(self, flag):
-        "Clear a flag bit in the flags byte"
+        """
+        Clear a flag bit in the flags byte
+        This is a private method
+        """
         # Clear the bit
         bit = 2 ** self[flag].bit_field_pos
         self.data = self.data & (0xFF - bit)
