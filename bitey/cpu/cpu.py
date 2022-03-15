@@ -115,10 +115,10 @@ class CPU:
 
         # TODO: Verify, this may not be in the reference
         # Processor Status Register still needs to be initialized
-        self.registers["A"].value = 0xFF
-        self.registers["X"].value = 0xFF
-        self.registers["Y"].value = 0xFF
-        self.registers["P"].value = 0xFF
+        self.registers["A"].set(0x00)
+        self.registers["X"].set(0x00)
+        self.registers["Y"].set(0x00)
+        self.registers["P"].set(0x00)
 
         # Load the first instruction and increment the PC
         self.get_next_instruction(memory)

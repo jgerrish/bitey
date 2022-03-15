@@ -3,6 +3,7 @@ import logging
 
 # from bitey.cpu.instruction.instruction_factory import InstructionFactory
 from bitey.cpu.instruction.opcode import Opcode, Opcodes
+from bitey.memory.memory import MemoryOutOfRange
 
 
 class UndocumentedInstruction(Exception):
@@ -111,9 +112,13 @@ class Instruction:
         It requires a Computer argument, to print the instruction
         operand.
         """
-        inst_str = self.opcode.addressing_mode.get_inst_str(
-            computer.cpu.flags, computer.cpu.registers, computer.memory
-        )
+        try:
+            inst_str = self.opcode.addressing_mode.get_inst_str(
+                computer.cpu.flags, computer.cpu.registers, computer.memory
+            )
+        except MemoryOutOfRange:
+            inst_str = "INV"
+
         if inst_str != "":
             return "{}  {}".format(self.short_str(), inst_str)
         else:

@@ -36,6 +36,7 @@ def test_inx_zero_flag_set():
     "Test INX that wraps sets the Z flag"
     computer = build_computer()
 
+    computer.cpu.registers["X"].set(0xFF)
     assert computer.cpu.registers["X"].get() == 0xFF
 
     # The INX instruction
@@ -72,6 +73,7 @@ def test_iny_zero_flag_set():
     "Test INY that wraps sets the Z flag"
     computer = build_computer()
 
+    computer.cpu.registers["Y"].set(0xFF)
     assert computer.cpu.registers["Y"].get() == 0xFF
 
     # The INY instruction

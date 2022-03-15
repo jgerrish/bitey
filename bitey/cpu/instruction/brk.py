@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from typing import ClassVar
-from bitey.cpu.instruction.instruction import (
-    Instruction,
-    IncompleteInstruction,
-)
+from bitey.cpu.instruction.instruction import Instruction
 
 
 @dataclass
@@ -27,26 +24,36 @@ class BRK(Instruction):
 
         # super().execute(cpu, memory)
         # Push the instruction after the next on the stack
-        pc = cpu.registers["PC"].value
-        cpu.stack_push_address(memory, pc + 2)
+        pc = cpu.registers["PC"].get()
+        cpu.stack_push_address(memory, pc)
 
+        # Set the Break (B) flag to indicate this interrupt was caused
+        # by a BRK instruction.
+        # TODO: It's ambigous how to do this, whether the interrupt
+        # handler has to pop the flags, check the B bit, and
+        # push it back on the stack or if there should be two stack
+        # pushes for the P register
+        # Since the manual says the value is invalid while not in an
+        # interrupt handling routine, we'll let the BRK and hw interrupts
+        # always manage it before a call
         self.set_flags(cpu.flags, cpu.registers)
 
-        # save the break command flag on the stack
-        cpu.stack_push(memory, cpu.flags.data)
+        # save all the flags on the stack
+        cpu.stack_push(memory, cpu.registers["P"].get() & 0xFF)
+
+        # Push the break flag on the top of the stack so the interrupt
+        # handler can process it
+        # bit_field_pos = cpu.flags["B"].bit_field_pos
+        # cpu.stack_push(memory, cpu.flags.data & (2 ** bit_field_pos))
 
         # Get the interrupt vector
         (al, ah) = BRK.maskable_interrupt_vector
-        memory.get_16bit_value(al, ah)
+        address = memory.get_16bit_value(al, ah)
 
-        raise IncompleteInstruction
-        # TODO: There is ambiguity in the manual about whether the B flag
-        # is reset at the end of the instruction
-
-        return
+        cpu.registers["PC"].set(address)
 
     def set_flags(self, flags, registers):
         "Set any flags as a result of the instruction execution"
+
         # Set the B flag
         flags["B"].set()
-        return

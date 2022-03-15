@@ -23,6 +23,7 @@ from bitey.cpu.instruction.ld import LDA
 from bitey.cpu.instruction.ld import LDX
 from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
+from bitey.cpu.instruction.rti import RTI
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
 from bitey.cpu.instruction.st import STX
@@ -36,6 +37,7 @@ class InstructionFactory:
     instruction_map: ClassVar[dict[str, Instruction]] = {
         0: BRK,
         32: JSR,
+        64: RTI,
         88: CLI,
         76: JMP,
         96: RTS,
@@ -119,6 +121,7 @@ class InstructionClassFactory:
     instruction_map: ClassVar[dict[str, (InstructionClass, Instruction)]] = {
         0: BRK,
         32: JSR,
+        64: RTI,
         88: CLI,
         76: JMP,
         96: RTS,
