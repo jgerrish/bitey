@@ -182,3 +182,38 @@ def test_cpu_cpu_step_two():
     assert cpu.registers["PC"].get() == 0x02
     assert cpu.current_instruction.short_str() == "INX"
     assert cpu.registers["X"].get() == 0x02
+
+
+def test_cpu_cpu_p_register_set_updates_flags():
+    "Test that updating the P register updates the flags bitvector"
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    assert cpu.registers["P"].get() == 0x00
+    assert cpu.flags.data == 0
+    assert not cpu.flags["C"].status
+    assert not cpu.flags["Z"].status
+
+    cpu.registers["P"].set(0x01)
+    assert cpu.registers["P"].get() == 0x01
+    assert cpu.flags.data == 0x01
+    assert cpu.flags["C"].status
+    assert not cpu.flags["Z"].status
+
+
+def test_cpu_cpu_flags_set_updates_p_register():
+    "Test that updating any of the flags updates the P register"
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    assert cpu.registers["P"].get() == 0x00
+    assert cpu.flags.data == 0
+    assert not cpu.flags["C"].status
+    assert not cpu.flags["Z"].status
+
+    # Setting the C flag should update the Processor Status register
+    cpu.flags["C"].set()
+    assert cpu.flags["C"].status
+    assert not cpu.flags["Z"].status
+    assert cpu.flags.data == 0x01
+    assert cpu.registers["P"].get() == 0x01

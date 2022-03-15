@@ -80,6 +80,16 @@ class CPU:
         self.logger = logging.getLogger("bitey.cpu.cpu")
         # TODO: Research best practices around logging and module namespaces
         self.registers.set_logger(self.logger)
+
+        # Connect up the P register and flags with the Watcher/Listener API
+        # We can profile later if speed is an issue
+        if self.registers and self.flags:
+            register = self.registers["P"]
+            register.register(self.flags.pflag_listener)
+
+            # Connect up the flags and the P register so they are both in sync
+            self.flags.register(register.flags_listener)
+
         return
 
     def reset(self, memory):

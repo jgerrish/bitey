@@ -2,11 +2,12 @@ from dataclasses import dataclass
 import json
 from json import JSONDecoder
 
+from bitey.listener import Listener
 from bitey.watcher import Watcher
 
 
 class RegisterOverflowException(Exception):
-    "The Register was incremented past it's size"
+    "The Register was incremented past its size"
 
 
 # dataclass generates __init__, __repr__ and other special methods for PEP526
@@ -38,6 +39,9 @@ class Register(Watcher):
         # don't need to know about Watcher's data
         super().__init__()
 
+        self.flags_listener = Listener()
+        self.flags_listener.register_callback(self.update_register_data)
+
     def name(self):
         "The name of the register"
         return self.name
@@ -58,6 +62,7 @@ class Register(Watcher):
             # raise RegisterOverflowException
         else:
             self.value += 1
+        self.update()
 
     def dec(self):
         """
@@ -71,6 +76,7 @@ class Register(Watcher):
             # raise RegisterOverflowException
         else:
             self.value -= 1
+        self.update()
 
     def get(self):
         """
@@ -79,21 +85,22 @@ class Register(Watcher):
         """
         return self.value
 
-    def set(self, value):
+    def set(self, value, update=True):
         """
         Set the register's value
         This setter should be used as the only way to change the register's value
         """
         self.value = value
-        self.update()
+        if update:
+            self.update()
 
     def add(self, amt):
         "Add an amount to the register's value"
         if (self.value + amt) >= (2 ** self.size):
             raise Exception
 
-        # self.logger.debug("Incrementing register {} by {}".format(self.name, amt))
         self.value += amt
+        self.update()
 
     def __eq__(self, value):
         """
@@ -101,6 +108,14 @@ class Register(Watcher):
         to other integer values without directly accessing .value
         """
         return self.value == value
+
+    def update_register_data(self, flag):
+        """
+        Update register data when the Flags data is updated
+        This is used to keep the P register and flags in sync
+        """
+        if self.short_name == "P":
+            self.set(flag.data, False)
 
 
 @dataclass

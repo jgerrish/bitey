@@ -19,7 +19,7 @@ class Watcher:
         Register to get messages when this component is updated.
         listener is a Listener
         """
-        if self.listeners:
+        if ("listeners" in self.__dict__) and self.listeners:
             self.listeners.append(listener)
         else:
             # TODO: Figure out why there's lookup issues with base class / subclass
@@ -32,6 +32,6 @@ class Watcher:
         obj is the object
         """
         # When called by the subclass, the subclass attributes aren't properly searched
-        if self.listeners:
+        if ("listeners" in self.__dict__) and self.listeners:
             for listener in self.listeners:
                 listener.update(self)

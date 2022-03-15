@@ -1,8 +1,10 @@
 from dataclasses import dataclass
+from bitey.listener import Listener
+from bitey.watcher import Watcher
 
 
 @dataclass
-class Flag:
+class Flag(Watcher):
     """
     Processor flag or status register
     Examples can include the carry flag and overflow flag
@@ -31,22 +33,28 @@ class Flag:
 
     def __post_init__(self):
         self.flags = None
+        # self.pflag_listener = Listener()
+        # self.pflag_listener.register_callback(self.update_flag_data)
 
-    def set(self):
+    def set(self, update=True):
         "Set this flag.  Set it to true."
         self.status = True
         if self.flags is not None:
             self.flags.set_bit(self.short_name)
+        if update:
+            self.update()
 
-    def clear(self):
+    def clear(self, update=True):
         "Clear this flag.  Set it to False."
         self.status = False
         if self.flags is not None:
             self.flags.clear_bit(self.short_name)
+        if update:
+            self.update()
 
 
 @dataclass
-class Flags:
+class Flags(Watcher):
     """
     Define a set of processor flags
     """
@@ -66,6 +74,9 @@ class Flags:
 
         self.data = 0
 
+        self.pflag_listener = Listener()
+        self.pflag_listener.register_callback(self.update_flag_data)
+
     def __getitem__(self, i):
         return self.flag_dict[i]
 
@@ -73,6 +84,7 @@ class Flags:
         "Set a flag and the bit in the flags byte"
         self[flag].set()
         self.set_bit(flag)
+        self.update()
 
     def set_bit(self, flag):
         """
@@ -81,11 +93,13 @@ class Flags:
         """
         bit = 2 ** self[flag].bit_field_pos
         self.data = self.data | bit
+        self.update()
 
     def clear(self, flag):
         "Clear a flag and the bit in the flags byte"
         self[flag].clear()
         self.clear_bit(flag)
+        self.update()
 
     def clear_bit(self, flag):
         """
@@ -95,3 +109,17 @@ class Flags:
         # Clear the bit
         bit = 2 ** self[flag].bit_field_pos
         self.data = self.data & (0xFF - bit)
+        self.update()
+
+    def update_flag_data(self, register):
+        "Update Flags data if the P register is updated"
+        self.data = register.get()
+
+        # Update the individual flags
+        for flag in self.flags:
+            bfp = flag.bit_field_pos
+            bit = 2 ** bfp
+            if (self.data & bit) != 0:
+                flag.set(False)
+            else:
+                flag.clear(False)
