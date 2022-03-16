@@ -1,3 +1,4 @@
+import pytest
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 
 from bitey.computer.computer import Computer
@@ -18,9 +19,17 @@ def build_computer():
     return None
 
 
-def test_build_cpu_instruction_jsr():
-    "Test building an instruction and executing it"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_build_cpu_instruction_jsr(setup):
+    "Test building an instruction and executing it"
+    computer = setup
+    computer.reset()
 
     # Pointer to the address containing the address of the subroutine
     # (absolute addressing mode)
@@ -51,9 +60,10 @@ def test_build_cpu_instruction_jsr():
     assert computer.memory.read(CPU.stack_start - 0x01) == 0x03
 
 
-def test_cpu_instruction_jsr():
+def test_cpu_instruction_jsr(setup):
     "Test loading a JSR instruction from memory"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # Absolute mode JSR instruction
     computer.memory.write(0x00, 0x20)

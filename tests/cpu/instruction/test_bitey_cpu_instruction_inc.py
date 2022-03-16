@@ -1,4 +1,5 @@
 # Test the INC instructions (INC, INX, INY)
+import pytest
 
 from bitey.computer.computer import Computer
 
@@ -14,9 +15,17 @@ def build_computer():
     return None
 
 
-def test_inx():
-    "Test INX that doesn't wrap"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_inx(setup):
+    "Test INX that doesn't wrap"
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x00)
 
@@ -32,9 +41,10 @@ def test_inx():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_inx_zero_flag_set():
+def test_inx_zero_flag_set(setup):
     "Test INX that wraps sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0xFF)
     assert computer.cpu.registers["X"].get() == 0xFF
@@ -51,9 +61,10 @@ def test_inx_zero_flag_set():
     assert computer.cpu.flags["Z"].status is True
 
 
-def test_iny():
+def test_iny(setup):
     "Test INY that doesn't wrap"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["Y"].set(0x00)
 
@@ -69,9 +80,10 @@ def test_iny():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_iny_zero_flag_set():
+def test_iny_zero_flag_set(setup):
     "Test INY that wraps sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["Y"].set(0xFF)
     assert computer.cpu.registers["Y"].get() == 0xFF
@@ -88,9 +100,10 @@ def test_iny_zero_flag_set():
     assert computer.cpu.flags["Z"].status is True
 
 
-def test_inc_zeropage():
+def test_inc_zeropage(setup):
     "Test INY that doesn't wrap"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # The INC instruction
     computer.memory.write(0x00, 0xE6)
@@ -107,9 +120,10 @@ def test_inc_zeropage():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_inc_zeropage_zero_flag_set():
+def test_inc_zeropage_zero_flag_set(setup):
     "Test INC that wraps sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # The INC instruction
     computer.memory.write(0x00, 0xE6)

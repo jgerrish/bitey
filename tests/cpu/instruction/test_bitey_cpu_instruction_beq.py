@@ -1,3 +1,4 @@
+import pytest
 from bitey.computer.computer import Computer
 
 
@@ -12,9 +13,17 @@ def build_computer():
     return None
 
 
-def test_cpu_instruction_beq_zero_flag_false():
-    "Test BEQ when zero flag is False"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_cpu_instruction_beq_zero_flag_false(setup):
+    "Test BEQ when zero flag is False"
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x02)
     computer.cpu.registers["PC"].set(0x00)
@@ -36,9 +45,10 @@ def test_cpu_instruction_beq_zero_flag_false():
     assert computer.cpu.registers["PC"].get() == 0x03
 
 
-def test_cpu_instruction_beq_zero_flag_true():
+def test_cpu_instruction_beq_zero_flag_true(setup):
     "Test BEQ when zero flag is True"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x01)
     computer.cpu.registers["PC"].set(0x00)

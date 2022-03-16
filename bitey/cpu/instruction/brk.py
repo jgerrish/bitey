@@ -22,11 +22,6 @@ class BRK(Instruction):
     def instruction_execute(self, cpu, memory, value=None, address=None):
         "Execute the instruction"
 
-        # super().execute(cpu, memory)
-        # Push the instruction after the next on the stack
-        pc = cpu.registers["PC"].get()
-        cpu.stack_push_address(memory, pc)
-
         # Set the Break (B) flag to indicate this interrupt was caused
         # by a BRK instruction.
         # TODO: It's ambigous how to do this, whether the interrupt
@@ -37,6 +32,11 @@ class BRK(Instruction):
         # interrupt handling routine, we'll let the BRK and hw interrupts
         # always manage it before a call
         self.set_flags(cpu.flags, cpu.registers)
+
+        # super().execute(cpu, memory)
+        # Push the instruction after the next on the stack
+        pc = cpu.registers["PC"].get()
+        cpu.stack_push_address(memory, pc)
 
         # save all the flags on the stack
         cpu.stack_push(memory, cpu.registers["P"].get() & 0xFF)
@@ -53,7 +53,10 @@ class BRK(Instruction):
         cpu.registers["PC"].set(address)
 
     def set_flags(self, flags, registers):
-        "Set any flags as a result of the instruction execution"
+        "Set the Interrupt Disable and Break flags"
 
-        # Set the B flag
+        # Set the Interrupt Disable flag to disable interrupts
+        flags["I"].set()
+
+        # Set the Break flag to indicate a software interrupt
         flags["B"].set()

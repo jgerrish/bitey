@@ -1,5 +1,5 @@
 # Test the DEC instructions (DEC, DEX, DEY)
-
+import pytest
 from bitey.computer.computer import Computer
 
 
@@ -14,9 +14,17 @@ def build_computer():
     return None
 
 
-def test_dex():
-    "Test DEX that doesn't wrap"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_dex(setup):
+    "Test DEX that doesn't wrap"
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x02)
 
@@ -32,9 +40,10 @@ def test_dex():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_dex_zero_flag_set():
+def test_dex_zero_flag_set(setup):
     "Test DEX that setting to zero sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x01)
 
@@ -50,9 +59,10 @@ def test_dex_zero_flag_set():
     assert computer.cpu.flags["Z"].status is True
 
 
-def test_dex_wrap_zero_flag_not_set():
+def test_dex_wrap_zero_flag_not_set(setup):
     "Test DEX that wrapping does not set the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["X"].set(0x00)
 
@@ -68,9 +78,10 @@ def test_dex_wrap_zero_flag_not_set():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_dey():
+def test_dey(setup):
     "Test DEY that doesn't wrap"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["Y"].set(0x02)
 
@@ -86,9 +97,10 @@ def test_dey():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_dey_zero_flag_set():
+def test_dey_zero_flag_set(setup):
     "Test DEY that setting to zero sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["Y"].set(0x01)
 
@@ -104,9 +116,10 @@ def test_dey_zero_flag_set():
     assert computer.cpu.flags["Z"].status is True
 
 
-def test_dey_wraps_zero_flag_not_set():
+def test_dey_wraps_zero_flag_not_set(setup):
     "Test DEY that wrapping doesn't set the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     computer.cpu.registers["Y"].set(0x00)
 
@@ -122,9 +135,10 @@ def test_dey_wraps_zero_flag_not_set():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_dec_zeropage():
+def test_dec_zeropage(setup):
     "Test DEY that doesn't set zero flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # The DEC instruction
     computer.memory.write(0x00, 0xC6)
@@ -141,9 +155,10 @@ def test_dec_zeropage():
     assert computer.cpu.flags["Z"].status is False
 
 
-def test_dec_zeropage_zero_flag_set():
+def test_dec_zeropage_zero_flag_set(setup):
     "Test DEC that wraps sets the Z flag"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # The DEC instruction
     computer.memory.write(0x00, 0xC6)

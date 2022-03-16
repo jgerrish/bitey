@@ -20,3 +20,10 @@ class RTI(Instruction):
 
         # The interrupt stores the return address after the flag data
         cpu.registers["PC"].set(cpu.stack_pop_address(memory))
+
+        # Set flags
+        self.set_flags(cpu.flags, cpu.registers)
+
+    def set_flags(self, flags, registers):
+        "Clear the Interrupt Disable flag "
+        flags["I"].clear()

@@ -1,3 +1,4 @@
+import pytest
 from bitey.computer.computer import Computer
 
 
@@ -12,9 +13,16 @@ def build_computer():
     return None
 
 
-def test_build_cpu_instruction_brk():
-    "Test the BRK instruction"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_build_cpu_instruction_brk(setup):
+    "Test the BRK instruction"
+    computer = setup
 
     # BRK instructions
     computer.memory.write(0x00, 0x00)
@@ -38,4 +46,5 @@ def test_build_cpu_instruction_brk():
 
     assert computer.memory.read(0x1FF) == 0x00
     assert computer.memory.read(0x1FE) == 0x01
-    assert computer.memory.read(0x1FD) == 0b00010000
+    # Interrupt Disable and Break should be set
+    assert computer.memory.read(0x1FD) == 0b00010100

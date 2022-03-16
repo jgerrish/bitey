@@ -1,3 +1,4 @@
+import pytest
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
     AbsoluteXAddressingMode,
@@ -91,8 +92,9 @@ def test_cpu_instruction_short_str():
     assert cli.short_str() == "CLI"
 
 
-def test_cpu_instruction_assembly_str():
-    computer = build_computer()
+def test_cpu_instruction_assembly_str(setup):
+    computer = setup
+    computer.reset()
 
     # Set the PC
     computer.cpu.registers["PC"].set(0x00)
@@ -203,8 +205,17 @@ def build_computer():
     return None
 
 
-def test_cpu_instruction_cli():
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_cpu_instruction_cli(setup):
+    computer = setup
+    computer.reset()
+
     flags = computer.cpu.flags
     assert flags["I"].status == 0
 
@@ -220,8 +231,10 @@ def test_cpu_instruction_cli():
     assert flags["I"].status is False
 
 
-def test_cpu_instruction_sei():
-    computer = build_computer()
+def test_cpu_instruction_sei(setup):
+    computer = setup
+    computer.reset()
+
     flags = computer.cpu.flags
     assert flags["I"].status is False
 

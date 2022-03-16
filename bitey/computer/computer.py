@@ -54,7 +54,12 @@ class Computer:
                 break
 
     def run(self):
+        "Run a single instruction"
         self.cpu.execute_instruction()
+
+    def reset(self):
+        "Reset the computer"
+        self.cpu.reset(self.memory)
 
     def parse(self):
         """

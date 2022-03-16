@@ -1,3 +1,4 @@
+import pytest
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 from bitey.cpu.addressing_mode import AbsoluteIndirectAddressingMode
 
@@ -19,9 +20,17 @@ def build_computer():
     return None
 
 
-def test_build_cpu_instruction_jmp_absolute():
-    "Test building an absolute JMP instruction and executing it"
+# module scope means run once per test module
+@pytest.fixture(scope="module")
+def setup():
     computer = build_computer()
+    yield computer
+
+
+def test_build_cpu_instruction_jmp_absolute(setup):
+    "Test building an absolute JMP instruction and executing it"
+    computer = setup
+    computer.reset()
 
     # Pointer to the address containing the address of the subroutine
     # (absolute addressing mode)
@@ -46,9 +55,10 @@ def test_build_cpu_instruction_jmp_absolute():
     assert computer.cpu.registers["S"].get() == CPU.stack_start
 
 
-def test_cpu_instruction_jmp_absolute():
+def test_cpu_instruction_jmp_absolute(setup):
     "Test loading an absolute JMP instruction from memory"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # Absolute mode JMP instruction
     computer.memory.write(0x00, 0x4C)
@@ -75,9 +85,10 @@ def test_cpu_instruction_jmp_absolute():
     assert computer.cpu.registers["S"].get() == CPU.stack_start
 
 
-def test_build_cpu_instruction_jmp_absolute_indirect():
+def test_build_cpu_instruction_jmp_absolute_indirect(setup):
     "Test building an absolute indirect JMP instruction and executing it"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # Pointer to the address containing the address of the subroutine
     # (absolute addressing mode)
@@ -108,9 +119,10 @@ def test_build_cpu_instruction_jmp_absolute_indirect():
     assert computer.cpu.registers["S"].get() == CPU.stack_start
 
 
-def test_cpu_instruction_jmp_absolute_indirect():
+def test_cpu_instruction_jmp_absolute_indirect(setup):
     "Test loading an absolute indirect JMP instruction from memory"
-    computer = build_computer()
+    computer = setup
+    computer.reset()
 
     # Absolute mode JMP instruction
     computer.memory.write(0x00, 0x6C)
