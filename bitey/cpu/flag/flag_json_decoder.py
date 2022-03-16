@@ -4,6 +4,7 @@ from json import JSONDecoder
 from typing import ClassVar
 
 from bitey.cpu.flag.flag import Flag, Flags
+from bitey.cpu.flag.carry_flag import CarryFlag
 from bitey.cpu.flag.negative_flag import NegativeFlag
 from bitey.cpu.flag.zero_flag import ZeroFlag
 
@@ -11,6 +12,7 @@ from bitey.cpu.flag.zero_flag import ZeroFlag
 @dataclass
 class FlagJSONDecoder(JSONDecoder):
     flag_map: ClassVar[dict[str, Flag]] = {
+        "C": CarryFlag,
         "N": NegativeFlag,
         "Z": ZeroFlag,
     }

@@ -11,6 +11,9 @@ from bitey.cpu.instruction.beq import BEQ
 from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.cli import CLI
+from bitey.cpu.instruction.cp import CMP
+from bitey.cpu.instruction.cp import CPX
+from bitey.cpu.instruction.cp import CPY
 from bitey.cpu.instruction.dec import DEC
 from bitey.cpu.instruction.dec import DEX
 from bitey.cpu.instruction.dec import DEY
@@ -69,13 +72,16 @@ class InstructionFactory:
         182: LDX,
         188: LDY,
         190: LDX,
+        192: CPY,
         198: DEC,
         200: INY,
+        201: CMP,
         202: DEX,
         206: DEC,
         208: BNE,
         214: DEC,
         222: DEC,
+        224: CPX,
         230: INC,
         232: INX,
         234: NOP,
@@ -153,13 +159,16 @@ class InstructionClassFactory:
         182: LDX,
         188: LDY,
         190: LDX,
+        192: CPY,
         198: DEC,
         200: INY,
+        201: CMP,
         202: DEX,
         206: DEC,
         208: BNE,
         214: DEC,
         222: DEC,
+        224: CPX,
         230: INC,
         232: INX,
         234: NOP,

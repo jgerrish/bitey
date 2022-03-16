@@ -9,6 +9,18 @@ class NegativeFlag(Flag):
     Set if the result of an instructions sets bit seven
     """
 
+    def test_result(self, result):
+        """
+        Test the result
+        Set the flag if the result is true
+        Reset the flag if the result is not true
+        """
+
+        if (result & 0x80) != 0:
+            self.set()
+        else:
+            self.clear()
+
     def test_register_result(self, register):
         """
         Test the register result
@@ -16,7 +28,4 @@ class NegativeFlag(Flag):
         Reset the flag if the result is not true
         """
 
-        if (register.get() & 0x80) != 0:
-            self.set()
-        else:
-            self.clear()
+        return self.test_result(register.get())

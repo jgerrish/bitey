@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import logging
 from typing import ClassVar
+from bitey.cpu.arch import EightBitArch
 
 
 @dataclass
@@ -561,9 +562,8 @@ class RelativeAddressingMode(AddressingMode):
     def get_address(self, flags, registers, memory):
         "Get the effective address"
         offset = memory.read(registers["PC"].get())
-        if offset > 0x7F:
-            # Calculate two's complement to get negative value
-            offset = -((0xFF - offset) + 1)
+        # Calculate two's complement to get negative value
+        offset = EightBitArch.twos_complement_to_signed_int(offset)
         # TODO: update flags
 
         registers["PC"].inc()
