@@ -7,6 +7,7 @@ from bitey.cpu.instruction.instruction import (
     InstructionClass,
     UnimplementedInstruction,
 )
+from bitey.cpu.instruction.an import AND
 from bitey.cpu.instruction.beq import BEQ
 from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.brk import BRK
@@ -26,6 +27,7 @@ from bitey.cpu.instruction.ld import LDA
 from bitey.cpu.instruction.ld import LDX
 from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
+from bitey.cpu.instruction.ora import ORA
 from bitey.cpu.instruction.rti import RTI
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
@@ -39,7 +41,23 @@ from bitey.cpu.instruction.rts import RTS
 class InstructionFactory:
     instruction_map: ClassVar[dict[str, Instruction]] = {
         0: BRK,
+        1: ORA,
+        5: ORA,
+        9: ORA,
+        13: ORA,
+        17: ORA,
+        21: ORA,
+        25: ORA,
+        29: ORA,
         32: JSR,
+        33: AND,
+        37: AND,
+        41: AND,
+        45: AND,
+        49: AND,
+        53: AND,
+        57: AND,
+        61: AND,
         64: RTI,
         88: CLI,
         76: JMP,
@@ -126,7 +144,23 @@ class InstructionFactory:
 class InstructionClassFactory:
     instruction_map: ClassVar[dict[str, (InstructionClass, Instruction)]] = {
         0: BRK,
+        1: ORA,
+        5: ORA,
+        9: ORA,
+        13: ORA,
+        17: ORA,
+        21: ORA,
+        25: ORA,
+        29: ORA,
         32: JSR,
+        33: AND,
+        37: AND,
+        41: AND,
+        45: AND,
+        49: AND,
+        53: AND,
+        57: AND,
+        61: AND,
         64: RTI,
         88: CLI,
         76: JMP,
