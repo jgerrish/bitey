@@ -104,7 +104,6 @@ class AccumulatorAddressingMode(AddressingMode):
 
     Instructions can test the addressing mode to set the accumulator after they
     have performed their operation.
-    This could be made transparent with references or something in a refactor.
     """
 
     bytes: ClassVar[int] = 1
