@@ -100,19 +100,22 @@ class AbsoluteAddressingMode(AddressingMode):
 class AccumulatorAddressingMode(AddressingMode):
     """
     Accumulator Addressing Mode
-    The address comes from the accumulator
+    The value is set to the current value of the accumulator
+
+    Instructions can test the addressing mode to set the accumulator after they
+    have performed their operation.
+    This could be made transparent with references or something in a refactor.
     """
 
     bytes: ClassVar[int] = 1
 
     def get_address(self, flags, registers, memory):
-        address = registers["A"].get()
-
-        return address
+        return None
 
     def get_value(self, flags, registers, memory):
         address = self.get_address(flags, registers, memory)
-        return (address, memory.read(address))
+        value = registers["A"].get()
+        return (address, value)
 
     def get_inst_str(self, flags, registers, memory):
         self.get_address(flags, registers, memory)

@@ -5,6 +5,7 @@ from bitey.cpu.addressing_mode import (
     AbsoluteIndirectAddressingMode,
     AbsoluteXAddressingMode,
     AbsoluteYAddressingMode,
+    AccumulatorAddressingMode,
     ImpliedAddressingMode,
     IndexedIndirectAddressingMode,
     IndirectIndexedAddressingMode,
@@ -706,3 +707,29 @@ def test_cpu_addressing_mode_absolute_indirect_get_instr_str(setup):
     )
 
     assert inst_str == "($0005)"
+
+
+def test_cpu_addressing_mode_accumulator(setup):
+    "Test accumulator addressing mode"
+    computer = setup
+    computer.reset()
+
+    computer.cpu.registers["PC"].set(0x00)
+    computer.cpu.registers["A"].set(0x13)
+
+    aam = AccumulatorAddressingMode()
+
+    inst_str = aam.get_inst_str(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
+
+    assert type(aam) == AccumulatorAddressingMode
+
+    (address, value) = aam.get_value(
+        computer.cpu.flags, computer.cpu.registers, computer.memory
+    )
+
+    assert address is None
+    assert value == 0x13
+    assert computer.cpu.registers["PC"].get() == 0x00
+    assert inst_str == ""
