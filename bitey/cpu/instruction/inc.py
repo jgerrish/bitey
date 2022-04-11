@@ -7,9 +7,9 @@ from bitey.cpu.instruction.instruction import (
 class IN(Instruction):
     "Generic register increment instruction"
 
-    def __init__(self, name, opcode, description, register):
+    def __init__(self, name, opcode, description, options, register):
         "Initialize with the register"
-        super().__init__(name, opcode, description)
+        super().__init__(name, opcode, description, options)
         self.register = register
 
     def instruction_execute(self, cpu, memory, value, address=None):
@@ -26,15 +26,15 @@ class IN(Instruction):
 class INX(IN):
     "INX: Increment Index X by One"
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "X")
+    def __init__(self, name, opcode, description, options):
+        super().__init__(name, opcode, description, options, "X")
 
 
 class INY(IN):
     "INY: Increment Index Y by One"
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "Y")
+    def __init__(self, name, opcode, description, options):
+        super().__init__(name, opcode, description, options, "Y")
 
 
 class INC(Instruction):

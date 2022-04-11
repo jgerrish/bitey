@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict
 import logging
 
 # from bitey.cpu.instruction.instruction_factory import InstructionFactory
@@ -46,6 +47,9 @@ class Instruction:
 
     description: str = None
     "A human-readable description of the instruction"
+
+    options: Dict = field(default_factory=lambda: {})
+    "Optional dictionary of enabled bugs or quirks for this instruction"
 
     def __post_init__(self):
         self.logger = logging.getLogger("bitey.cpu.instruction")
@@ -153,6 +157,9 @@ class InstructionClass:
     description: str = None
     "A human-readable description of the instruction"
 
+    options: Dict = field(default_factory=lambda: {})
+    "Optional dictionary of enabled bugs or quirks for this instruction"
+
     def __post_init__(self):
         """
         Build the tables for opcode lookup
@@ -168,11 +175,12 @@ class InstructionClass:
                 # We modify the already existing instruction
                 # This is wrong
                 self.instruction.opcode = opcode
+                self.instruction.options = self.options
                 self.instructions[opcode.opcode] = self.instruction
             else:
                 # If self.instruction is not set, build a generic one
                 self.instructions[opcode.opcode] = Instruction(
-                    self.name, opcode, self.description
+                    self.name, opcode, self.description, self.options
                 )
 
     def execute(self, cpu, memory):

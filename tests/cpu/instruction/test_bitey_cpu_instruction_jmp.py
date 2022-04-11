@@ -1,4 +1,6 @@
 import pytest
+import re
+
 from bitey.cpu.addressing_mode import AbsoluteAddressingMode
 from bitey.cpu.addressing_mode import AbsoluteIndirectAddressingMode
 
@@ -9,10 +11,18 @@ from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.jmp import JMP
 
 
-def build_computer():
+def build_computer(chip_line=None):
     computer = None
 
-    with open("chip/6502.json") as f:
+    search = re.compile(".*[^a-zA-Z0-9_-].*")
+
+    if (chip_line is not None) and (search.search(chip_line) is not None):
+        raise Exception("Invalid chip_line, contains non-alphanumeric characters")
+
+    fn = "chip/6502.json"
+    if chip_line is not None:
+        fn = "chip/{}-6502.json".format(chip_line)
+    with open(fn) as f:
         chip_data = f.read()
         computer = Computer.build_from_json(chip_data)
         return computer
@@ -153,3 +163,57 @@ def test_cpu_instruction_jmp_absolute_indirect(setup):
 
     # The stack should contain the old address
     assert computer.cpu.registers["S"].get() == CPU.stack_start
+
+
+def test_cpu_instruction_jmp_nmos_wrap():
+    "Test buggy JMP instruction that wraps"
+    computer = build_computer("nmos")
+    computer.reset()
+
+    computer.memory.write(0xFE, 0x6C)
+    computer.memory.write(0x00, 0x9A)
+    computer.memory.write(0xFF, 0x4D)
+    computer.memory.write(0x9A4D, 0x4D)
+
+    computer.cpu.registers["PC"].set(0x00FE, 0x45)
+
+    computer.cpu.get_next_instruction(computer.memory)
+
+    assert computer.cpu.current_instruction.opcode.opcode == 0x6C
+
+    # Check this has a bug
+    assert "page_boundary_bug" in computer.cpu.current_instruction.options
+    assert computer.cpu.current_instruction.options["page_boundary_bug"]
+
+    # execute the instruction
+    computer.cpu.execute_instruction(computer.memory)
+
+    # check that the address is correct
+    assert computer.cpu.registers["PC"].get() == 0x004D
+
+
+def test_cpu_instruction_jmp_nmos_nowrap():
+    "Test buggy JMP instruction that doesn't wrap"
+    computer = build_computer("nmos")
+    computer.reset()
+
+    computer.memory.write(0xFD, 0x6C)
+    computer.memory.write(0xFE, 0x4D)
+    computer.memory.write(0xFF, 0x9A)
+    computer.memory.write(0x9A4D, 0x4D)
+
+    computer.cpu.registers["PC"].set(0x00FD, 0x45)
+
+    computer.cpu.get_next_instruction(computer.memory)
+
+    assert computer.cpu.current_instruction.opcode.opcode == 0x6C
+
+    # Check this has a bug
+    assert "page_boundary_bug" in computer.cpu.current_instruction.options
+    assert computer.cpu.current_instruction.options["page_boundary_bug"]
+
+    # execute the instruction
+    computer.cpu.execute_instruction(computer.memory)
+
+    # check that the address is correct
+    assert computer.cpu.registers["PC"].get() == 0x004D

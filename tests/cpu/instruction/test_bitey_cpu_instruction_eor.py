@@ -5,7 +5,7 @@ from bitey.cpu.addressing_mode import ImmediateAddressingMode
 from bitey.computer.computer import Computer
 from bitey.cpu.instruction.instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
-from bitey.cpu.instruction.ora import ORA
+from bitey.cpu.instruction.eor import EOR
 
 
 def build_computer():
@@ -26,7 +26,7 @@ def init_computer():
     flags = computer.cpu.flags
     assert flags["Z"].status is False
 
-    # The reset code in the CPU loads the first instruction ORA
+    # The reset code in the CPU loads the first instruction EOR
     # increments the PC by one
     # TODO: These tests should be simplified to not rely on that
     assert computer.cpu.registers["PC"].get() == 1
@@ -57,7 +57,7 @@ def execute_instruction(
 ):
     "Execute the instruction based on an opcode"
     flags = computer.cpu.flags
-    i1 = ORA("ORA", opcode, "Load Accumulator with Memory")
+    i1 = EOR("EOR", opcode, "Load Accumulator with Memory")
 
     try:
         i1.execute(computer.cpu, computer.memory)
@@ -68,49 +68,49 @@ def execute_instruction(
         assert False
 
 
-def test_cpu_instruction_ora_immediate(setup):
-    "Test ORA in immediate addressing mode that doesn't load a zero"
+def test_cpu_instruction_eor_immediate(setup):
+    "Test EOR in immediate addressing mode that doesn't load a zero"
     computer = setup
     computer.reset()
 
     computer.cpu.registers["A"].set(0b101100)
     init_memory(computer.memory, [(1, 0b101011)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
-    execute_instruction(computer, i1_opcode, 0b101111, False, False)
+    i1_opcode = Opcode(0x49, ImmediateAddressingMode())
+    execute_instruction(computer, i1_opcode, 0b00000111, False, False)
 
 
-def test_cpu_instruction_ora_immediate_zero(setup):
-    "Test ORA in immediate addressing mode that loads a zero"
+def test_cpu_instruction_eor_immediate_zero(setup):
+    "Test EOR in immediate addressing mode that loads a zero"
     computer = setup
     computer.reset()
 
-    computer.cpu.registers["A"].set(0x00)
-    init_memory(computer.memory, [(1, 0x00)])
+    computer.cpu.registers["A"].set(0b11000011)
+    init_memory(computer.memory, [(1, 0b11000011)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    i1_opcode = Opcode(0x49, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0x00, True, False)
 
 
-def test_cpu_instruction_ora_immediate_nonnegative(setup):
-    "Test ORA in immediate addressing mode that doesn't load a negative number"
+def test_cpu_instruction_eor_immediate_nonnegative(setup):
+    "Test EOR in immediate addressing mode that doesn't load a negative number"
     computer = setup
     computer.reset()
 
     computer.cpu.registers["A"].set(0b01111111)
     init_memory(computer.memory, [(1, 0b00000001)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
-    execute_instruction(computer, i1_opcode, 0b01111111, False, False)
+    i1_opcode = Opcode(0x49, ImmediateAddressingMode())
+    execute_instruction(computer, i1_opcode, 0b01111110, False, False)
 
 
-def test_cpu_instruction_ora_immediate_zero_negative(setup):
-    "Test ORA in immediate addressing mode that loads a negative number"
+def test_cpu_instruction_eor_immediate_zero_negative(setup):
+    "Test EOR in immediate addressing mode that loads a negative number"
     computer = setup
     computer.reset()
 
-    computer.cpu.registers["A"].set(0b10000000)
-    init_memory(computer.memory, [(1, 0b10000001)])
+    computer.cpu.registers["A"].set(0b00110000)
+    init_memory(computer.memory, [(1, 0b10000000)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
-    execute_instruction(computer, i1_opcode, 0b10000001, False, True)
+    i1_opcode = Opcode(0x49, ImmediateAddressingMode())
+    execute_instruction(computer, i1_opcode, 0b10110000, False, True)

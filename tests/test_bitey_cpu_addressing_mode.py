@@ -3,6 +3,7 @@ import pytest
 from bitey.cpu.addressing_mode import (
     AbsoluteAddressingMode,
     AbsoluteIndirectAddressingMode,
+    AbsoluteIndirectPageBoundaryBugAddressingMode,
     AbsoluteXAddressingMode,
     AbsoluteYAddressingMode,
     AccumulatorAddressingMode,
@@ -733,3 +734,66 @@ def test_cpu_addressing_mode_accumulator(setup):
     assert value == 0x13
     assert computer.cpu.registers["PC"].get() == 0x00
     assert inst_str == ""
+
+
+def test_cpu_addressing_mode_absolute_indirect_page_boundary_bug_get_value(setup):
+    computer = setup
+    computer.reset()
+
+    # Pointer to the pointer to the effective address
+    computer.memory.write(0x0B, 0x10)
+    computer.memory.write(0x0C, 0x20)
+
+    # Pointer to the effective address
+    computer.memory.write(0x2010, 0x33)
+    computer.memory.write(0x2011, 0x55)
+
+    computer.memory.write(0x5533, 0x11)
+
+    computer.cpu.registers["PC"].set(0x0B)
+
+    aam = AbsoluteIndirectPageBoundaryBugAddressingMode(3)
+    assert type(aam) == AbsoluteIndirectPageBoundaryBugAddressingMode
+
+    value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    # adl and adh are the effective address low and high bytes
+    # not the original address (PC + 1, PC + 2)
+    assert aam.adl == 0x33
+    assert aam.adh == 0x55
+
+    assert value == (0x5533, 0x11)
+    assert computer.cpu.registers["PC"].get() == 0x0D
+
+
+def test_cpu_addressing_mode_absolute_indirect_page_boundary_bug_wrap_get_value(setup):
+    computer = setup
+    computer.reset()
+
+    # Pointer to the pointer to the effective address
+    computer.memory.write(0x00FF, 0x10)
+    computer.memory.write(0x0000, 0x20)
+
+    # Pointer to the effective address
+    computer.memory.write(0x2010, 0x33)
+    computer.memory.write(0x2011, 0x55)
+
+    computer.memory.write(0x5533, 0x11)
+
+    computer.cpu.registers["PC"].set(0x00FF)
+
+    aam = AbsoluteIndirectPageBoundaryBugAddressingMode(3)
+    assert type(aam) == AbsoluteIndirectPageBoundaryBugAddressingMode
+
+    value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    # adl and adh are the effective address low and high bytes
+    # not the original address (PC + 1, PC + 2)
+    assert aam.adl == 0x33
+    assert aam.adh == 0x55
+
+    assert value == (0x5533, 0x11)
+
+    # Technically, the JMP instruction is the only instruction that uses this "buggy"
+    # mode, so this shouldn't matter
+    assert computer.cpu.registers["PC"].get() == 0x101

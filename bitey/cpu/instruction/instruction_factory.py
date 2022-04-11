@@ -18,6 +18,7 @@ from bitey.cpu.instruction.cp import CPY
 from bitey.cpu.instruction.dec import DEC
 from bitey.cpu.instruction.dec import DEX
 from bitey.cpu.instruction.dec import DEY
+from bitey.cpu.instruction.eor import EOR
 from bitey.cpu.instruction.inc import INC
 from bitey.cpu.instruction.inc import INX
 from bitey.cpu.instruction.inc import INY
@@ -28,6 +29,9 @@ from bitey.cpu.instruction.ld import LDX
 from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.ora import ORA
+from bitey.cpu.instruction.rol import ROL
+from bitey.cpu.instruction.ror import ROR
+from bitey.cpu.instruction.ror import RORNoCarryBug
 from bitey.cpu.instruction.rti import RTI
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
@@ -39,7 +43,7 @@ from bitey.cpu.instruction.rts import RTS
 
 @dataclass
 class InstructionFactory:
-    instruction_map: ClassVar[dict[str, Instruction]] = {
+    instruction_map: ClassVar[dict[int, Instruction]] = {
         0: BRK,
         1: ORA,
         5: ORA,
@@ -52,18 +56,36 @@ class InstructionFactory:
         32: JSR,
         33: AND,
         37: AND,
+        38: ROL,
         41: AND,
+        42: ROL,
         45: AND,
+        46: ROL,
         49: AND,
         53: AND,
+        54: ROL,
         57: AND,
         61: AND,
+        62: ROL,
         64: RTI,
+        65: EOR,
+        69: EOR,
+        73: EOR,
+        77: EOR,
         88: CLI,
         76: JMP,
+        81: EOR,
+        85: EOR,
+        89: EOR,
+        93: EOR,
         96: RTS,
+        102: ROR,
+        106: ROR,
         108: JMP,
+        110: ROR,
+        118: ROR,
         120: SEI,
+        126: ROR,
         129: STA,
         132: STY,
         133: STA,
@@ -111,22 +133,25 @@ class InstructionFactory:
 
     def __post_init__(self):
         "Initialize the InstructionFactory"
-        self.logger = logging.getLogger("bitey.cpu.instruction.instruction_factory")
+        self.logger = logging.getLogger(
+            "bitey.cpu.instruction.instruction_factory.InstructionFactory"
+        )
 
-    def build(name, opcode, description):
+    def build(name, opcode, description, options={}):
         """
         Build an Instruction instance
         This builds an instruction from an instruction name, opcode and description.
         The opcode is an Opcode class.
         """
         try:
-            return InstructionFactory.get_instruction_from_opcode(opcode)(
-                name, opcode, description
+            inst = InstructionFactory.get_instruction_from_opcode(opcode)(
+                name, opcode, description, options
             )
+            return inst
         except UnimplementedInstruction:
             # Use the base class for the instruction
             # self.logger.debug("UnimplementedInstruction, building Instruction instance")
-            return Instruction(name, opcode, description)
+            return Instruction(name, opcode, description, options)
 
     def get_instruction_from_opcode(opcode):
         "Given an opcode class, return the instruction class"
@@ -142,7 +167,7 @@ class InstructionFactory:
 
 @dataclass
 class InstructionClassFactory:
-    instruction_map: ClassVar[dict[str, (InstructionClass, Instruction)]] = {
+    instruction_map: ClassVar[dict[int, (InstructionClass, Instruction)]] = {
         0: BRK,
         1: ORA,
         5: ORA,
@@ -155,18 +180,36 @@ class InstructionClassFactory:
         32: JSR,
         33: AND,
         37: AND,
+        38: ROL,
         41: AND,
+        42: ROL,
         45: AND,
+        46: ROL,
         49: AND,
         53: AND,
+        54: ROL,
         57: AND,
         61: AND,
+        62: ROL,
         64: RTI,
+        65: EOR,
+        69: EOR,
+        73: EOR,
+        77: EOR,
+        81: EOR,
+        85: EOR,
         88: CLI,
+        89: EOR,
         76: JMP,
+        93: EOR,
         96: RTS,
+        102: ROR,
+        106: ROR,
         108: JMP,
+        110: ROR,
+        118: ROR,
         120: SEI,
+        126: ROR,
         129: STA,
         132: STY,
         133: STA,
@@ -211,10 +254,27 @@ class InstructionClassFactory:
         246: INC,
         254: INC,
     }
+    # A custom instruction class map to hold buggy or quirky instructions
+    instruction_map_options: ClassVar[
+        dict[str, dict[int, (InstructionClass, Instruction)]]
+    ] = {
+        "no_carry_bug": {
+            102: RORNoCarryBug,
+            106: RORNoCarryBug,
+            110: RORNoCarryBug,
+            126: RORNoCarryBug,
+        }
+    }
 
     logger: ClassVar = logging.getLogger("bitey.cpu.instruction.instruction_factory")
 
-    def build(name, opcodes, description):
+    def __post_init__(self):
+        "Initialize the InstructionFactory"
+        self.logger = logging.getLogger(
+            "bitey.cpu.instruction.instruction_factory.InstructionFactory"
+        )
+
+    def build(name, opcodes, description, options={}):
         """
         Build an Instruction instance
         This builds an instruction from an instruction name,
@@ -224,14 +284,38 @@ class InstructionClassFactory:
         # TODO: Refactor this
         if len(opcodes.opcodes) > 0:
             opcode = opcodes.opcodes[0].opcode
+            if options is not None:
+                for key in options.keys():
+                    if key in InstructionClassFactory.instruction_map_options:
+                        custom_instruction_classes = (
+                            InstructionClassFactory.instruction_map_options[key]
+                        )
+                        try:
+                            if opcode in custom_instruction_classes:
+                                instruction_class = custom_instruction_classes[opcode]
+                                inst = instruction_class(
+                                    name, opcodes, description, options
+                                )
+                                return InstructionClass(
+                                    name, inst, opcodes, description, options
+                                )
+                            else:
+                                raise UnimplementedInstruction
+                        except UnimplementedInstruction:
+                            return InstructionClass(
+                                name, inst, opcodes, description, options
+                            )
             try:
-                inst = InstructionClassFactory.get_instruction_class_from_opcode(
-                    opcode
-                )(name, opcodes, description)
-                return InstructionClass(name, inst, opcodes, description)
+                instruction_class = (
+                    InstructionClassFactory.get_instruction_class_from_opcode(opcode)
+                )
+                inst = instruction_class(name, opcodes, description, options)
+                # TODO: There could be a separate InstructionClass for each
+                # instruction variant, so they're built once and execution doesn't slow down
+                return InstructionClass(name, inst, opcodes, description, options)
             except UnimplementedInstruction:
                 # Use the base class for the instruction
-                return InstructionClass(name, None, opcodes, description)
+                return InstructionClass(name, None, opcodes, description, options)
         else:
             return None
 

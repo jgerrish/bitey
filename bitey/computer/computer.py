@@ -53,9 +53,9 @@ class Computer:
             else:
                 break
 
-    def run(self):
+    def step(self):
         "Run a single instruction"
-        self.cpu.execute_instruction()
+        self.cpu.step(self.memory)
 
     def reset(self):
         "Reset the computer"

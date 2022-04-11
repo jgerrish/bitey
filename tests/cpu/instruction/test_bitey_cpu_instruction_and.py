@@ -73,8 +73,8 @@ def test_cpu_instruction_and_immediate(setup):
     computer = setup
     computer.reset()
 
-    computer.cpu.registers["A"].set(  0b101100)  # 0x2C
-    init_memory(computer.memory, [(1, 0b101011)])  # 0x2B
+    computer.cpu.registers["A"].set(0b101100)
+    init_memory(computer.memory, [(1, 0b101011)])
 
     i1_opcode = Opcode(0x29, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0b101000, False, False)

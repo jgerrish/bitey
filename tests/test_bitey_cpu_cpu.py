@@ -44,7 +44,7 @@ def test_cpu_cpu_decode_instruction():
     memory.write(0, 0x58)
     instruction = cpu.get_next_instruction(memory)
     opcode = Opcode(0x58, ImpliedAddressingMode())
-    expected_instruction = CLI("CLI", opcode, "Clear Interrupt Disable Bit")
+    expected_instruction = CLI("CLI", opcode, "Clear Interrupt Disable Bit", None)
     assert instruction == expected_instruction
 
 

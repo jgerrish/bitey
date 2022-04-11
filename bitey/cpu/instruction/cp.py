@@ -14,9 +14,9 @@ class CP(Instruction):
     The negative flag is set when memory is greater than the register
     """
 
-    def __init__(self, name, opcode, description, register):
+    def __init__(self, name, opcode, description, options, register):
         "Initialize with the register"
-        super().__init__(name, opcode, description)
+        super().__init__(name, opcode, description, options)
         self.register = register
         # result is the intermediate result of the subtraction
         self.result = None
@@ -48,8 +48,8 @@ class CMP(CP):
     Compare Memory and Accumulator
     """
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "A")
+    def __init__(self, name, opcode, description, options):
+        super().__init__(name, opcode, description, options, "A")
 
 
 class CPX(CP):
@@ -57,8 +57,8 @@ class CPX(CP):
     Compare Memory and Index X
     """
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "X")
+    def __init__(self, name, opcode, description, options):
+        super().__init__(name, opcode, description, options, "X")
 
 
 class CPY(CP):
@@ -66,5 +66,5 @@ class CPY(CP):
     Compare Memory and Index Y
     """
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "Y")
+    def __init__(self, name, opcode, description, options):
+        super().__init__(name, opcode, description, options, "Y")

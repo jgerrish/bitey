@@ -7,9 +7,9 @@ from bitey.cpu.instruction.instruction import (
 class LD(Instruction):
     "Generic load register with memory instruction"
 
-    def __init__(self, name, opcode, description, register):
+    def __init__(self, name, opcode, description, options={}, register=None):
         "Initialize with the register"
-        super().__init__(name, opcode, description)
+        super().__init__(name, opcode, description, options)
         self.register = register
 
     def instruction_execute(self, cpu, memory, value, address=None):
@@ -33,19 +33,19 @@ class LD(Instruction):
 class LDA(LD):
     "LDA: Load Accumulator with Memory"
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "A")
+    def __init__(self, name, opcode, description, options={}):
+        super().__init__(name, opcode, description, options, "A")
 
 
 class LDX(LD):
     "LDX: Load Index X with Memory"
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "X")
+    def __init__(self, name, opcode, description, options={}):
+        super().__init__(name, opcode, description, options, "X")
 
 
 class LDY(LD):
     "LDA: Load Index Y with Memory"
 
-    def __init__(self, name, opcode, description):
-        super().__init__(name, opcode, description, "Y")
+    def __init__(self, name, opcode, description, options={}):
+        super().__init__(name, opcode, description, options, "Y")

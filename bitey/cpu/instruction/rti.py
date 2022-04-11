@@ -25,5 +25,5 @@ class RTI(Instruction):
         self.set_flags(cpu.flags, cpu.registers)
 
     def set_flags(self, flags, registers):
-        "Clear the Interrupt Disable flag "
+        "Clear the Interrupt Disable flag"
         flags["I"].clear()

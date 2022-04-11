@@ -141,7 +141,7 @@ class CPU:
         #   TODO: Start the user's program
 
     def build_from_json(json_data):
-        logger = logging.getLogger("bitey")
+        logger = logging.getLogger("bitey.cpu.cpu.CPU")
         decoder = CPUJSONDecoder()
         logger.debug("Building CPU")
         cpu = decoder.decode(json_data)
@@ -298,6 +298,9 @@ class CPUJSONDecoder(JSONDecoder):
     """
     Decode a CPU in JSON format
     """
+
+    def __init__(self):
+        self.logger = logging.getLogger("bitey.cpu.cpu.CPUJSONDecoder")
 
     def decode(self, json_doc):
         parsed_json = json.loads(json_doc)

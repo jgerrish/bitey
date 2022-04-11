@@ -181,6 +181,86 @@ class AbsoluteIndirectAddressingMode(AddressingMode):
             return ""
 
 
+class AbsoluteIndirectPageBoundaryBugAddressingMode(AddressingMode):
+    bytes: ClassVar[int] = 3
+
+    """
+    Absolute Indirect addressing mode with the Page Boundary Bug
+    Absolute Indirect addressing is a three-byte instruction
+    The address is encoded in the next two bytes after the opcode
+    The first byte contains the opcode
+    The second byte contains the low-order byte of an address
+    that contains the effective address
+    The third byte contains the high-order byte of an address that contains
+    the effective address
+    The effective address points to the actual location
+
+    This version of the addressing mode exhibits the JMP page boundary bug
+    seen on some NMOS chips.
+
+    If the base address is on the edge of a page boundary, it wraps to the
+    beginning of that page instead of going to the beginning of the next page.
+
+    The following absolute indirect JMP command would jump to the NOP instruction
+
+    0x0000  0x34         ; most-significant byte of address
+    ...
+    0x00FE  0x6C  JMP
+    0x00FF  0x12         ; least-significant byte of address
+    ...
+    0x3412  0x15
+    0x3413  0x34
+    ...
+    0x3415  0xEA  NOP
+    """
+
+    adl: int = 0
+    "The low-order byte"
+
+    adh: int = 0
+    "The high-order byte"
+
+    bytes: ClassVar[int] = 3
+
+    def get_address(self, flags, registers, memory):
+        pc = registers["PC"].get()
+
+        self.adl = memory.read(pc)
+
+        if (pc & 0xFF) == 0xFF:
+            # Memory form 0x??FF should wrap to the same page
+            self.adh = memory.read(pc & 0xFF00)
+            registers["PC"].inc()
+        else:
+            # Other memory should work the same as the normal AbsoluteIndirectAddressingMode
+            # TODO: Verify that the PC ends up in the correct place
+            # (it should still go to the next instruction)
+            # "technically" it doesn't matter, since this bug is exclusive to JMP
+            # instructions
+            # But for more accurate simulation and cycle-dependent stuff, it may matter
+            registers["PC"].inc()
+            self.adh = memory.read(registers["PC"].get())
+
+        registers["PC"].inc()
+
+        address_to_address = memory.get_16bit_address(self.adl, self.adh)
+        self.adl = memory.read(address_to_address)
+        self.adh = memory.read(address_to_address + 1)
+        effective_address = memory.get_16bit_address(self.adl, self.adh)
+        return effective_address
+
+    def get_value(self, flags, registers, memory):
+        address = self.get_address(flags, registers, memory)
+        return (address, memory.read(address))
+
+    def get_inst_str(self, flags, registers, memory):
+        address = self.get_address(flags, registers, memory)
+        if address is not None:
+            return "(${0:04x})".format(address)
+        else:
+            return ""
+
+
 @dataclass
 class AbsoluteXAddressingMode(AddressingMode):
     bytes: ClassVar[int] = 3

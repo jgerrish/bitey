@@ -17,4 +17,4 @@ pytest-benchmark = ">=3.4.1"
 pytest-mock = ">=3.7.0"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

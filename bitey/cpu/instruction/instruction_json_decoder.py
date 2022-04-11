@@ -1,5 +1,6 @@
 import json
 from json import JSONDecoder
+import logging
 
 from bitey.cpu.instruction.opcode import OpcodeJSONDecoder, OpcodesJSONDecoder
 from bitey.cpu.instruction.instruction import Instructions, InstructionSet
@@ -17,6 +18,11 @@ class InstructionJSONDecoder(JSONDecoder):
     refactored to the other classes.
     """
 
+    def __init__(self):
+        self.logger = logging.getLogger(
+            "bitey.cpu.instruction.instruction_json_decoder.InstructionJSONDecoder"
+        )
+
     def decode(self, json_doc):
         parsed_json = json.loads(json_doc)
         return self.decode_parsed(parsed_json)
@@ -30,8 +36,12 @@ class InstructionJSONDecoder(JSONDecoder):
                 opcode = opcode_decoder.decode_parsed(parsed_json["opcode"])
             else:
                 opcode = None
+            if "options" in parsed_json:
+                options = parsed_json["options"]
+            else:
+                options = None
 
-            return InstructionFactory.build(name, opcode, description)
+            return InstructionFactory.build(name, opcode, description, options)
 
         else:
             # Return None if the instruction JSON object is missing fields or invalid
@@ -44,6 +54,11 @@ class InstructionClassJSONDecoder(JSONDecoder):
     The instance generation logic is collected in here, it should be
     refactored to the other classes.
     """
+
+    def __init__(self):
+        self.logger = logging.getLogger(
+            "bitey.cpu.instruction.instruction_json_decoder.InstructionClassJSONDecoder"
+        )
 
     def decode(self, json_doc):
         parsed_json = json.loads(json_doc)
@@ -59,7 +74,12 @@ class InstructionClassJSONDecoder(JSONDecoder):
             else:
                 opcodes = None
 
-            icf = InstructionClassFactory.build(name, opcodes, description)
+            if "options" in parsed_json:
+                options = parsed_json["options"]
+            else:
+                options = None
+
+            icf = InstructionClassFactory.build(name, opcodes, description, options)
             return icf
 
         else:
