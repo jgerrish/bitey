@@ -33,12 +33,13 @@ from bitey.cpu.instruction.rol import ROL
 from bitey.cpu.instruction.ror import ROR
 from bitey.cpu.instruction.ror import RORNoCarryBug
 from bitey.cpu.instruction.rti import RTI
+from bitey.cpu.instruction.rts import RTS
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
 from bitey.cpu.instruction.st import STX
 from bitey.cpu.instruction.st import STY
+from bitey.cpu.instruction.tsx import TSX
 from bitey.cpu.instruction.txs import TXS
-from bitey.cpu.instruction.rts import RTS
 
 
 @dataclass
@@ -110,6 +111,7 @@ class InstructionFactory:
         174: LDX,
         180: LDY,
         182: LDX,
+        186: TSX,
         188: LDY,
         190: LDX,
         192: CPY,
@@ -234,6 +236,7 @@ class InstructionClassFactory:
         174: LDX,
         180: LDY,
         182: LDX,
+        186: TSX,
         188: LDY,
         190: LDX,
         192: CPY,
