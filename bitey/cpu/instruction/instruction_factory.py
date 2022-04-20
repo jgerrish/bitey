@@ -39,6 +39,10 @@ from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
 from bitey.cpu.instruction.st import STX
 from bitey.cpu.instruction.st import STY
+from bitey.cpu.instruction.ta import TAX
+from bitey.cpu.instruction.ta import TAY
+from bitey.cpu.instruction.ta import TXA
+from bitey.cpu.instruction.ta import TYA
 from bitey.cpu.instruction.tsx import TSX
 from bitey.cpu.instruction.txs import TXS
 
@@ -98,6 +102,7 @@ class InstructionFactory:
         133: STA,
         134: STX,
         136: DEY,
+        138: TXA,
         140: STY,
         141: STA,
         142: STX,
@@ -105,6 +110,7 @@ class InstructionFactory:
         148: STY,
         149: STA,
         150: STX,
+        152: TYA,
         153: STA,
         154: TXS,
         157: STA,
@@ -112,6 +118,8 @@ class InstructionFactory:
         162: LDX,
         164: LDY,
         166: LDX,
+        168: TAY,
+        170: TAX,
         172: LDY,
         173: LDA,
         174: LDX,
@@ -228,6 +236,7 @@ class InstructionClassFactory:
         133: STA,
         134: STX,
         136: DEY,
+        138: TXA,
         140: STY,
         141: STA,
         142: STX,
@@ -235,6 +244,7 @@ class InstructionClassFactory:
         148: STY,
         149: STA,
         150: STX,
+        152: TYA,
         153: STA,
         154: TXS,
         157: STA,
@@ -242,6 +252,8 @@ class InstructionClassFactory:
         162: LDX,
         164: LDY,
         166: LDX,
+        168: TAY,
+        170: TAX,
         172: LDY,
         173: LDA,
         174: LDX,
