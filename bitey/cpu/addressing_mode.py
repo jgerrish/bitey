@@ -421,8 +421,8 @@ class ImpliedAddressingMode(AddressingMode):
 class IndexedIndirectAddressingMode(AddressingMode):
     """
     Indexed Indirect addressing mode
-    Get an address in zero page memory from the next byte and the Z Index.
-    The Z index is added to the base address before fetching the effective
+    Get an address in zero page memory from the next byte and the X Index.
+    The X index is added to the base address before fetching the effective
     address.  This is different than Indirect Indexed, where the Index
     is added after fetching the address from Zero Page.
     Also called Indirect X
@@ -435,14 +435,17 @@ class IndexedIndirectAddressingMode(AddressingMode):
         zero_page_address = registers["PC"].get()
         registers["PC"].inc()
 
+        # X register size is 8-bits
         zero_page_address += registers["X"].get()
-        # verify wrapping is the correct behavior
-        zero_page_address = zero_page_address % 0xFF
 
         adl = zero_page_address
         # TODO: Test for case we go beyond the page boundary
         # Wraparound is assumed
-        adh = zero_page_address + 1
+        # This behavior may still be incorrect
+        # TODO: Use one of the native functional test suites like
+        # https://github.com/Klaus2m5/6502_65C02_functional_tests.git
+        # after implementation
+        adh = (zero_page_address + 1) % 0x100
         address = memory.get_16bit_value(adl, adh)
 
         return address

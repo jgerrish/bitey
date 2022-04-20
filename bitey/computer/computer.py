@@ -59,6 +59,7 @@ class Computer:
 
     def reset(self):
         "Reset the computer"
+        self.memory.reset()
         self.cpu.reset(self.memory)
 
     def parse(self):

@@ -29,11 +29,16 @@ class Memory:
 
     def __init__(self, size=0):
         "Initialize the memory to size bytes"
+        self.size = size
         self.memory = bytearray(size)
 
     def __len__(self):
         "Get the size of the memory"
         return len(self.memory)
+
+    def reset(self):
+        "Reset the memory to zero"
+        self.memory = bytearray(self.size)
 
     def read(self, address):
         """

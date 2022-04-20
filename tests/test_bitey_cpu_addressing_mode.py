@@ -492,6 +492,29 @@ def test_cpu_addressing_mode_indexed_indirect(setup):
     assert value == (0x0B70, 0x73)
 
 
+def test_cpu_addressing_mode_indexed_indirect_incorrect_mask(setup):
+    "Test for bug with incorrect masking case"
+    computer = setup
+    computer.reset()
+
+    # Zero Page ADL
+    computer.memory.write(0xFF, 0x70)
+    # Zero Page ADH
+    computer.memory.write(0x00, 0x0B)
+    # Final address
+    computer.memory.write(0x0B70, 0x73)
+
+    computer.cpu.registers["PC"].set(0xFB)
+    computer.cpu.registers["X"].set(0x04)
+
+    am = IndexedIndirectAddressingMode()
+    assert type(am) == IndexedIndirectAddressingMode
+
+    value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == (0x0B70, 0x73)
+
+
 def test_cpu_addressing_mode_absolute_x(setup):
     computer = setup
     computer.reset()
