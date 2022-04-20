@@ -8,6 +8,7 @@ from bitey.cpu.instruction.instruction import (
     UnimplementedInstruction,
 )
 from bitey.cpu.instruction.an import AND
+from bitey.cpu.instruction.asl import ASL
 from bitey.cpu.instruction.beq import BEQ
 from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.brk import BRK
@@ -48,12 +49,17 @@ class InstructionFactory:
         0: BRK,
         1: ORA,
         5: ORA,
+        6: ASL,
         9: ORA,
+        10: ASL,
         13: ORA,
+        14: ASL,
         17: ORA,
         21: ORA,
+        22: ASL,
         25: ORA,
         29: ORA,
+        30: ASL,
         32: JSR,
         33: AND,
         37: AND,
@@ -173,12 +179,17 @@ class InstructionClassFactory:
         0: BRK,
         1: ORA,
         5: ORA,
+        6: ASL,
         9: ORA,
+        10: ASL,
         13: ORA,
+        14: ASL,
         17: ORA,
         21: ORA,
+        22: ASL,
         25: ORA,
         29: ORA,
+        30: ASL,
         32: JSR,
         33: AND,
         37: AND,
