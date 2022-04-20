@@ -1,6 +1,7 @@
 from bitey.cpu.addressing_mode import AccumulatorAddressingMode
 from bitey.cpu.instruction.instruction import Instruction, IncompleteInstruction
 
+
 class ASL(Instruction):
     """
     Shift Left One Bit (Memory or Accumulator)

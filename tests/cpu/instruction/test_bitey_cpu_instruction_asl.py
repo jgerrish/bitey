@@ -17,12 +17,12 @@ def setup():
 
 
 def execute_instruction(
-        computer,
-        opcode,
-        expected_a_register,
-        expected_c_flag,
-        expected_z_flag,
-        expected_n_flag
+    computer,
+    opcode,
+    expected_a_register,
+    expected_c_flag,
+    expected_z_flag,
+    expected_n_flag,
 ):
     """
     Execute the instruction based on an opcode
@@ -120,6 +120,7 @@ def test_cpu_instruction_asl_zeropage_addressing_mode_no_carry(setup):
     execute_instruction(computer, i1_opcode, a, False, False, False)
     assert computer.memory.read(0xA6) == 0b01010110
 
+
 def test_cpu_instruction_asl_zeropage_addressing_mode_carry_flag(setup):
     computer = setup
     computer.reset()
@@ -133,6 +134,7 @@ def test_cpu_instruction_asl_zeropage_addressing_mode_carry_flag(setup):
     execute_instruction(computer, i1_opcode, a, True, False, False)
 
     assert computer.memory.read(0xA6) == 0b01010110
+
 
 def test_cpu_instruction_asl_zeropage_addressing_mode_zero_flag(setup):
     computer = setup
