@@ -492,8 +492,8 @@ def test_cpu_addressing_mode_indexed_indirect(setup):
     assert value == (0x0B70, 0x73)
 
 
-def test_cpu_addressing_mode_indexed_indirect_incorrect_mask(setup):
-    "Test for bug with incorrect masking case"
+def test_cpu_addressing_mode_indexed_indirect_incorrect_wrap(setup):
+    "Test for bug with incorrect wrap case"
     computer = setup
     computer.reset()
 
