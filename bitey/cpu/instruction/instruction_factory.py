@@ -21,6 +21,7 @@ from bitey.cpu.instruction.bvs import BVS
 from bitey.cpu.instruction.clc import CLC
 from bitey.cpu.instruction.cld import CLD
 from bitey.cpu.instruction.cli import CLI
+from bitey.cpu.instruction.clv import CLV
 from bitey.cpu.instruction.cp import CMP
 from bitey.cpu.instruction.cp import CPX
 from bitey.cpu.instruction.cp import CPY
@@ -148,6 +149,7 @@ class InstructionFactory:
         176: BCS,
         180: LDY,
         182: LDX,
+        184: CLV,
         186: TSX,
         188: LDY,
         190: LDX,
@@ -294,6 +296,7 @@ class InstructionClassFactory:
         176: BCS,
         180: LDY,
         182: LDX,
+        184: CLV,
         186: TSX,
         188: LDY,
         190: LDX,
