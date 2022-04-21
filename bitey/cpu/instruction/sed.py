@@ -3,8 +3,8 @@ from bitey.cpu.instruction.instruction import Instruction
 
 
 @dataclass
-class SEI(Instruction):
-    "SEI: Set Interrupt Disable"
+class SED(Instruction):
+    "SED: Set Decimal Mode"
 
     def execute(self, cpu, memory):
         "Execute the instruction"
@@ -12,5 +12,5 @@ class SEI(Instruction):
         return
 
     def set_flags(self, flags, registers):
-        flags["I"].set()
+        flags["D"].set()
         return

@@ -49,6 +49,8 @@ from bitey.cpu.instruction.ror import ROR
 from bitey.cpu.instruction.ror import RORNoCarryBug
 from bitey.cpu.instruction.rti import RTI
 from bitey.cpu.instruction.rts import RTS
+from bitey.cpu.instruction.sec import SEC
+from bitey.cpu.instruction.sed import SED
 from bitey.cpu.instruction.sei import SEI
 from bitey.cpu.instruction.st import STA
 from bitey.cpu.instruction.st import STX
@@ -94,6 +96,7 @@ class InstructionFactory:
         49: AND,
         53: AND,
         54: ROL,
+        56: SEC,
         57: AND,
         61: AND,
         62: ROL,
@@ -176,6 +179,7 @@ class InstructionFactory:
         238: INC,
         240: BEQ,
         246: INC,
+        248: SED,
         254: INC,
     }
 
@@ -246,6 +250,7 @@ class InstructionClassFactory:
         49: AND,
         53: AND,
         54: ROL,
+        56: SEC,
         57: AND,
         61: AND,
         62: ROL,
@@ -328,6 +333,7 @@ class InstructionClassFactory:
         238: INC,
         240: BEQ,
         246: INC,
+        248: SED,
         254: INC,
     }
     # A custom instruction class map to hold buggy or quirky instructions
