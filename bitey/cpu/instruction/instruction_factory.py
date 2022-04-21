@@ -36,6 +36,8 @@ from bitey.cpu.instruction.ld import LDX
 from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.ora import ORA
+from bitey.cpu.instruction.pha import PHA
+from bitey.cpu.instruction.pla import PLA
 from bitey.cpu.instruction.rol import ROL
 from bitey.cpu.instruction.ror import ROR
 from bitey.cpu.instruction.ror import RORNoCarryBug
@@ -89,6 +91,7 @@ class InstructionFactory:
         64: RTI,
         65: EOR,
         69: EOR,
+        72: PHA,
         73: EOR,
         76: JMP,
         77: EOR,
@@ -100,6 +103,7 @@ class InstructionFactory:
         93: EOR,
         96: RTS,
         102: ROR,
+        104: PLA,
         106: ROR,
         108: JMP,
         110: ROR,
@@ -229,6 +233,7 @@ class InstructionClassFactory:
         64: RTI,
         65: EOR,
         69: EOR,
+        72: PHA,
         73: EOR,
         76: JMP,
         77: EOR,
@@ -240,6 +245,7 @@ class InstructionClassFactory:
         93: EOR,
         96: RTS,
         102: ROR,
+        104: PLA,
         106: ROR,
         108: JMP,
         110: ROR,
