@@ -19,6 +19,7 @@ from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.bvc import BVC
 from bitey.cpu.instruction.bvs import BVS
 from bitey.cpu.instruction.clc import CLC
+from bitey.cpu.instruction.cld import CLD
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.cp import CMP
 from bitey.cpu.instruction.cp import CPX
@@ -158,6 +159,7 @@ class InstructionFactory:
         206: DEC,
         208: BNE,
         214: DEC,
+        216: CLD,
         222: DEC,
         224: CPX,
         230: INC,
@@ -303,6 +305,7 @@ class InstructionClassFactory:
         206: DEC,
         208: BNE,
         214: DEC,
+        216: CLD,
         222: DEC,
         224: CPX,
         230: INC,
