@@ -731,7 +731,7 @@
 	},
 	{
 	    "name": "LSR",
-	    "description": "Right Right One Bit (Memory or Accumulator)",
+	    "description": "Right Shift One Bit (Memory or Accumulator)",
 	    "opcodes": [
 		{
 		    "opcode": 74,

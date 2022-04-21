@@ -54,7 +54,7 @@ def execute_instruction(
 
 
 def execute_explicit_instruction(
-    computer, opcode, instruction, expected_registers, expected_flags
+    computer, opcode, instruction, expected_registers, expected_flags, expected_memory
 ):
     "Execute an explicit instruction based on an opcode"
     flags = computer.cpu.flags
@@ -65,5 +65,7 @@ def execute_explicit_instruction(
             assert computer.cpu.registers[register].get() == value
         for flag, value in expected_flags:
             assert flags[flag].status is value
+        for address, value in expected_memory:
+            assert computer.memory.read(address) == value
     except IncompleteInstruction:
         assert False

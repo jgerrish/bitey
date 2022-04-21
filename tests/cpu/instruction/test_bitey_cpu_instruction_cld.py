@@ -27,5 +27,5 @@ def test_cpu_instruction_cld(setup):
     i1_opcode = Opcode(0xD8, ImpliedAddressingMode())
     i1 = CLD("CLD", i1_opcode, "Clear Decimal Mode")
     tests.computer.computer.execute_explicit_instruction(
-        computer, i1_opcode, i1, [], [("D", False)]
+        computer, i1_opcode, i1, [], [("D", False)], []
     )

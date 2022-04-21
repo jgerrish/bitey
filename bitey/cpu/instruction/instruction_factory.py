@@ -37,6 +37,7 @@ from bitey.cpu.instruction.jsr import JSR
 from bitey.cpu.instruction.ld import LDA
 from bitey.cpu.instruction.ld import LDX
 from bitey.cpu.instruction.ld import LDY
+from bitey.cpu.instruction.lsr import LSR
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.ora import ORA
 from bitey.cpu.instruction.pha import PHA
@@ -99,16 +100,21 @@ class InstructionFactory:
         64: RTI,
         65: EOR,
         69: EOR,
+        70: LSR,
         72: PHA,
         73: EOR,
+        74: LSR,
         76: JMP,
         77: EOR,
+        78: LSR,
         80: BVC,
         81: EOR,
         85: EOR,
+        86: LSR,
         88: CLI,
         89: EOR,
         93: EOR,
+        94: LSR,
         96: RTS,
         102: ROR,
         104: PLA,
@@ -246,16 +252,21 @@ class InstructionClassFactory:
         64: RTI,
         65: EOR,
         69: EOR,
+        70: LSR,
         72: PHA,
         73: EOR,
+        74: LSR,
         76: JMP,
         77: EOR,
+        78: LSR,
         80: BVC,
         81: EOR,
         85: EOR,
+        86: LSR,
         88: CLI,
         89: EOR,
         93: EOR,
+        94: LSR,
         96: RTS,
         102: ROR,
         104: PLA,

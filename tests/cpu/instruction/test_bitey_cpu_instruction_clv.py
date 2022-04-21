@@ -27,5 +27,5 @@ def test_cpu_instruction_clv(setup):
     i1_opcode = Opcode(0xB8, ImpliedAddressingMode())
     i1 = CLV("CLV", i1_opcode, "Clear Overflow Flag")
     tests.computer.computer.execute_explicit_instruction(
-        computer, i1_opcode, i1, [], [("V", False)]
+        computer, i1_opcode, i1, [], [("V", False)], []
     )

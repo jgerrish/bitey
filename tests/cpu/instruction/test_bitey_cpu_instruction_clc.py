@@ -27,5 +27,5 @@ def test_cpu_instruction_clc(setup):
     i1_opcode = Opcode(0x18, ImpliedAddressingMode())
     i1 = CLC("CLC", i1_opcode, "Clear Carry Flag")
     tests.computer.computer.execute_explicit_instruction(
-        computer, i1_opcode, i1, [], [("C", False)]
+        computer, i1_opcode, i1, [], [("C", False)], []
     )

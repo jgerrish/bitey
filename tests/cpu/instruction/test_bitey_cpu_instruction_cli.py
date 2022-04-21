@@ -27,5 +27,5 @@ def test_cpu_instruction_cli(setup):
     i1_opcode = Opcode(0x58, ImpliedAddressingMode())
     i1 = CLI("CLI", i1_opcode, "Clear Interrupt Disable Bit")
     tests.computer.computer.execute_explicit_instruction(
-        computer, i1_opcode, i1, [], [("I", False)]
+        computer, i1_opcode, i1, [], [("I", False)], []
     )
