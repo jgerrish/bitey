@@ -9,9 +9,15 @@ from bitey.cpu.instruction.instruction import (
 )
 from bitey.cpu.instruction.an import AND
 from bitey.cpu.instruction.asl import ASL
+from bitey.cpu.instruction.bcc import BCC
+from bitey.cpu.instruction.bcs import BCS
 from bitey.cpu.instruction.beq import BEQ
+from bitey.cpu.instruction.bmi import BMI
 from bitey.cpu.instruction.bne import BNE
+from bitey.cpu.instruction.bpl import BPL
 from bitey.cpu.instruction.brk import BRK
+from bitey.cpu.instruction.bvc import BVC
+from bitey.cpu.instruction.bvs import BVS
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.cp import CMP
 from bitey.cpu.instruction.cp import CPX
@@ -58,6 +64,7 @@ class InstructionFactory:
         10: ASL,
         13: ORA,
         14: ASL,
+        16: BPL,
         17: ORA,
         21: ORA,
         22: ASL,
@@ -72,6 +79,7 @@ class InstructionFactory:
         42: ROL,
         45: AND,
         46: ROL,
+        48: BMI,
         49: AND,
         53: AND,
         54: ROL,
@@ -82,11 +90,12 @@ class InstructionFactory:
         65: EOR,
         69: EOR,
         73: EOR,
-        77: EOR,
-        88: CLI,
         76: JMP,
+        77: EOR,
+        80: BVC,
         81: EOR,
         85: EOR,
+        88: CLI,
         89: EOR,
         93: EOR,
         96: RTS,
@@ -94,6 +103,7 @@ class InstructionFactory:
         106: ROR,
         108: JMP,
         110: ROR,
+        112: BVS,
         118: ROR,
         120: SEI,
         126: ROR,
@@ -106,6 +116,7 @@ class InstructionFactory:
         140: STY,
         141: STA,
         142: STX,
+        144: BCC,
         145: STA,
         148: STY,
         149: STA,
@@ -123,6 +134,7 @@ class InstructionFactory:
         172: LDY,
         173: LDA,
         174: LDX,
+        176: BCS,
         180: LDY,
         182: LDX,
         186: TSX,
@@ -192,6 +204,7 @@ class InstructionClassFactory:
         10: ASL,
         13: ORA,
         14: ASL,
+        16: BPL,
         17: ORA,
         21: ORA,
         22: ASL,
@@ -206,6 +219,7 @@ class InstructionClassFactory:
         42: ROL,
         45: AND,
         46: ROL,
+        48: BMI,
         49: AND,
         53: AND,
         54: ROL,
@@ -216,18 +230,20 @@ class InstructionClassFactory:
         65: EOR,
         69: EOR,
         73: EOR,
+        76: JMP,
         77: EOR,
+        80: BVC,
         81: EOR,
         85: EOR,
         88: CLI,
         89: EOR,
-        76: JMP,
         93: EOR,
         96: RTS,
         102: ROR,
         106: ROR,
         108: JMP,
         110: ROR,
+        112: BVS,
         118: ROR,
         120: SEI,
         126: ROR,
@@ -240,6 +256,7 @@ class InstructionClassFactory:
         140: STY,
         141: STA,
         142: STX,
+        144: BCC,
         145: STA,
         148: STY,
         149: STA,
@@ -257,6 +274,7 @@ class InstructionClassFactory:
         172: LDY,
         173: LDA,
         174: LDX,
+        176: BCS,
         180: LDY,
         182: LDX,
         186: TSX,
