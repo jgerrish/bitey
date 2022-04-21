@@ -18,6 +18,7 @@ from bitey.cpu.instruction.bpl import BPL
 from bitey.cpu.instruction.brk import BRK
 from bitey.cpu.instruction.bvc import BVC
 from bitey.cpu.instruction.bvs import BVS
+from bitey.cpu.instruction.clc import CLC
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.cp import CMP
 from bitey.cpu.instruction.cp import CPX
@@ -73,6 +74,7 @@ class InstructionFactory:
         17: ORA,
         21: ORA,
         22: ASL,
+        24: CLC,
         25: ORA,
         29: ORA,
         30: ASL,
@@ -217,6 +219,7 @@ class InstructionClassFactory:
         17: ORA,
         21: ORA,
         22: ASL,
+        24: CLC,
         25: ORA,
         29: ORA,
         30: ASL,

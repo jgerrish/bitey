@@ -51,3 +51,19 @@ def execute_instruction(
         assert flags["C"].status is expected_c_flag
     except IncompleteInstruction:
         assert False
+
+
+def execute_explicit_instruction(
+    computer, opcode, instruction, expected_registers, expected_flags
+):
+    "Execute an explicit instruction based on an opcode"
+    flags = computer.cpu.flags
+
+    try:
+        instruction.execute(computer.cpu, computer.memory)
+        for register, value in expected_registers:
+            assert computer.cpu.registers[register].get() == value
+        for flag, value in expected_flags:
+            assert flags[flag].status is value
+    except IncompleteInstruction:
+        assert False
