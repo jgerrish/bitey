@@ -37,7 +37,9 @@ from bitey.cpu.instruction.ld import LDY
 from bitey.cpu.instruction.nop import NOP
 from bitey.cpu.instruction.ora import ORA
 from bitey.cpu.instruction.pha import PHA
+from bitey.cpu.instruction.php import PHP
 from bitey.cpu.instruction.pla import PLA
+from bitey.cpu.instruction.plp import PLP
 from bitey.cpu.instruction.rol import ROL
 from bitey.cpu.instruction.ror import ROR
 from bitey.cpu.instruction.ror import RORNoCarryBug
@@ -62,6 +64,7 @@ class InstructionFactory:
         1: ORA,
         5: ORA,
         6: ASL,
+        8: PHP,
         9: ORA,
         10: ASL,
         13: ORA,
@@ -77,6 +80,7 @@ class InstructionFactory:
         33: AND,
         37: AND,
         38: ROL,
+        40: PLP,
         41: AND,
         42: ROL,
         45: AND,
@@ -204,6 +208,7 @@ class InstructionClassFactory:
         1: ORA,
         5: ORA,
         6: ASL,
+        8: PHP,
         9: ORA,
         10: ASL,
         13: ORA,
@@ -219,6 +224,7 @@ class InstructionClassFactory:
         33: AND,
         37: AND,
         38: ROL,
+        40: PLP,
         41: AND,
         42: ROL,
         45: AND,
