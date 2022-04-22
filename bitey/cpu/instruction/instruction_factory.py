@@ -12,6 +12,7 @@ from bitey.cpu.instruction.asl import ASL
 from bitey.cpu.instruction.bcc import BCC
 from bitey.cpu.instruction.bcs import BCS
 from bitey.cpu.instruction.beq import BEQ
+from bitey.cpu.instruction.bit import BIT
 from bitey.cpu.instruction.bmi import BMI
 from bitey.cpu.instruction.bne import BNE
 from bitey.cpu.instruction.bpl import BPL
@@ -85,11 +86,13 @@ class InstructionFactory:
         30: ASL,
         32: JSR,
         33: AND,
+        36: BIT,
         37: AND,
         38: ROL,
         40: PLP,
         41: AND,
         42: ROL,
+        44: BIT,
         45: AND,
         46: ROL,
         48: BMI,
@@ -239,11 +242,13 @@ class InstructionClassFactory:
         30: ASL,
         32: JSR,
         33: AND,
+        36: BIT,
         37: AND,
         38: ROL,
         40: PLP,
         41: AND,
         42: ROL,
+        44: BIT,
         45: AND,
         46: ROL,
         48: BMI,
