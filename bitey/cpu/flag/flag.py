@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict
 from bitey.listener import Listener
 from bitey.watcher import Watcher
 
@@ -28,13 +29,17 @@ class Flag(Watcher):
     status: bool
     "Store the state of the register in a boolean flag"
 
-    # flags: Flags
-    # "Reference to the Flags object that owns this flag"
+    options: Dict = field(default_factory=lambda: {})
+    "Optional dictionary of enabled bugs or quirks for this instruction"
 
     def __post_init__(self):
         self.flags = None
         # self.pflag_listener = Listener()
         # self.pflag_listener.register_callback(self.update_flag_data)
+
+    def __str__(self):
+        "Return a string representation of the flag"
+        return "{}: {}".format(self.short_name, 1 if self.status else 0)
 
     def set(self, update=True):
         "Set this flag.  Set it to true."
@@ -76,6 +81,10 @@ class Flags(Watcher):
 
         self.pflag_listener = Listener()
         self.pflag_listener.register_callback(self.update_flag_data)
+
+    def __str__(self):
+        "Return a string representation of the flags"
+        return ", ".join([str(x) for x in self.flags])
 
     def __getitem__(self, i):
         return self.flag_dict[i]

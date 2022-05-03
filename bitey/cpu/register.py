@@ -42,6 +42,10 @@ class Register(Watcher):
         self.flags_listener = Listener()
         self.flags_listener.register_callback(self.update_register_data)
 
+    def __str__(self):
+        "Return a string representation of the register"
+        return "{}: 0x{:>02X}".format(self.short_name, self.value)
+
     def name(self):
         "The name of the register"
         return self.name
@@ -131,6 +135,10 @@ class Registers:
         self.regs = {}
         for r in self.registers:
             self.regs[r.short_name] = r
+
+    def __str__(self):
+        "Return a string representation of the registers"
+        return ", ".join([str(x) for x in self.registers])
 
     def __getitem__(self, i):
         return self.regs[i]

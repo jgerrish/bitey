@@ -36,6 +36,11 @@ class FlagJSONDecoder(JSONDecoder):
 
             short_name = json_doc["short_name"]
 
+            if "options" in json_doc:
+                options = json_doc["options"]
+            else:
+                options = None
+
             # Create a specific class if it exists
             if short_name in FlagJSONDecoder.flag_map:
                 flag_class = FlagJSONDecoder.flag_map[short_name]
@@ -44,6 +49,7 @@ class FlagJSONDecoder(JSONDecoder):
                     json_doc["name"],
                     json_doc["bit_field_pos"],
                     status,
+                    options,
                 )
 
             return Flag(
@@ -51,6 +57,7 @@ class FlagJSONDecoder(JSONDecoder):
                 json_doc["name"],
                 json_doc["bit_field_pos"],
                 status,
+                options,
             )
         else:
             # Return None if the flag JSON object is missing fields or invalid

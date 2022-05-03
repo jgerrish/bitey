@@ -36,6 +36,25 @@ def test_cpu_flags_post_init():
     assert flags["Z"].flags == flags
 
 
+def test_cpu_flag_str():
+    f1 = Flag("C", "Carry", 0, False)
+    f2 = Flag("Z", "Zero Result", 1, False)
+    f3 = Flag("N", "Negative Result", 1, True)
+
+    assert str(f1) == "C: 0"
+    assert str(f2) == "Z: 0"
+    assert str(f3) == "N: 1"
+
+
+def test_cpu_flags_str():
+    f1 = Flag("C", "Carry", 0, False)
+    f2 = Flag("Z", "Zero Result", 1, False)
+    f3 = Flag("N", "Negative Result", 1, True)
+    flags = Flags([f1, f2, f3], 0)
+
+    assert str(flags) == "C: 0, Z: 0, N: 1"
+
+
 def test_cpu_flags_set():
     s = """
     [

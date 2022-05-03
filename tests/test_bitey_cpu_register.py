@@ -44,6 +44,25 @@ def test_cpu_register_pc_inc():
     assert r.value == 1
 
 
+def test_cpu_register_str():
+    pc = Register("PC", "Program Counter", 16, 0x2EC4)
+    a = Register("A", "Accumulator", 8, 0x1D)
+    x = Register("X", "Index register X", 8, 0x0A)
+
+    assert str(pc) == "PC: 0x2EC4"
+    assert str(a) == "A: 0x1D"
+    assert str(x) == "X: 0x0A"
+
+
+def test_cpu_flags_str():
+    pc = Register("PC", "Program Counter", 16, 0x2EC4)
+    a = Register("A", "Accumulator", 8, 0x1D)
+    x = Register("X", "Index register X", 8, 0x0A)
+    registers = Registers([pc, a, x])
+
+    assert str(registers) == "PC: 0x2EC4, A: 0x1D, X: 0x0A"
+
+
 def test_cpu_register_pc_no_exception_on_8bit_inc():
     setup_logger()
     r = Register("PC", "Program Counter", 16, 0xFF)
