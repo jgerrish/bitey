@@ -192,7 +192,7 @@ class CPU:
         "Set flags depending on the instruction"
         instruction.set_flags(flags, registers)
 
-    def stack_init(self):
+    def stack_init(self, stack_start=0x01FF):
         """
         Initialize the stack
         The stack starts at 0x01FF and moves downwards
@@ -229,8 +229,8 @@ class CPU:
         #     Opcodes([Opcode(154, ImpliedAddressingMode())]),
         #     "Transfer index X to stack pointer",
         # )
-
-        self.registers["S"].value = 0x01FF
+        self.registers["S"].value = stack_start
+        CPU.stack_start = stack_start
 
     def stack_push(self, memory, value):
         "Push a value on the stack"
