@@ -1,5 +1,6 @@
 from bitey.cpu.instruction.instruction import Instruction, IncompleteInstruction
-from bitey.cpu.arch import EightBitArch
+
+# from bitey.cpu.arch import EightBitArch
 
 
 class CP(Instruction):
@@ -25,11 +26,27 @@ class CP(Instruction):
         """
         Subtract the contents of memory from the contents of the index
         Store the intermediate result, then test flags.
+
+        From the MCS6500 Family Programming Manual,
+        the results of a compare are:
+
+                                 N           C        Z          V
+        Accumulator < Memory    Either     Reset    Reset    Unchanged
+        Accumulator = Memory    Reset       Set      Set     Unchanged
+        Accumulator > Memory    Either      Set     Reset    Unchanged
         """
         if value is not None:
-            result = cpu.registers[self.register].get() - value
-            self.result = EightBitArch.signed_int_to_twos_complement(result)
-            # logger.debug("register: {}, memory: {}, result: {}")
+            self.value = value
+            self.register_value = cpu.registers[self.register].get()
+
+            # Using simple subtraction
+            self.result = self.register_value - self.value
+
+            # Using proper two's complement addition for subtraction
+            # self.complemented_value = 0xFF - self.value
+            # self.result = 0xFF - (self.register_value + self.complemented_value)
+            # # self.result = EightBitArch.signed_int_to_twos_complement(result)
+
             self.set_flags(cpu.flags, cpu.registers)
         else:
             raise IncompleteInstruction
@@ -38,7 +55,10 @@ class CP(Instruction):
         """
         Sets flags based on the result of the subtract operation
         """
-        flags["C"].test_result(self.result)
+        if self.register_value < self.value:
+            flags["C"].clear()
+        else:
+            flags["C"].set()
         flags["N"].test_result(self.result)
         flags["Z"].test_result(self.result)
 
