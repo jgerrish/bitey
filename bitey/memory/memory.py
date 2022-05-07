@@ -92,3 +92,47 @@ class Memory:
         adh = self.read(adh_address)
 
         return self.get_16bit_address(adl, adh)
+
+    def memory_range_dump(self, memory_range=None):
+        """
+        Dump a range of memory
+
+        Defaults to the zero page.
+        Rounds down the range to a 16-byte boundary.
+
+        Example:
+
+        from bitey.memory.memory import Memory
+        b = bytes(range(256)) * 10
+        m = Memory(b)
+        print(m.memory_range_dump(range(32, 64)))
+        """
+        memory_dump = []
+        memory_range_len = None
+        num_lines = 0
+        if memory_range is None:
+            memory_range = range(0x00, 0x100)
+
+        if (memory_range.start < 0) or (memory_range.stop > len(self.memory)):
+            raise MemoryOutOfRange
+
+        memory_range_len = len(memory_range)
+        num_lines = memory_range_len // 16
+        for line_index in range(num_lines):
+            line = []
+            line.append("0x{:04x} ".format(line_index * 0x10 + memory_range.start))
+            for x in range(
+                line_index * 0x10 + memory_range.start,
+                line_index * 0x10 + 0x08 + memory_range.start,
+            ):
+                line.append("{:02x}".format(self.memory[x]))
+            line.append("")
+            for x in range(
+                line_index * 0x10 + 0x08 + memory_range.start,
+                line_index * 0x10 + 0x10 + memory_range.start,
+            ):
+                line.append("{:02x}".format(self.memory[x]))
+            memory_dump.append("{}".format(" ".join(line)))
+        memory_dump = "\n".join(memory_dump)
+
+        return memory_dump
