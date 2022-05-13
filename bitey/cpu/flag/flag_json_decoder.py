@@ -5,23 +5,29 @@ from typing import ClassVar
 
 from bitey.cpu.flag.flag import Flag, Flags
 from bitey.cpu.flag.carry_flag import CarryFlag
+from bitey.cpu.flag.decimal_flag import DecimalFlag
 from bitey.cpu.flag.negative_flag import NegativeFlag
 from bitey.cpu.flag.zero_flag import ZeroFlag
 
 
 @dataclass
 class FlagJSONDecoder(JSONDecoder):
-    flag_map: ClassVar[dict[str, Flag]] = {
-        "C": CarryFlag,
-        "N": NegativeFlag,
-        "Z": ZeroFlag,
-    }
-
     """
     Decode a flag definition in JSON format
     """
 
+    flag_map: ClassVar[dict[str, Flag]] = {
+        "C": CarryFlag,
+        "N": NegativeFlag,
+        "Z": ZeroFlag,
+        "D": DecimalFlag,
+    }
+
     def decode(self, json_doc):
+        """
+        Decode a flag definition in JSON format
+        json_doc should be a parsed JSON structure
+        """
         if (
             ("short_name" in json_doc)
             and ("name" in json_doc)

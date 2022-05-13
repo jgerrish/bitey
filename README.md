@@ -82,6 +82,37 @@ The opcode field comes before the description field because name and
 opcode are the two primary elements used when manipulating
 instructions.
 
+A single Instruction is represented by the Instruction class.  A set
+of instructions is represented by the Instructions class.  An
+Instruction matches a single opcode, and can be thought of as an
+"instantiation" of that opcode, not to be confused with the OOP
+meaning of the word.
+
+Instructions belong to an InstructionClass, which can have different
+opcodes for different addressing modes.  A set of InstructionClasses
+belong to an InstructionSet.  These InstructionSets combined with
+Register and Flag definitions define chipsets, which are described in
+JSON documents in the chip directory.
+
+Different chipsets may have slightly different versions of
+instructions.  For example, the NMOS and CMOS versions of the 6502
+have some different features, bugs and quirks.  These differences are
+often described with different words in the literature, as a "bug",
+"quirk", "characteristic", "feature" or "idiom".  All these terms
+describe a rich spectrum of advertant or inadvertant design choices
+that bring life or difficulty to hardware designs.
+
+John West and Marko MŠkelŠ have a document describing decimal / BCD
+mode in NMOS 6500 series in depth and other processor features.  It
+includes commented versions of decimal addition and subtraction code.
+The name of the document is "Documentation for the NMOS 65xx/85xx
+Instruction Set."  It also includes more detailed information on
+processor differences.
+
+Related to differences in behavior, some instructions are undocumented
+and may behave differently on different chipsets.
+
+
 ### Bus Design ###
 
 Most of the components, like instructions, flags and registers had

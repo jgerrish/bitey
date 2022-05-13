@@ -126,7 +126,10 @@
 		    "addressing_mode": "indirect_y",
 		    "bytes": 2
 		}
-	    ]
+	    ],
+	    "options": {
+		"large_lower_nibble_behavior_2": true
+	    }
 	},
 	{
 	    "name": "AND",
@@ -989,7 +992,10 @@
 		    "addressing_mode": "indirect_y",
 		    "bytes": 2
 		}
-	    ]
+	    ],
+	    "options": {
+		"large_lower_nibble_behavior_2": true
+	    }
 	},
 	{
 	    "name": "SEC",

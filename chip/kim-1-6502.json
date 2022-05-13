@@ -55,7 +55,11 @@
 	    "short_name": "D",
 	    "name": "Decimal Mode",
 	    "bit_field_pos": 3,
-	    "status": 0
+	    "status": 0,
+	    "options": {
+		"hardware_interrupt_characteristic": true,
+		"n_v_z_flag_relfect_binary_result": true
+	    }
 	},
 	{
 	    "short_name": "B",
@@ -995,7 +999,10 @@
 		    "addressing_mode": "indirect_y",
 		    "bytes": 2
 		}
-	    ]
+	    ],
+	    "options": {
+		"large_lower_nibble_behavior_1": true
+	    }
 	},
 	{
 	    "name": "SEC",

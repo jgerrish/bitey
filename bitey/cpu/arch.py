@@ -12,6 +12,27 @@ class IntegerValueError(Exception):
 
 
 class EightBitArch:
+    def high_nibble(byte):
+        """
+        Get the high nibble of a byte
+        """
+        return (byte >> 4) & 0x0F
+
+    def low_nibble(byte):
+        """
+        Get the low nibble of a byte
+        """
+        return byte & 0x0F
+
+    def decimal_value(byte):
+        """
+        Get the 4-bit Binary Coded Decimal (BCD) value of a byte
+        The decimal value of a byte is found by "concatenating" the
+        high nibble and low nibble, or adding them after multiplying
+        the high nibble by ten.
+        """
+        return (EightBitArch.high_nibble(byte) * 10) + EightBitArch.low_nibble(byte)
+
     def signed_int_to_twos_complement(signed_int_value):
         """
         Convert a signed integer to a single-byte two's-complement value
