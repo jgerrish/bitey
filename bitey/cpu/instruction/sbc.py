@@ -61,16 +61,20 @@ class SBCNMOS(Instruction):
             # Normal binary addition
             if value is not None:
                 self.value = value
-                self.carry_value = 1 if cpu.flags["C"].status else 0
+                self.carry_value = 0 if cpu.flags["C"].status else 1
                 self.accumulator_value = cpu.registers["A"].get()
                 # One's complement for following two's complement subtraction
-                self.complemented_value = 0xFF - self.value
+                # self.complemented_value = 0xFF - self.value
 
-                # Two's complement value
-                self.twos_complement = self.complemented_value + self.carry_value
+                # # Two's complement value
+                # self.twos_complement = self.complemented_value + self.carry_value
 
-                # Subtraction using addition and two's complement representation
-                self.result = self.accumulator_value + self.twos_complement
+                # # Subtraction using addition and two's complement representation
+                # self.result = self.accumulator_value + self.twos_complement
+
+                self.result = self.accumulator_value - self.value - self.carry_value
+
+                self.binary_result = self.result
 
                 cpu.registers["A"].set(self.result & 0xFF)
 
@@ -81,10 +85,14 @@ class SBCNMOS(Instruction):
                 raise IncompleteInstruction
         else:
             # Decimal mode addition
+            # TODO: Simplify
             if value is not None:
                 self.value = value
                 self.carry_value = 0 if cpu.flags["C"].status else 1
                 self.accumulator_value = cpu.registers["A"].get()
+                self.result = self.accumulator_value - self.value - self.carry_value
+
+                self.binary_result = self.result
 
                 # The carry and overflow bits are set based on the full subtraction
                 self.full_result = (
@@ -121,7 +129,7 @@ class SBCNMOS(Instruction):
             # binary mode subtraction
             if self.result is not None:
                 # Set the carry flag
-                if self.result < 0x100:
+                if self.result < 0x00:
                     flags["C"].clear()
                 else:
                     flags["C"].set()
@@ -138,45 +146,94 @@ class SBCNMOS(Instruction):
                 else:
                     flags["N"].clear()
 
-                # if (self.accumulator_value & 0x80) != (self.value & 0x80) and (
-                #    self.accumulator_value & 0x80
-                # ) != (registers["A"].get() & 0x80):
+                # Can be calculated from accumulator and memory, forms a
+                # "triangular" distribution, e.g. with CLC set
+                # 1 0xFE, 1 0x00, 2 0x01, 2 0xFD, ... 127 0x80
+                # 1 0xFE, 1 0x00, 2 0x01, 2 0xFD, ... 127 0x80
+                # To find number available, something like: 0x80 - abs(0x80 - NUM)
+                # Then the numbers from 0x7F (or 0x80) down to 0x7F minus the number available
+                # verify something like this, add tests around carry and edge cases
+                # 0x00 endpoint is 0x80, 0xFE endpoint is 0x7F,
+                # simple addition or "shift" should fix it
+                # if abs(0x80 - self.value) < (0x80 - abs(0x80 - self.accumulator_value))
+                #
+                # Another way of calculating this is with bit seven in the
+                # accumulator, memory and binary result.
+                # fmt: off
                 if (
-                    (self.accumulator_value ^ self.value)
-                    & (self.accumulator_value ^ self.result)
-                    & 0x80
+                        (((self.accumulator_value & 0x80) == 0x80)
+                         and ((self.value & 0x80) != 0x80)
+                         and ((self.binary_result & 0x80) != 0x80))
+                        or
+                        (((self.accumulator_value & 0x80) != 0x80)
+                         and ((self.value & 0x80) == 0x80)
+                         and ((self.binary_result & 0x80) == 0x80))
                 ):
                     flags["V"].set()
                 else:
                     flags["V"].clear()
+                # fmt: on
         else:
-            # decimal mode subtraction
-            # TODO: Verify C flag and others in emulator and manual
-            if self.full_result is not None:
-                if (self.accumulator_value & 0x80) != (self.value & 0x80) and (
-                    self.accumulator_value & 0x80
-                ) != (self.full_result & 0x80):
-                    flags["V"].set()
-                else:
-                    flags["V"].clear()
-
+            # decimal mode subtraction flags
+            # The behavior of the V flag is "undocumented", but the behavior here
+            # should follow the behavior of NMOS 6502 chips
+            # The values below follows the values in the
+            # transistor-level simulation found in visual6502.org
+            # thse flags (C, Z, V, N) follow the same rules as for binary mode
+            # It uses the binary addition result in calculating them too
+            # "Verified" with the visual6502.org simulator
+            #
+            # Also documented in https://http://www.6502.org/tutorials/decimal_mode.html
+            #
+            # Although this document has an error:
+            # the V flag is clear when the result is in the range -128
+            # to 127 inclusive and set when the result is outside that
+            # range.
             if self.result is not None:
-                # From the MCS6500 Family Programming Manual:
-                # The carry flag is set if the result is greater than or equal to zero
-                # Otherwise it is reset
-                if self.result >= 0:
-                    flags["C"].set()
-                else:
+                # Set the carry flag
+                if self.binary_result < 0x00:
                     flags["C"].clear()
-                if registers["A"].get() & 0x80:
+                else:
+                    flags["C"].set()
+
+                # Set the zero flag if the accumlator is zero
+                if self.binary_result == 0x00:
+                    flags["Z"].set()
+                else:
+                    flags["Z"].clear()
+
+                # Set the negative flag
+                if (self.binary_result & 0x80) != 0:
                     flags["N"].set()
                 else:
                     flags["N"].clear()
 
-                if registers["A"].get() == 0x00:
-                    flags["Z"].set()
+                # Can be calculated from accumulator and memory, forms a
+                # "triangular" distribution , e.g. with CLC set
+                # 1 0xFE, 1 0x00, 2 0x01, 2 0xFD, ... 127 0x80
+                # To find number available, something like: 0x80 - abs(0x80 - NUM)
+                # Then the numbers from 0x7F (or 0x80) down to 0x7F minus the number available
+                # verify something like this, add tests around carry and edge cases
+                # 0x00 endpoint is 0x80, 0xFE endpoint is 0x7F,
+                # simple addition or "shift" should fix it
+                # if abs(0x80 - self.value) < (0x80 - abs(0x80 - self.accumulator_value))
+                #
+                # Another way of calculating this is with bit seven in the
+                # accumulator, memory and binary result.
+                # fmt: off
+                if (
+                        (((self.accumulator_value & 0x80) == 0x80)
+                         and ((self.value & 0x80) != 0x80)
+                         and ((self.binary_result & 0x80) != 0x80))
+                        or
+                        (((self.accumulator_value & 0x80) != 0x80)
+                         and ((self.value & 0x80) == 0x80)
+                         and ((self.binary_result & 0x80) == 0x80))
+                ):
+                    flags["V"].set()
                 else:
-                    flags["Z"].clear()
+                    flags["V"].clear()
+                # fmt: on
 
 
 @dataclass

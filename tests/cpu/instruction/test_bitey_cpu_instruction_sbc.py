@@ -1,6 +1,4 @@
 import pytest
-import re
-from bitey.computer.computer import Computer
 import tests.computer.computer
 import tests.memory.memory
 
@@ -8,25 +6,6 @@ import tests.memory.memory
 from bitey.cpu.addressing_mode import ImmediateAddressingMode
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.sbc import SBC
-
-
-def build_computer(chip_line=None):
-    computer = None
-
-    search = re.compile(".*[^a-zA-Z0-9_-].*")
-
-    if (chip_line is not None) and (search.search(chip_line) is not None):
-        raise Exception("Invalid chip_line, contains non-alphanumeric characters")
-
-    fn = "chip/6502.json"
-    if chip_line is not None:
-        fn = "chip/{}-6502.json".format(chip_line)
-    with open(fn) as f:
-        chip_data = f.read()
-        computer = Computer.build_from_json(chip_data)
-        return computer
-
-    return None
 
 
 # module scope means run once per test module
@@ -84,7 +63,8 @@ def test_cpu_instruction_sbc_binary_subtract_negative_result(setup):
         [],
     )
 
-    assert i1.result == 255
+    # assert i1.result == 255
+    assert i1.result == -1
 
 
 def test_cpu_instruction_sbc_binary_subtract_with_borrow(setup):
@@ -111,7 +91,8 @@ def test_cpu_instruction_sbc_binary_subtract_with_borrow(setup):
         [],
     )
 
-    assert i1.result == 0x101
+    # assert i1.result == 0x101
+    assert i1.result == 0x01
 
 
 def test_cpu_instruction_sbc_decimal_subtract(setup):
@@ -162,6 +143,5 @@ def test_cpu_instruction_sbc_decimal_subtract_with_previous_carry(setup):
         i1,
         [("A", 0x85)],  # 0b00010101)],
         [("C", False), ("Z", False), ("V", False), ("N", True)],
-        # [("C", True), ("Z", False), ("V", False), ("N", False)],
         [],
     )

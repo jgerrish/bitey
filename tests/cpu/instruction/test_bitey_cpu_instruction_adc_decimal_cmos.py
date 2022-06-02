@@ -1,32 +1,6 @@
 import pytest
-import re
-
-import tests.computer.computer
+from tests.computer.computer import run_adc_test
 import tests.memory.memory
-
-from bitey.computer.computer import Computer
-from bitey.cpu.addressing_mode import ImmediateAddressingMode
-from bitey.cpu.instruction.opcode import Opcode
-from bitey.cpu.instruction.adc import ADCCMOS, ADCNMOS
-
-
-def build_computer(chip_line=None):
-    computer = None
-
-    search = re.compile(".*[^a-zA-Z0-9_-].*")
-
-    if (chip_line is not None) and (search.search(chip_line) is not None):
-        raise Exception("Invalid chip_line, contains non-alphanumeric characters")
-
-    fn = "chip/6502.json"
-    if chip_line is not None:
-        fn = "chip/{}-6502.json".format(chip_line)
-    with open(fn) as f:
-        chip_data = f.read()
-        computer = Computer.build_from_json(chip_data)
-        return computer
-
-    return None
 
 
 # module scope means run once per test module
@@ -34,52 +8,6 @@ def build_computer(chip_line=None):
 def setup():
     computer = tests.computer.computer.init_computer()
     yield computer
-
-
-def run_adc_test(
-    chip,
-    decimal_mode,
-    accumulator,
-    memory,
-    carry,
-    expected_accumulator,
-    expected_flags,
-):
-    if (chip == "nmos") or (chip == "cmos"):
-        computer = build_computer(chip)
-    else:
-        computer = build_computer()
-
-    computer.reset()
-    computer.cpu.registers["PC"].set(0x00)
-    computer.cpu.registers["A"].set(accumulator)
-
-    if decimal_mode:
-        computer.cpu.flags["D"].set()
-    else:
-        computer.cpu.flags["D"].clear()
-
-    if carry:
-        computer.cpu.flags["C"].set()
-    else:
-        computer.cpu.flags["C"].clear()
-
-    computer.memory.write(0x00, memory)
-
-    i1_opcode = Opcode(0x69, ImmediateAddressingMode())
-    if chip == "nmos":
-        i1 = ADCNMOS("ADC", i1_opcode, "Add Memory to Accumulator with Carry")
-    elif chip == "cmos":
-        i1 = ADCCMOS("ADC", i1_opcode, "Add Memory to Accumulator with Carry")
-
-    tests.computer.computer.execute_explicit_instruction(
-        computer,
-        i1_opcode,
-        i1,
-        [("A", expected_accumulator)],
-        expected_flags,
-        [],
-    )
 
 
 # Test Overflow Flag differences

@@ -36,6 +36,17 @@ https://github.com/MiSTer-devel/Apple-II_MiSTer
 FPGA-64
 https://www.syntiac.com/fpga64.html
 
+
+Some software transistor and gate-level simulators include:
+
+Visual6502 by Ijor, Segher Boessenkool, Ed Spittles, Brian Silverman,
+Barry Silverman and others
+https://github.com/trebonian/visual6502.git
+
+Breaknes by the emu-russia team
+https://github.com/emu-russia/breaknes.git
+
+
 I haven't examined all of these, but I'm pointing them out for those
 who are more interested in a more formal approach.
 

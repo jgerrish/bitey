@@ -1,32 +1,7 @@
 import pytest
-import re
-from bitey.computer.computer import Computer
 import tests.computer.computer
+from tests.computer.computer import run_sbc_test
 import tests.memory.memory
-
-# TODO Maybe refactor so these are not needed
-from bitey.cpu.addressing_mode import ImmediateAddressingMode
-from bitey.cpu.instruction.opcode import Opcode
-from bitey.cpu.instruction.sbc import SBCCMOS, SBCNMOS
-
-
-def build_computer(chip_line=None):
-    computer = None
-
-    search = re.compile(".*[^a-zA-Z0-9_-].*")
-
-    if (chip_line is not None) and (search.search(chip_line) is not None):
-        raise Exception("Invalid chip_line, contains non-alphanumeric characters")
-
-    fn = "chip/6502.json"
-    if chip_line is not None:
-        fn = "chip/{}-6502.json".format(chip_line)
-    with open(fn) as f:
-        chip_data = f.read()
-        computer = Computer.build_from_json(chip_data)
-        return computer
-
-    return None
 
 
 # module scope means run once per test module
@@ -34,52 +9,6 @@ def build_computer(chip_line=None):
 def setup():
     computer = tests.computer.computer.init_computer()
     yield computer
-
-
-def run_sbc_test(
-    chip,
-    decimal_mode,
-    accumulator,
-    memory,
-    carry,
-    expected_accumulator,
-    expected_flags,
-):
-    if (chip == "nmos") or (chip == "cmos"):
-        computer = build_computer(chip)
-    else:
-        computer = build_computer()
-
-    computer.reset()
-    computer.cpu.registers["PC"].set(0x00)
-    computer.cpu.registers["A"].set(accumulator)
-
-    if decimal_mode:
-        computer.cpu.flags["D"].set()
-    else:
-        computer.cpu.flags["D"].clear()
-
-    if carry:
-        computer.cpu.flags["C"].set()
-    else:
-        computer.cpu.flags["C"].clear()
-
-    computer.memory.write(0x00, memory)
-
-    i1_opcode = Opcode(0xE9, ImmediateAddressingMode())
-    if chip == "nmos":
-        i1 = SBCNMOS("SBC", i1_opcode, "Subtract Memory from Accumulator with Borrow")
-    elif chip == "cmos":
-        i1 = SBCCMOS("SBC", i1_opcode, "Subtract Memory from Accumulator with Borrow")
-
-    tests.computer.computer.execute_explicit_instruction(
-        computer,
-        i1_opcode,
-        i1,
-        [("A", expected_accumulator)],
-        expected_flags,
-        [],
-    )
 
 
 def test_cpu_instruction_sbc_decimal_subtract_cmos_00_minus_00_carry_0(setup):

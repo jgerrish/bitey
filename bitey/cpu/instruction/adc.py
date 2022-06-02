@@ -133,15 +133,24 @@ class ADCNMOS(Instruction):
                     flags["N"].clear()
 
                 # Set the overflow flag if bit seven changed
-                # if (self.accumulator_value & 0x80) != (registers["A"].get() & 0x80):
+                # The rule is, set the overflow if:
+                # Both the operands are < 0x80 and the result is > 0x80, or
+                # Both the operands are > 0x80 and the result is < 0x80
+                # Inefficient, could be optimized
+                # fmt: off
                 if (
-                    (self.accumulator_value ^ self.value)
-                    & (self.accumulator_value ^ self.result)
-                    & 0x80
+                        (((self.accumulator_value >= 0x80)
+                          and (self.value >= 0x80))
+                         and (registers["A"].get() < 0x80))
+                        or
+                        (((self.accumulator_value < 0x80)
+                          and (self.value < 0x80))
+                         and (registers["A"].get() >= 0x80))
                 ):
                     flags["V"].set()
                 else:
                     flags["V"].clear()
+                # fmt: on
         else:
             # decimal mode addition
             if self.result is not None:
@@ -167,15 +176,15 @@ class ADCNMOS(Instruction):
 
                 # Set the overflow flag if bit seven changed
                 # For NMOS chips, this is based on the binary addition result
-                # if (self.accumulator_value & 0x80) != (self.binary_addition_result & 0x80):
+                # fmt: off
                 if (
-                    (self.accumulator_value ^ self.value)
-                    & (self.accumulator_value ^ self.binary_addition_result)
-                    & 0x80
+                        ((self.accumulator_value ^ self.sign_bit_result) & 0x80)
+                        and (not ((self.accumulator_value ^ self.value) & 0x80))
                 ):
                     flags["V"].set()
                 else:
                     flags["V"].clear()
+                # fmt: on
 
 
 @dataclass
@@ -304,6 +313,14 @@ class ADCCMOS(Instruction):
                 else:
                     flags["N"].clear()
                 # Set the overflow flag
+
+                # This behavior was modified several times
+                # The current behavior is described right above the conditional
+                # It's based on simulations with the visual6502.org
+                # transistor-level simulator
+
+                # The previous, possibly incorrect behavior is described below
+
                 # This interpretation of the V flag should be compared against
                 # actual hardware
                 # This comparison is made in the SBC instruction too
@@ -322,14 +339,44 @@ class ADCCMOS(Instruction):
                 # If the accumulator is 0b01 and the memory is 0b11,
                 # V is 0, but if the accumulator is 0b11 and the memory is 0b01,
                 # V is 1
+
+                # The current behavior uses transistor-level models from
+                # visual6502.org
+                # These simulations may be inaccurate or have bugs, they haven't
+                # been verified against hardware runs.
+                #
+                # An assembly language program to run all possible combinations of
+                # adds is included in the examples directory
+                # Simply change CLD, SEC and ADC to try other combinations
+                #
+                # The behavior of the V flag in ADC decimal mode isn't a simple
+                # "triangular" reflection, but a triangular reflection with a
+                # series of spikes or "plates" on one edge and a series of
+                # indentations on the other edge.
+
+                # The rule is, set the overflow if:
+                # Both the operands are < 0x80 and the result is > 0x80, or
+                # Both the operands are > 0x80 and the result is < 0x80
+                # Inefficient, could be optimized
+
+                # This uses the following rule:
+                # The rule is, set the overflow if:
+                # Both the operands are < 0x80 and the result is > 0x80, or
+                # Both the operands are > 0x80 and the result is < 0x80
+                # fmt: off
                 if (
-                    (self.accumulator_value ^ self.value)
-                    & (self.accumulator_value ^ self.result)
-                    & 0x80
+                        (((self.accumulator_value >= 0x80)
+                          and (self.value >= 0x80))
+                         and (registers["A"].get() < 0x80))
+                        or
+                        (((self.accumulator_value < 0x80)
+                          and (self.value < 0x80))
+                         and (registers["A"].get() >= 0x80))
                 ):
                     flags["V"].set()
                 else:
                     flags["V"].clear()
+                # fmt: on
         else:
             # decimal mode addition
             if self.result is not None:

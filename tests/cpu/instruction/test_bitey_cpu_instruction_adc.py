@@ -130,7 +130,7 @@ def test_cpu_instruction_adc_binary_add_carry_and_overflow_flags_set(setup):
         i1_opcode,
         i1,
         [("A", 0x01)],
-        [("C", True), ("Z", False), ("V", False), ("N", False)],
+        [("C", True), ("Z", False), ("V", True), ("N", False)],
         [],
     )
 
@@ -154,7 +154,7 @@ def test_cpu_instruction_adc_binary_add_carry_and_zero_flags_set(setup):
         i1_opcode,
         i1,
         [("A", 0x00)],
-        [("C", True), ("Z", True), ("V", False), ("N", False)],
+        [("C", True), ("Z", True), ("V", True), ("N", False)],
         [],
     )
 
@@ -232,6 +232,90 @@ def test_cpu_instruction_adc_decimal_add_carry_high_nibble(setup):
         i1_opcode,
         i1,
         [("A", 0b00000000)],
-        [("C", True), ("Z", False), ("V", False), ("N", True)],
+        [("C", True), ("Z", False), ("V", True), ("N", True)],
+        [],
+    )
+
+
+# # Some more tests
+
+
+# # Test symmetry of the V flag
+
+
+def test_cpu_instruction_adc_binary_add_7F_and_01(setup):
+    "Add 7F and 01, expect overflow flag set, default NMOS chipset"
+    computer = setup
+    computer.reset()
+
+    computer.cpu.registers["PC"].set(0x00)
+    computer.cpu.registers["A"].set(0x7F)
+    # Set decimal mode
+    computer.cpu.flags["D"].clear()
+
+    computer.memory.write(0x00, 0x01)
+
+    i1_opcode = Opcode(0x69, ImmediateAddressingMode())
+    i1 = ADC("ADC", i1_opcode, "Add Memory to Accumulator with Carry")
+
+    tests.computer.computer.execute_explicit_instruction(
+        computer,
+        i1_opcode,
+        i1,
+        [("A", 0x80)],
+        [("C", False), ("Z", False), ("V", True), ("N", True)],
+        [],
+    )
+
+
+def test_cpu_instruction_adc_binary_add_01_and_7F(setup):
+    "Add 01 and 7F, expect overflow flag set, default NMOS chipset"
+    computer = setup
+    computer.reset()
+
+    computer.cpu.registers["PC"].set(0x00)
+    computer.cpu.registers["A"].set(0x01)
+    # Set decimal mode
+    computer.cpu.flags["D"].clear()
+
+    computer.memory.write(0x00, 0x7F)
+
+    i1_opcode = Opcode(0x69, ImmediateAddressingMode())
+    i1 = ADC("ADC", i1_opcode, "Add Memory to Accumulator with Carry")
+
+    tests.computer.computer.execute_explicit_instruction(
+        computer,
+        i1_opcode,
+        i1,
+        [("A", 0x80)],
+        [("C", False), ("Z", False), ("V", True), ("N", True)],
+        [],
+    )
+
+
+# Test both operands greater than or equal 0x80, result less than 0x80
+
+
+def test_cpu_instruction_adc_binary_add_80_and_80(setup):
+    "Add 7F and 01, expect overflow flag set, default NMOS chipset"
+    computer = setup
+    computer.reset()
+
+    computer.cpu.registers["PC"].set(0x00)
+    computer.cpu.registers["A"].set(0x80)
+    # Set decimal mode
+    computer.cpu.flags["D"].clear()
+
+    computer.memory.write(0x00, 0x80)
+
+    i1_opcode = Opcode(0x69, ImmediateAddressingMode())
+    i1 = ADC("ADC", i1_opcode, "Add Memory to Accumulator with Carry")
+
+    tests.computer.computer.execute_explicit_instruction(
+        computer,
+        i1_opcode,
+        i1,
+        [("A", 0x00)],
+        [("C", True), ("Z", True), ("V", True), ("N", False)],
         [],
     )
