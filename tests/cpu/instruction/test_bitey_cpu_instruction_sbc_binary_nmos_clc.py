@@ -3,6 +3,7 @@ import tests.computer.computer
 from tests.computer.computer import run_sbc_test
 import tests.memory.memory
 
+
 # module scope means run once per test module
 @pytest.fixture(scope="module")
 def setup():
