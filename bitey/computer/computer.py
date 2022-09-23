@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import logging
 
-from bitey.logger import setup_logger
 from bitey.cpu.cpu import CPU
 from bitey.cpu.instruction.instruction import UndocumentedInstruction
 from bitey.memory.memory import Memory
@@ -24,7 +23,6 @@ class Computer:
         Called after the generated __init__ method
         Initialize the computer
         """
-        setup_logger()
         self.logger = logging.getLogger("bitey.computer.computer.Computer")
         self.cpu.reset(self.memory)
 
@@ -32,7 +30,6 @@ class Computer:
         """
         Build a computer from a JSON representation
         """
-        setup_logger()
         logger = logging.getLogger("bitey.computer.computer.Computer")
         logger.debug("Building computer")
         cpu = CPU.build_from_json(json_data)

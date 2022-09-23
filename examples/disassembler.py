@@ -3,6 +3,7 @@
 # PYTHONPATH=. pipenv run python examples/disassembler.py FILENAME
 import click
 
+from bitey.logger import setup_logger
 from bitey.computer.computer import Computer
 from bitey.memory.memory import Memory
 
@@ -13,6 +14,7 @@ from bitey.memory.memory import Memory
 @click.option("--skip", "-s", is_flag=False, type=int, help="Skip n bytes in input")
 def cli(filename, count, skip):
     "Disassemble a file"
+    setup_logger()
     data = None
     with open(filename, "rb") as f:
         data = f.read()
