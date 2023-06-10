@@ -93,6 +93,25 @@ class Memory:
 
         return self.get_16bit_address(adl, adh)
 
+    def memory_dump(self, address=None):
+        """
+        Dump a range of memory starting at an address
+
+        Defaults to the zero page.
+        Rounds down the range to a 16-byte boundary.
+
+        Example:
+
+        from bitey.memory.memory import Memory
+        b = bytes(range(256)) * 10
+        m = Memory(b)
+        print(m.memory_dump(32))
+        """
+
+        if address is None:
+            address = 0
+        return self.memory_range_dump(range(address, address + 32))
+
     def memory_range_dump(self, memory_range=None):
         """
         Dump a range of memory

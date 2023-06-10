@@ -1,0 +1,6 @@
+{
+    "breakpoints": [
+	{ "address": 1, "description": "second NOP code" }
+    ]
+
+}

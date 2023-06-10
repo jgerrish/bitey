@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import logging
 
-from bitey.cpu.cpu import CPU
+from bitey.cpu.cpu import CPU, CPUState, CPUStateChange
 from bitey.cpu.instruction.instruction import UndocumentedInstruction
 from bitey.memory.memory import Memory
 
@@ -50,14 +50,102 @@ class Computer:
             else:
                 break
 
-    def step(self):
-        "Run a single instruction"
-        self.cpu.step(self.memory)
+    def step(self, instruction_loaded=False):
+        """
+        Run a single instruction
+
+        This changes the CPU state to running, if it is not already
+        running.
+        """
+        try:
+            self.cpu.set_state(CPUState.RUNNING)
+        except CPUStateChange:
+            pass
+
+        self.cpu.step(self.memory, 1, instruction_loaded)
 
     def reset(self):
         "Reset the computer"
         self.memory.reset()
         self.cpu.reset(self.memory)
+
+    def set_instructions_loaded_limit(self, limit):
+        """
+        Set an instruction load limit on the CPU.
+
+        Set an instruction limit on the total number of instructions
+        that can be loaded.  Once that limit is reached, an action
+        can be taken such as stopping the CPU.
+
+        This limit can be changed, but calling methods such as run()
+        doesn't reset the number of instructions executed.  The computer
+        needs to be reset to change that.
+        """
+        self.cpu.num_instructions_loaded_limit = limit
+
+    def set_instructions_executed_limit(self, limit):
+        """
+        Set an instruction execute limit on the CPU.
+
+        Set an instruction execute limit on the total number of
+        instructions that can be run.  Once that limit is reached, an
+        action can be taken such as stopping the CPU.
+
+        This limit can be changed, but calling methods such as run()
+        doesn't reset the number of instructions executed.  The computer
+        needs to be reset to change that.
+
+        """
+        self.cpu.num_instructions_executed_limit = limit
+
+    def run(  # noqa: C901
+        self,
+        instruction_loaded=False,
+        num_instructions_loaded_limit=None,
+        num_instructions_executed_limit=None,
+    ):
+        """
+        Run the processor
+
+        This changes the CPU state to running, if it is not already
+        running.
+        """
+        if num_instructions_executed_limit is not None:
+            self.set_instructions_executed_limit(num_instructions_executed_limit)
+
+        if num_instructions_loaded_limit is not None:
+            self.set_instructions_loaded_limit(num_instructions_loaded_limit)
+
+        try:
+            self.cpu.set_state(CPUState.RUNNING)
+        except CPUStateChange:
+            pass
+
+        # After setup() is run, the CPU is initialized into a state
+        # where the first instruction is already loaded.
+        if instruction_loaded:
+            try:
+                self.cpu.execute_instruction(self.memory)
+            except CPUStateChange:
+                if self.cpu.state != CPUState.RUNNING:
+                    self.logger.debug(
+                        "Number of instructions executed: {}".format(
+                            self.cpu.num_instructions_executed
+                        )
+                    )
+                    return
+
+        while self.cpu.state == CPUState.RUNNING:
+            try:
+                self.step()
+            except CPUStateChange:
+                continue
+
+        self.logger.debug(
+            "Number of instructions executed: {}".format(
+                self.cpu.num_instructions_executed
+            )
+        )
 
     def parse(self):
         """
@@ -98,6 +186,8 @@ class Computer:
 
         It might make more sense to include this as a method on
         Memory, but it uses and tests the existing execution machinery.
+
+        If an invalid opcode is found, it prints it as "INV"
         """
         total_consumed = 0
         self.cpu.registers["PC"].set(0x00)
@@ -117,3 +207,16 @@ class Computer:
             total_consumed += consumed
 
         return "\n".join(lines)
+
+    def set_input_handler(self, handler):
+        """
+        Add a custom input handler to the computer
+
+        Adding a custom input handler lets us use a simple computer
+        from different types of IO devices including terminal or
+        consoles, GUIs and other devices.  For basic usage, you can
+        use the Python input() function:
+
+        computer.set_input_handler(input("> "))
+        """
+        self.input_handler = handler

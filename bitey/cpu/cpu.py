@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from enum import Enum
 import json
 import logging
 from json import JSONDecoder
-from typing import ClassVar
+from typing import ClassVar, Dict
 
 
 from bitey.cpu.addressing_mode import (
@@ -43,6 +44,36 @@ class StackUnderflow(Exception):
     """
 
 
+class CPUBreakpoint(Exception):
+    """
+    CPU Breakpoint exception
+    Raised if a cpu breakpoint is hit
+    """
+
+    def __init__(self, address):
+        self.address = address
+
+
+class CPUStateChange(Exception):
+    """
+    CPUStateChange exception
+    Raised if a change in cpu state occurs
+    """
+
+    def __init__(self, state):
+        self.state = state
+
+
+class CPUState(Enum):
+    """
+    Different CPU states.
+    A CPU can be stopped or running.
+    """
+
+    STOPPED = 0
+    RUNNING = 1
+
+
 @dataclass
 class CPU:
     """
@@ -72,6 +103,27 @@ class CPU:
 
     current_instruction: Instruction = None
 
+    state: CPUState = CPUState.STOPPED
+    """
+    The current state of the CPU
+    The CPU can be in several states, for example, STOPPED or RUNNING.
+
+    CPU methods such as step() don't explicitly start the CPU running,
+    but a caller may start the CPU before calling step() or run().
+    """
+
+    num_instructions_loaded: int = 0
+    "The number of instructions that have been loaded by the processor"
+
+    num_instructions_executed: int = 0
+    "The number of instructions that have been executed by the processor"
+
+    cpu_breakpoints: Dict = field(default_factory=lambda: {})
+    "A dictionary of all CPU breakpoints"
+
+    ignore_breakpoints_until_next_instruction: bool = False
+    "Ignore breakpoints until the next instruction is loaded"
+
     def __post_init__(self):
         """
         Called after the generated __init__ method
@@ -80,6 +132,13 @@ class CPU:
         self.logger = logging.getLogger("bitey.cpu.cpu")
         # TODO: Research best practices around logging and module namespaces
         self.registers.set_logger(self.logger)
+
+        # Set the number of instructions that can be loaded to None,
+        # so there is no limit
+        self.num_instructions_loaded_limit = None
+        # Set the number of instructions that can be executed to None,
+        # so there is no limit
+        self.num_instructions_executed_limit = None
 
         # Connect up the P register and flags with the Watcher/Listener API
         # We can profile later if speed is an issue
@@ -104,6 +163,11 @@ class CPU:
         # TODO: The flags need to be initialized to some valid
         # boolean state before running this
         self.flags.data = 0
+
+        self.num_instructions_loaded = 0
+        self.num_instructions_loaded_limit = None
+        self.num_instructions_executed = 0
+        self.num_instructions_executed_limit = None
 
         # TODO: Use a different builder for this
         opcodes = Opcodes([Opcode(120, ImpliedAddressingMode)])
@@ -133,12 +197,34 @@ class CPU:
         cli = CLI("CLI", opcodes, "Clear Interrupt Disable")
         cli.execute(self, memory)
 
+        # The MOS 6502 family specification documents include a set of
+        # instructions that should be run on reset.
+        # These instructions are counted in the
+        # num_instructions_loaded and num_instructions_executed
+        # counters, even though they are not "technically" loaded from
+        # memory, or loaded into normal CPU working area.
+        # This may be confusing for those working with binary files
+        # wondering where extra instructions are coming from.
+        self.num_instructions_loaded += 1
+        self.num_instructions_executed += 1
+
         # TODO: Initialize the decimal mode
         # For now, test with all flags initialized to zero
         # This is dependent on the application,
         self.flags.data = 0
 
         #   TODO: Start the user's program
+
+    def set_state(self, state):
+        """
+        Change the processor state.
+
+        If the new state is different from the previous state, raise a
+        CPUStateChange exception.
+        """
+        if self.state != state:
+            self.state = state
+            raise CPUStateChange(state)
 
     def build_from_json(json_data):
         logger = logging.getLogger("bitey.cpu.cpu.CPU")
@@ -153,8 +239,15 @@ class CPU:
         Load and decode the next instruction
         Increments the PC
         """
+        if self.num_instructions_loaded_limit is not None:
+            if self.num_instructions_loaded >= self.num_instructions_loaded_limit:
+                self.set_state(CPUState.STOPPED)
         self.current_opcode = self.load_opcode(memory)
         self.logger.debug("get_next_instruction opcode: {}".format(self.current_opcode))
+
+        # Save the instruction address to test for breakpoints
+        self.last_opcode_address = self.registers["PC"].value
+
         self.registers["PC"].inc()
         self.current_instruction = self.decode_opcode(self.current_opcode)
 
@@ -163,6 +256,7 @@ class CPU:
     def load_opcode(self, memory):
         "Load the opcode pointed to by the PC from memory"
         self.logger.debug("Loading opcode at {}".format(self.registers["PC"].get()))
+        self.num_instructions_loaded += 1
         return memory.read(self.registers["PC"].get())
 
     def decode_opcode(self, opcode):
@@ -176,16 +270,30 @@ class CPU:
 
     def execute_instruction(self, memory):
         "Execute an instruction"
+        if self.num_instructions_executed_limit is not None:
+            if self.num_instructions_executed >= self.num_instructions_executed_limit:
+                self.set_state(CPUState.STOPPED)
+
+        # Check if there was a breakpoint for this instruction
+        if not self.ignore_breakpoints_until_next_instruction and (
+            self.last_opcode_address in self.cpu_breakpoints
+        ):
+            raise CPUBreakpoint(self.last_opcode_address)
+        else:
+            self.ignore_breakpoints_until_next_instruction = False
+
         self.logger.debug("Executing instruction")
         self.current_instruction.execute(self, memory)
+        self.num_instructions_executed += 1
 
-    def step(self, memory, count=1):
+    def step(self, memory, count=1, instruction_loaded=False):
         """
         Execute the next count instructions, stepping into any subroutine calls
         Steps through one instruction if count isn't specified
         """
         for i in range(count):
-            self.get_next_instruction(memory)
+            if not instruction_loaded:
+                self.get_next_instruction(memory)
             self.execute_instruction(memory)
 
     def set_flags(self, instruction, flags, registers):
@@ -292,6 +400,16 @@ class CPU:
 
     def stack_pull_address(self, memory):
         return self.stack_pop_address(memory)
+
+    # Debugger related methods
+
+    def set_breakpoint(self, address):
+        "Set a breakpoint in the CPU"
+        self.cpu_breakpoints[address] = True
+
+    def clear_breakpoint(self, address):
+        "Clear a breakpoint in the CPU"
+        del self.cpu_breakpoints[address]
 
 
 class CPUJSONDecoder(JSONDecoder):

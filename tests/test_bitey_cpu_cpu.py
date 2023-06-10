@@ -1,5 +1,13 @@
 from bitey.cpu.addressing_mode import AccumulatorAddressingMode, ImpliedAddressingMode
-from bitey.cpu.cpu import CPU, CPUJSONDecoder, StackOverflow, StackUnderflow
+from bitey.cpu.cpu import (
+    CPU,
+    CPUBreakpoint,
+    CPUState,
+    CPUStateChange,
+    CPUJSONDecoder,
+    StackOverflow,
+    StackUnderflow,
+)
 from bitey.cpu.instruction.cli import CLI
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.memory.memory import Memory
@@ -217,3 +225,422 @@ def test_cpu_cpu_flags_set_updates_p_register():
     assert not cpu.flags["Z"].status
     assert cpu.flags.data == 0x01
     assert cpu.registers["P"].get() == 0x01
+
+
+# Tests around changing processor state
+
+
+def test_cpu_cpu_set_state_change():
+    "Test that changing the processor state to a different state works"
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        # The state should change and an exception should be raised
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+
+def test_cpu_cpu_set_state_no_change():
+    "Test that changing the processor state to the same state works"
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.STOPPED)
+    except CPUStateChange:
+        # There should be no state change
+        assert False
+    else:
+        assert True
+
+    assert cpu.state == CPUState.STOPPED
+
+
+# Tests around processor limits and auditing
+
+# Test a processor instruction load limit of 0 instructions
+def test_cpu_cpu_num_instructions_loaded_limit_0():
+    """
+    Test that setting a number of instructions loaded limit of zero fails
+    if any instruction is loaded.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # One NOP instruction
+    memory.write(0x00, 0xEA)
+
+    cpu.num_instructions_loaded_limit = 0
+    assert cpu.registers["PC"].value == 0x00
+
+    # reset hasn't been called, so the number of instructions loaded is zero
+    assert cpu.num_instructions_loaded == 0
+    assert cpu.num_instructions_loaded_limit == 0
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange as e:
+        # The state should change and an exception should be raised
+        assert e.state == CPUState.STOPPED
+        assert cpu.state == CPUState.STOPPED
+
+    assert cpu.num_instructions_loaded == 0
+
+
+# Test a processor instruction execute limit of 0 instructions
+def test_cpu_cpu_num_instructions_execute_limit_0():
+    """
+    Test that setting a number of instructions execute limit of zero
+    fails if any instruction is executed.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # One NOP instruction
+    memory.write(0x00, 0xEA)
+
+    cpu.num_instructions_executed_limit = 0
+    assert cpu.registers["PC"].value == 0x00
+
+    # reset hasn't been called, so the number of instructions executed is zero
+    assert cpu.num_instructions_executed == 0
+    assert cpu.num_instructions_executed_limit == 0
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    # Just loading the instruction should be fine
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        assert False
+
+    # Trying to execute it should fail
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange as e:
+        # The state should change and an exception should be raised
+        assert e.state == CPUState.STOPPED
+        assert cpu.state == CPUState.STOPPED
+
+    assert cpu.num_instructions_executed == 0
+
+
+# Test a processor instruction load limit of 1 instructions
+def test_cpu_cpu_num_instructions_loaded_limit_1():
+    """
+    Test that setting a number of instructions loaded limit of one fails
+    if any instruction is loaded.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Two NOP instructions
+    memory.write(0x00, 0xEA)
+    memory.write(0x01, 0xEA)
+
+    cpu.num_instructions_loaded_limit = 1
+    assert cpu.registers["PC"].value == 0x00
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_loaded == 1
+
+    assert cpu.state == CPUState.RUNNING
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange as e:
+        # The state should have changed
+        assert e.state == CPUState.STOPPED
+    else:
+        assert False
+
+    assert cpu.num_instructions_loaded == 1
+
+
+# Test a processor instruction execute limit of 1 instructions
+def test_cpu_cpu_num_instructions_executed_limit_1():  # noqa: C901
+    """
+    Test that setting a number of instructions executed limit of one fails
+    if any instruction is executed.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Two NOP instructions
+    memory.write(0x00, 0xEA)
+    memory.write(0x01, 0xEA)
+
+    cpu.num_instructions_executed_limit = 1
+    assert cpu.registers["PC"].value == 0x00
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    # Just loading the instruction should be fine
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    # Trying to execute it should also work
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange:
+        # The state should change and an exception should be raised
+        assert False
+
+    assert cpu.num_instructions_executed == 1
+
+    assert cpu.state == CPUState.RUNNING
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_loaded == 2
+
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange as e:
+        # The state should change and an exception should be raised
+        assert e.state == CPUState.STOPPED
+    else:
+        assert False
+
+    assert cpu.num_instructions_executed == 1
+
+
+# Test a processor instruction load limit of 2 instructions
+def test_cpu_cpu_num_instructions_loaded_limit_2():
+    """
+    Test that setting a number of instructions loaded limit of two instructions passes
+    if any instruction is loaded.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Three NOP instructions
+    memory.write(0x01, 0xEA)
+    memory.write(0x02, 0xEA)
+    memory.write(0x03, 0xEA)
+
+    cpu.num_instructions_loaded_limit = 2
+    assert cpu.registers["PC"].value == 0x00
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_loaded == 1
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_loaded == 2
+
+    assert cpu.state == CPUState.RUNNING
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange as e:
+        # The state should have changed
+        assert e.state == CPUState.STOPPED
+    else:
+        assert False
+
+    assert cpu.num_instructions_loaded == 2
+
+
+# Test a processor instruction execute limit of 2 instructions
+# Test a processor instruction load limit of 2 instructions
+def test_cpu_cpu_num_instructions_executed_limit_2():  # noqa: C901
+    """
+    Test that setting a number of instructions executed limit of two instructions passes
+    if any instruction is executed.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Three NOP instructions
+    memory.write(0x01, 0xEA)
+    memory.write(0x02, 0xEA)
+    memory.write(0x03, 0xEA)
+
+    cpu.num_instructions_executed_limit = 2
+    assert cpu.registers["PC"].value == 0x00
+
+    assert cpu.state == CPUState.STOPPED
+
+    try:
+        cpu.set_state(CPUState.RUNNING)
+    except CPUStateChange as e:
+        assert e.state == CPUState.RUNNING
+        assert cpu.state == CPUState.RUNNING
+
+    # Just loading the instruction should be fine
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    # Trying to execute it should also work
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange:
+        # The state should change and an exception should be raised
+        assert False
+
+    assert cpu.num_instructions_executed == 1
+
+    # Just loading the instruction should be fine
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    # Trying to execute it should also work
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_executed == 2
+
+    assert cpu.state == CPUState.RUNNING
+
+    try:
+        cpu.get_next_instruction(memory)
+    except CPUStateChange:
+        # The state should not change and an exception should not be raised
+        assert False
+
+    assert cpu.num_instructions_loaded == 3
+
+    try:
+        cpu.execute_instruction(memory)
+    except CPUStateChange as e:
+        # The state should change and an exception should be raised
+        assert e.state == CPUState.STOPPED
+    else:
+        assert False
+
+    assert cpu.num_instructions_executed == 2
+
+
+# Tests around processor breakpoints and watchpoints
+
+
+def test_cpu_cpu_set_breakpoint():
+    """
+    Test that setting a breakpoint triggers it on stepping.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Three NOP instructions
+    memory.write(0x01, 0xEA)
+    memory.write(0x02, 0xEA)
+    memory.write(0x03, 0xEA)
+
+    assert cpu.registers["PC"].value == 0x00
+
+    cpu.set_breakpoint(0x00)
+
+    # Trying to step one instruction should trigger the breakpoint
+    try:
+        cpu.step(memory)
+    except CPUBreakpoint as e:
+        # An exception should be raised
+        assert e.address == 0x00
+    else:
+        assert False
+
+
+def test_cpu_cpu_clear_breakpoint():
+    """
+    Test that clearing a breakpoint doesn't trigger it on stepping.
+    """
+    cpu = build_cpu()
+    cpu.stack_init()
+
+    memory = Memory(bytearray(65536))
+    # Three NOP instructions
+    memory.write(0x01, 0xEA)
+    memory.write(0x02, 0xEA)
+    memory.write(0x03, 0xEA)
+
+    assert cpu.registers["PC"].value == 0x00
+
+    cpu.set_breakpoint(0x00)
+    cpu.clear_breakpoint(0x00)
+
+    # Trying to step one instruction should not trigger the breakpoint
+    try:
+        cpu.step(memory)
+    except CPUBreakpoint:
+        assert False
+    else:
+        assert True
