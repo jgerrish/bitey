@@ -19,7 +19,6 @@ import json
 
 from bitey.logger import setup_logger
 from bitey.computer.computer import Computer
-from bitey.cpu.cpu import CPU
 from bitey.debug.debugger import DebuggerStateChange
 from bitey.debug.cli_debugger import CLIDebugger
 from bitey.debug.debugger import DebuggerState
@@ -38,13 +37,12 @@ def get_computer():
 @click.command()
 @click.argument("filename")
 @click.option("--pc", "-p", is_flag=False, type=int, help="PC initial value")
-@click.option("--sp", "-s", is_flag=False, type=int, help="Stack Pointer address")
 @click.option(
     "--reset", "-r", is_flag=False, type=int, help="Reset address (PC initial value)"
 )
 @click.option("--config", "-c", is_flag=False, type=str, help="CPU config file")
 @click.option("--debug", "-d", is_flag=True, type=bool, help="Enable debugger")
-def cli(filename, pc, sp, reset, config, debug):  # noqa: C901
+def cli(filename, pc, reset, config, debug):  # noqa: C901
     "Load a program into memory and run it"
 
     setup_logger()
@@ -60,33 +58,20 @@ def cli(filename, pc, sp, reset, config, debug):  # noqa: C901
 
     if data is not None:
         computer = get_computer()
+        computer.load(data)
 
-        print("PC: {}".format(pc))
-        if pc is not None:
-            computer.memory.write(0xFFFC, (pc & 0xFF))
-            computer.memory.write(0xFFFD, ((pc >> 8) & 0xFF))
-        # print("reset: {}".format(reset))
-        # if reset is not None:
-        #     computer.memory.write(0xFFFC, (reset & 0xFF))
-        #     computer.memory.write(0xFFFD, ((reset >> 8) & 0xFF))
-
+        print("reset: {}".format(reset))
         if reset is not None:
-            print("Loading at specific offset")
-            computer.load(data, offset=reset)
-        else:
-            computer.load(data)
+            computer.memory.write(0xFFFC, (reset & 0xFF))
+            computer.memory.write(0xFFFD, ((reset >> 8) & 0xFF))
 
-        if sp is not None:
-            print("Setting stack start")
-            CPU.stack_start = sp
-
-        computer.cpu.reset(computer.memory)
         if pc is not None:
             print("Setting PC to 0x{}".format(pc))
             computer.cpu.registers["PC"].set(pc)
 
+        computer.cpu.reset(computer.memory)
+
         print("Computer PC: {}".format(computer.cpu.registers["PC"].get()))
-        print("Computer SP: {}".format(computer.cpu.registers["S"].get()))
         print(
             "reset vector: {} {}".format(
                 computer.memory.read(0xFFFC), computer.memory.read(0xFFFD)
@@ -97,12 +82,12 @@ def cli(filename, pc, sp, reset, config, debug):  # noqa: C901
         # The cpu reset routine loads but DOESN'T run the first instruction in memory,
         # so this should be computer.cpu.num_instructions_loaded - 1
         instructions_loaded_limit = (
-            min(len(data), 2000) + computer.cpu.num_instructions_loaded - 1
+            min(len(data), 100000) + computer.cpu.num_instructions_loaded - 1
         )
         # The cpu reset routine loads but DOESN'T run the first instruction in memory,
         # so this should be computer.cpu.num_instructions_loaded
         instructions_executed_limit = (
-            min(len(data), 2000) + computer.cpu.num_instructions_executed
+            min(len(data), 100000) + computer.cpu.num_instructions_executed
         )
 
         if config_data is not None:
@@ -130,6 +115,11 @@ def cli(filename, pc, sp, reset, config, debug):  # noqa: C901
         else:
             computer.run(True, instructions_loaded_limit, instructions_executed_limit)
             print(computer.cpu.registers)
+            print(
+                "Number of instructions executed: {}".format(
+                    computer.cpu.num_instructions_executed
+                )
+            )
 
 
 if __name__ == "__main__":

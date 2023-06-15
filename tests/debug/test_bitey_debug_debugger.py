@@ -35,6 +35,12 @@ class MockDebugger(Debugger):
         """
         return self.commands.popleft()
 
+    def output_handler(self, string):
+        """
+        The output handler for the mock debugger prints to stdout
+        """
+        print(string)
+
 
 def test_bitey_debug_debugger_run():
     """

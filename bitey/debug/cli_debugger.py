@@ -19,3 +19,10 @@ class CLIDebugger(Debugger):
         Use this Debugger TUI as an input handler for normal code
         """
         return input("> ")
+
+    def output_handler(self, string):
+        """
+        The output handler function writes output to an appropriate stream
+        For the CLI/TUI debugger, this is stdout.
+        """
+        print(string)

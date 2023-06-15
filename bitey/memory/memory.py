@@ -110,7 +110,9 @@ class Memory:
 
         if address is None:
             address = 0
-        return self.memory_range_dump(range(address, address + 32))
+        end = 0
+        end = min(address + 32, len(self.memory))
+        return self.memory_range_dump(range(address, end))
 
     def memory_range_dump(self, memory_range=None):
         """

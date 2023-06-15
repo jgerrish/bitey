@@ -243,7 +243,11 @@ class CPU:
             if self.num_instructions_loaded >= self.num_instructions_loaded_limit:
                 self.set_state(CPUState.STOPPED)
         self.current_opcode = self.load_opcode(memory)
-        self.logger.debug("get_next_instruction opcode: {}".format(self.current_opcode))
+        self.logger.debug(
+            "get_next_instruction opcode: {}, 0x{:2X}".format(
+                self.current_opcode, self.current_opcode
+            )
+        )
 
         # Save the instruction address to test for breakpoints
         self.last_opcode_address = self.registers["PC"].value
@@ -253,9 +257,21 @@ class CPU:
 
         return self.current_instruction
 
+    def peek_next_instruction(self, memory):
+        """
+        Return the next instruction without incrementing the PC or
+        changing the CPU state.
+        """
+        opcode = memory.read(self.registers["PC"].get())
+        instruction = self.instruction_set.get_instruction_by_opcode(opcode)
+
+        return instruction
+
     def load_opcode(self, memory):
         "Load the opcode pointed to by the PC from memory"
-        self.logger.debug("Loading opcode at {}".format(self.registers["PC"].get()))
+        self.logger.debug(
+            "Loading opcode at 0x{:04X}".format(self.registers["PC"].get())
+        )
         self.num_instructions_loaded += 1
         return memory.read(self.registers["PC"].get())
 
