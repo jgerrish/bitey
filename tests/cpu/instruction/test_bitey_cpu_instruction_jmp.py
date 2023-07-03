@@ -62,7 +62,7 @@ def test_build_cpu_instruction_jmp_absolute(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack be unchanged
-    assert computer.cpu.registers["S"].get() == CPU.stack_start
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01
 
 
 def test_cpu_instruction_jmp_absolute(setup):
@@ -92,7 +92,7 @@ def test_cpu_instruction_jmp_absolute(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack should contain the old address
-    assert computer.cpu.registers["S"].get() == CPU.stack_start
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01
 
 
 def test_build_cpu_instruction_jmp_absolute_indirect(setup):
@@ -126,7 +126,7 @@ def test_build_cpu_instruction_jmp_absolute_indirect(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack be unchanged
-    assert computer.cpu.registers["S"].get() == CPU.stack_start
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01
 
 
 def test_cpu_instruction_jmp_absolute_indirect(setup):
@@ -162,7 +162,7 @@ def test_cpu_instruction_jmp_absolute_indirect(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack should contain the old address
-    assert computer.cpu.registers["S"].get() == CPU.stack_start
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01
 
 
 def test_cpu_instruction_jmp_nmos_wrap():

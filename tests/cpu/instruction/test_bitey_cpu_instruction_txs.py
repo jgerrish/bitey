@@ -18,13 +18,14 @@ def setup():
     yield computer
 
 
-def test_cpu_instruction_txs(setup):
+def test_cpu_instruction_txs_same(setup):
     computer = setup
     computer.reset()
 
     computer.cpu.registers["X"].set(0xFF)
 
-    assert computer.cpu.registers["S"].get() == 0x1FF
+    assert CPU.stack_base == 0x0100
+    assert computer.cpu.registers["S"].get() == 0xFF
 
     i1_opcode = Opcode(0x9A, ImpliedAddressingMode())
     i1 = TXS("TXS", i1_opcode, "Transfer Index X to Stack Pointer")
@@ -37,6 +38,34 @@ def test_cpu_instruction_txs(setup):
         [("C", False), ("Z", False), ("V", False), ("N", False)],
         [],
     )
+
+    assert CPU.stack_base == 0x0100
+    assert computer.cpu.registers["S"].get() == 0xFF
+
+
+def test_cpu_instruction_txs_different(setup):
+    computer = setup
+    computer.reset()
+
+    computer.cpu.registers["X"].set(0xFE)
+
+    assert CPU.stack_base == 0x0100
+    assert computer.cpu.registers["S"].get() == 0xFF
+
+    i1_opcode = Opcode(0x9A, ImpliedAddressingMode())
+    i1 = TXS("TXS", i1_opcode, "Transfer Index X to Stack Pointer")
+
+    tests.computer.computer.execute_explicit_instruction(
+        computer,
+        i1_opcode,
+        i1,
+        [("S", 0xFE)],
+        [("C", False), ("Z", False), ("V", False), ("N", False)],
+        [],
+    )
+
+    assert CPU.stack_base == 0x0100
+    assert computer.cpu.registers["S"].get() == 0xFE
 
 
 def test_cpu_instruction_txs_stack_overflow(setup):
@@ -46,7 +75,8 @@ def test_cpu_instruction_txs_stack_overflow(setup):
 
     computer.cpu.registers["X"].set(0xFF)
 
-    assert computer.cpu.registers["S"].get() == 0x1FF
+    assert CPU.stack_base == 0x0100
+    assert computer.cpu.registers["S"].get() == 0xFF
 
     i1_opcode = Opcode(0x9A, ImpliedAddressingMode())
     i1 = TXS("TXS", i1_opcode, "Transfer Index X to Stack Pointer")
@@ -60,7 +90,10 @@ def test_cpu_instruction_txs_stack_overflow(setup):
         [],
     )
 
-    assert CPU.stack_start == 0x00FF
+    assert CPU.stack_base == 0x0100
+    assert CPU.stack_size == 0x0100
+
+    assert computer.cpu.registers["S"].get() == 0xFF
 
     try:
         for i in range(257):

@@ -81,16 +81,16 @@ class CPU:
     TODO: Refactor using a builder pattern
     """
 
-    stack_start: ClassVar[int] = 0x01FF
+    stack_base: ClassVar[int] = 0x0100
     """
-    Start of the stack
+    Base offset of the stack
     This location is "Page One"
     """
 
     stack_size: ClassVar[int] = 0x0100
     """
     Maximum stack size
-    The stack is automatically locatd in "Page One".  Page size is 0x0100
+    The stack is automatically located in "Page One".  Page size is 0x0100
     """
 
     registers: Registers
@@ -316,10 +316,21 @@ class CPU:
         "Set flags depending on the instruction"
         instruction.set_flags(flags, registers)
 
-    def stack_init(self, stack_start=0x01FF):
+    def stack_init(self, stack_base=0x0100, stack_start=0xFF):
         """
-        Initialize the stack
-        The stack starts at 0x01FF and moves downwards
+        Initialize the stack.
+
+        By default the stack starts at 0x01FF and moves downwards.
+
+        The parameter stack_base is added to the stack address
+        (usually the stack register).  It's set to 0x0100 by default.
+
+        stack_start is set to the start (top) of the stack.  It is
+        usually 0xFF.
+
+        This would give an initial stack top of 0x01FF, the top-most
+        value in Page One.
+
         The stack pointer always points to the next memory location data can be
         stored.
         The stack pointer size is 9.
@@ -329,39 +340,27 @@ class CPU:
           push PC low
         So starting at 0x01FF, 0x1FF would be the high byte of the PC and
         0x1FE would be the low byte.
+
         """
-        # CPU reference documentation is ambiguous in defining what actual value
-        # the stack pointer should store, and how the final address should be
-        # calculated.
-        # These stack routines assume the address is stored directly in the
-        # stack pointer, and not calculated by adding 0x0100
-        # to the contents of the stack pointer to get the memory address
-        # for a page zero stack, for a page one stack it would be 0x01FF
-        # (This means the stack pointer would start at zero)
+        # Previous documentation about stack operation was incorrect.
         #
-        # TODO: This can also be done by LDX and TXS instructions
-        # But since an immediate LDX instruction can store a max value of 0xFF,
-        # some sort of extra addition would be needed, or an absolute
-        # mode version
-        # ldx = LDX(
-        #     "LDX",
-        #     Opcodes([Opcode(174, AbsoluteAddressingMode())]),
-        #     "Load Index Register X From Memory",
-        # )
-        # txs = TXS(
-        #     "TXS",
-        #     Opcodes([Opcode(154, ImpliedAddressingMode())]),
-        #     "Transfer index X to stack pointer",
-        # )
+        # On page 116 of the MCS6500 Microcomputer Family Programming
+        # Manual the operation of the stack is outlined.  By default,
+        # it's automatically located in Page One.  "The microprocessor
+        # always puts out the address 0x0100 plus stack register for
+        # every stack operation."
+        #
+        # It also talks about "selected memory techniques" to locate
+        # the stack in Page Zero or Page One.
         self.registers["S"].value = stack_start
-        CPU.stack_start = stack_start
 
     def stack_push(self, memory, value):
         "Push a value on the stack"
-        stack_pointer = self.registers["S"].value
-        if (CPU.stack_start - stack_pointer) >= CPU.stack_size:
+        stack_register = self.registers["S"].value
+        if (CPU.stack_size - stack_register) > 0xFF:
             raise StackOverflow
 
+        stack_pointer = CPU.stack_base + stack_register
         memory.write(stack_pointer, value)
 
         self.registers["S"].value = self.registers["S"].value - 1
@@ -382,14 +381,13 @@ class CPU:
 
     def stack_pop(self, memory):
         "Pop a  value off the stack"
-        # TODO: These stack routines may be wrong, we may need to add 0x0100
-        # to the contents of the stack pointer to get the memory address
-        stack_pointer = self.registers["S"].value
-        if CPU.stack_start == stack_pointer:
+        stack_register = self.registers["S"].value
+        if (CPU.stack_size - stack_register) <= 0x01:
             raise StackUnderflow
 
         self.registers["S"].value = self.registers["S"].value + 1
-        stack_pointer = self.registers["S"].value
+        stack_register = self.registers["S"].value
+        stack_pointer = CPU.stack_base + stack_register
 
         return memory.read(stack_pointer)
 

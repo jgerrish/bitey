@@ -42,7 +42,7 @@ def test_build_cpu_instruction_brk(setup):
     assert computer.cpu.registers["PC"].get() == 0x2010
     # Stack should be down three (two bytes for address, one for
     # process status register)
-    assert computer.cpu.registers["S"] == 0x01FF - 0x003
+    assert computer.cpu.registers["S"] == 0xFF - 0x003
 
     assert computer.memory.read(0x1FF) == 0x00
     assert computer.memory.read(0x1FE) == 0x01

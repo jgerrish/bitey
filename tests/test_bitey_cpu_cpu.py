@@ -59,7 +59,7 @@ def test_cpu_cpu_decode_instruction():
 def test_cpu_cpu_stack_init():
     cpu = build_cpu()
     cpu.stack_init()
-    assert cpu.registers["S"].value == 0x01FF
+    assert cpu.registers["S"].value == 0xFF
 
 
 def test_cpu_cpu_stack_push():
@@ -68,7 +68,7 @@ def test_cpu_cpu_stack_push():
     cpu.stack_init()
 
     cpu.stack_push(memory, 3)
-    assert cpu.registers["S"].value == 0x01FE
+    assert cpu.registers["S"].value == 0xFE
     assert memory.memory[0x01FF] == 3
 
 
@@ -77,7 +77,7 @@ def test_cpu_cpu_stack_push_stack_overflow():
     memory = Memory(bytearray(65536))
     cpu.stack_init()
 
-    cpu.registers["S"].value = 0x01FF - 0x0100
+    cpu.registers["S"].value = 0x00
     try:
         cpu.stack_push(memory, 3)
         assert False
@@ -107,7 +107,7 @@ def test_cpu_cpu_stack_pop():
     value = cpu.stack_pop(memory)
 
     assert value == 3
-    assert cpu.registers["S"].value == 0x01FF
+    assert cpu.registers["S"].value == 0xFF
 
 
 def test_cpu_cpu_stack_pull():
@@ -120,7 +120,7 @@ def test_cpu_cpu_stack_pull():
     value = cpu.stack_pull(memory)
 
     assert value == 3
-    assert cpu.registers["S"].value == 0x01FF
+    assert cpu.registers["S"].value == 0xFF
 
 
 def test_cpu_cpu_stack_push_address():
@@ -134,7 +134,7 @@ def test_cpu_cpu_stack_push_address():
 
     assert memory.read(0x01FF) == 0x20
     assert memory.read(0x01FE) == 0x10
-    assert cpu.registers["S"].value == 0x01FD
+    assert cpu.registers["S"].value == 0xFD
 
 
 def test_cpu_cpu_stack_pop_address():

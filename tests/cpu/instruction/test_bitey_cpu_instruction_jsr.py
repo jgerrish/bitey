@@ -55,9 +55,9 @@ def test_build_cpu_instruction_jsr(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack should contain the old address
-    assert computer.cpu.registers["S"].get() == CPU.stack_start - 0x02
-    assert computer.memory.read(CPU.stack_start) == 0x00
-    assert computer.memory.read(CPU.stack_start - 0x01) == 0x03
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01 - 0x02
+    assert computer.memory.read(CPU.stack_base + 0xFF) == 0x00
+    assert computer.memory.read(CPU.stack_base + 0xFE) == 0x03
 
 
 def test_cpu_instruction_jsr(setup):
@@ -91,6 +91,6 @@ def test_cpu_instruction_jsr(setup):
     assert computer.cpu.registers["PC"].get() == 0x05
 
     # The stack should contain the old address
-    assert computer.cpu.registers["S"].get() == CPU.stack_start - 0x02
-    assert computer.memory.read(CPU.stack_start) == 0x00
-    assert computer.memory.read(CPU.stack_start - 0x01) == 0x03
+    assert computer.cpu.registers["S"].get() == CPU.stack_size - 0x01 - 0x02
+    assert computer.memory.read(CPU.stack_base + 0xFF) == 0x00
+    assert computer.memory.read(CPU.stack_base + 0xFE) == 0x03
