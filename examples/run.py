@@ -15,12 +15,12 @@ stop on the first breakpoint.
 """
 
 import click
-import json
 
 from bitey.logger import setup_logger
 from bitey.computer.computer import Computer
 from bitey.debug.debugger import DebuggerStateChange
 from bitey.debug.cli_debugger import CLIDebugger
+from bitey.debug.config_decoder import ConfigDecoder
 from bitey.debug.debugger import DebuggerState
 
 
@@ -50,11 +50,11 @@ def cli(filename, pc, reset, config, debug):  # noqa: C901
     with open(filename, "rb") as f:
         data = f.read()
 
-    config_data = None
+    debug_config = None
     if config is not None:
         with open(config, "r") as f:
-            json_data = f.read()
-            config_data = json.loads(json_data)
+            debug_config_decoder = ConfigDecoder()
+            debug_config = debug_config_decoder.decode(f.read())
 
     if data is not None:
         computer = get_computer()
@@ -90,23 +90,11 @@ def cli(filename, pc, reset, config, debug):  # noqa: C901
             min(len(data), 100000) + computer.cpu.num_instructions_executed
         )
 
-        if config_data is not None:
-            print("Found config_data")
-            if "breakpoints" in config_data:
-                for breakpoint in config_data["breakpoints"]:
-                    print("Breakpoint: {}".format(breakpoint))
-                    if "address" in breakpoint:
-                        computer.cpu.set_breakpoint(breakpoint["address"])
-            if "watchpoints" in config_data:
-                for watchpoint in config_data["watchpoints"]:
-                    print("Watchpoint: {}".format(watchpoint))
-                    if "address" in watchpoint:
-                        computer.cpu.set_watchpoint(
-                            watchpoint["address"], computer.memory
-                        )
-
         if (debug is not None) and debug:
             debugger = CLIDebugger(computer, DebuggerState.STEPPING)
+            if debug_config is not None:
+                print("applying debugger configuration data:\n{}".format(debug_config))
+                debug_config.apply(debugger)
             try:
                 debugger.run(instructions_loaded_limit, instructions_executed_limit)
             except DebuggerStateChange as dsc:
