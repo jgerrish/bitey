@@ -14,6 +14,7 @@ from bitey.cpu.addressing_mode import (
 from bitey.cpu.instruction.instruction import Instruction, InstructionSet
 from bitey.cpu.instruction.instruction_json_decoder import InstructionSetJSONDecoder
 
+from bitey.cpu.instruction.cld import CLD
 from bitey.cpu.instruction.cli import CLI
 
 # from bitey.cpu.instruction.sei import SEI
@@ -151,11 +152,30 @@ class CPU:
 
         return
 
-    def reset(self, memory):
+    def reset(self, memory, housekeeping=True, load_first_instruction=True):
         """
         Reset the CPU
         Reset the CPU, setting up the stack and other initial values.
+
         This loads the first instruction and increments the PC to the next instruction.
+
+        This reset, restart and initialization process is outlined on
+        page 125 of the MCS6500 Microcomputer Family Programming
+        Manual.  The restart process includes executing several
+        instructions such as CLI and CLD.  These steps are referred to
+        as housekeeping in the manual.
+
+        These instructions are counted towards the processor execution
+        counts and limits.
+
+        Some users of this module may not want to execute these
+        instructions, if the instructions are already in their
+        application.
+
+        If housekeeping is True, the following occurs:
+          A CLI and CLD instruction are executed.
+
+        The first instruction in memory is loaded.
         """
 
         self.logger.debug("Resetting CPU")
@@ -170,7 +190,7 @@ class CPU:
         self.num_instructions_executed_limit = None
 
         # TODO: Use a different builder for this
-        opcodes = Opcodes([Opcode(120, ImpliedAddressingMode)])
+        # opcodes = Opcodes([Opcode(120, ImpliedAddressingMode)])
         # sei = SEI("SEI", opcodes, "Set Interrupt Disable")
         # sei.execute(self, memory)
 
@@ -185,28 +205,32 @@ class CPU:
         self.registers["P"].set(0x00)
 
         # Load the first instruction and increment the PC
-        self.get_next_instruction(memory)
+        if load_first_instruction:
+            self.get_next_instruction(memory)
 
         # Initialize the stack
         self.stack_init()
 
         # TODO: Initialize data devices
 
-        # TODO: CLI to enable interrupts
-        opcodes = Opcodes([Opcode(88, ImpliedAddressingMode)])
-        cli = CLI("CLI", opcodes, "Clear Interrupt Disable")
-        cli.execute(self, memory)
+        if housekeeping:
+            opcodes = Opcodes([Opcode(88, ImpliedAddressingMode)])
+            cli = CLI("CLI", opcodes, "Clear Interrupt Disable")
+            cli.execute(self, memory)
 
-        # The MOS 6502 family specification documents include a set of
-        # instructions that should be run on reset.
-        # These instructions are counted in the
-        # num_instructions_loaded and num_instructions_executed
-        # counters, even though they are not "technically" loaded from
-        # memory, or loaded into normal CPU working area.
-        # This may be confusing for those working with binary files
-        # wondering where extra instructions are coming from.
-        self.num_instructions_loaded += 1
-        self.num_instructions_executed += 1
+            opcodes = Opcodes([Opcode(216, ImpliedAddressingMode)])
+            cld = CLD("CLD", opcodes, "Clear Decimal Mode")
+            cld.execute(self, memory)
+            # The MOS 6502 family specification documents include a set of
+            # instructions that should be run on reset.
+            # These instructions are counted in the
+            # num_instructions_loaded and num_instructions_executed
+            # counters, even though they are not "technically" loaded from
+            # memory, or loaded into normal CPU working area.
+            # This may be confusing for those working with binary files
+            # wondering where extra instructions are coming from.
+            self.num_instructions_loaded += 2
+            self.num_instructions_executed += 2
 
         # TODO: Initialize the decimal mode
         # For now, test with all flags initialized to zero
@@ -242,15 +266,24 @@ class CPU:
         if self.num_instructions_loaded_limit is not None:
             if self.num_instructions_loaded >= self.num_instructions_loaded_limit:
                 self.set_state(CPUState.STOPPED)
+
+        # Save the instruction address to test for breakpoints
+        self.last_opcode_address = self.registers["PC"].value
+
+        if not self.ignore_breakpoints_until_next_instruction and (
+            self.last_opcode_address in self.cpu_breakpoints
+        ):
+            self.ignore_breakpoints_until_next_instruction = True
+            raise CPUBreakpoint(self.last_opcode_address)
+        else:
+            self.ignore_breakpoints_until_next_instruction = False
+
         self.current_opcode = self.load_opcode(memory)
         self.logger.debug(
             "get_next_instruction opcode: {}, 0x{:2X}".format(
                 self.current_opcode, self.current_opcode
             )
         )
-
-        # Save the instruction address to test for breakpoints
-        self.last_opcode_address = self.registers["PC"].value
 
         self.registers["PC"].inc()
         self.current_instruction = self.decode_opcode(self.current_opcode)
@@ -272,6 +305,7 @@ class CPU:
         self.logger.debug(
             "Loading opcode at 0x{:04X}".format(self.registers["PC"].get())
         )
+
         self.num_instructions_loaded += 1
         return memory.read(self.registers["PC"].get())
 
@@ -289,14 +323,6 @@ class CPU:
         if self.num_instructions_executed_limit is not None:
             if self.num_instructions_executed >= self.num_instructions_executed_limit:
                 self.set_state(CPUState.STOPPED)
-
-        # Check if there was a breakpoint for this instruction
-        if not self.ignore_breakpoints_until_next_instruction and (
-            self.last_opcode_address in self.cpu_breakpoints
-        ):
-            raise CPUBreakpoint(self.last_opcode_address)
-        else:
-            self.ignore_breakpoints_until_next_instruction = False
 
         self.logger.debug("Executing instruction")
         self.current_instruction.execute(self, memory)

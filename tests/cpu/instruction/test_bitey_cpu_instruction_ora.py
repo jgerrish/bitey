@@ -1,37 +1,12 @@
 import pytest
 
+import tests.computer.computer
+
 # TODO Maybe refactor so these are not needed
 from bitey.cpu.addressing_mode import ImmediateAddressingMode
-from bitey.computer.computer import Computer
 from bitey.cpu.instruction.instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.ora import ORA
-
-
-def build_computer():
-    "Build the computer"
-    computer = None
-
-    with open("chip/6502.json") as f:
-        chip_data = f.read()
-        computer = Computer.build_from_json(chip_data)
-        return computer
-
-    return None
-
-
-def init_computer():
-    "Initialize computer for tests"
-    computer = build_computer()
-    flags = computer.cpu.flags
-    assert flags["Z"].status is False
-
-    # The reset code in the CPU loads the first instruction ORA
-    # increments the PC by one
-    # TODO: These tests should be simplified to not rely on that
-    assert computer.cpu.registers["PC"].get() == 1
-
-    return computer
 
 
 def init_memory(memory, init_list):
@@ -48,7 +23,8 @@ def init_memory(memory, init_list):
 # module scope means run once per test module
 @pytest.fixture(scope="module")
 def setup():
-    computer = init_computer()
+    computer = tests.computer.computer.init_computer()
+
     yield computer
 
 

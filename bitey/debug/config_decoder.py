@@ -12,10 +12,8 @@ class ConfigDecoder(JSONDecoder):
         config_data = json.loads(json_doc)
         return self.decode_parsed(config_data)
 
-    def decode_parsed(self, config_data):
-        print("Found config_data")
+    def decode_breakpoints(self, config_data):
         breakpoints = []
-        watchpoints = []
         if "breakpoints" in config_data:
             for bp in config_data["breakpoints"]:
                 new_bp = {}
@@ -26,6 +24,10 @@ class ConfigDecoder(JSONDecoder):
                     elif type(bp["address"]) == int:
                         new_bp["address"] = bp["address"]
                     breakpoints.append(new_bp)
+        return breakpoints
+
+    def decode_watchpoints(self, config_data):
+        watchpoints = []
         if "watchpoints" in config_data:
             for wp in config_data["watchpoints"]:
                 new_wp = {}
@@ -36,4 +38,9 @@ class ConfigDecoder(JSONDecoder):
                     elif type(wp["address"]) == int:
                         new_wp["address"] = wp["address"]
                     watchpoints.append(new_wp)
+        return watchpoints
+
+    def decode_parsed(self, config_data):
+        breakpoints = self.decode_breakpoints(config_data)
+        watchpoints = self.decode_watchpoints(config_data)
         return Config(breakpoints, watchpoints)

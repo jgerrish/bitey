@@ -182,3 +182,36 @@ $ pipenv run black --check --diff .
 
 Focus is on making sure the tests run.
 
+
+## Debugging ##
+
+A debugger and debugging modules are now included with the emulator.
+
+Here's an example debugging a simple 6502 object file with with four instructions:
+
+0000  ea        NOP
+0001  e8        INX
+0002  e8        INX
+0003  e8        INX
+
+
+$ PYTHONPATH=. pipenv run python examples/run.py -c data/nop-inx-inx-inx-sample-breakpoints.json --debug data/nop-inx-inx-inx.bin
+
+reset: None
+Computer PC: 0
+reset vector: 0 0
+applying debugger configuration data:
+  Breakpoints:
+    description: second NOP code
+    address: 0x0002
+
+> c
+Breakpoint
+0x0002 INX
+> r
+A: 0x00, P: 0x00, PC: 0x02, S: 0xFF, X: 0x01, Y: 0x00
+> s
+0x0003 INX
+> c
+> q
+DebuggerState.EXIT

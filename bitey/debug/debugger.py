@@ -23,6 +23,9 @@ class Debugger:
     state: DebuggerState = DebuggerState.STOPPED
     "The current state of the debugger"
 
+    eval_enabled: bool = False
+    "A flag indicating whether Python evaluation is enabled in the debugger"
+
     def __post_init__(self):
         setup_logger()
         self.logger = logging.getLogger("bitey.debug.debugger.Debugger")
@@ -56,7 +59,7 @@ class Debugger:
         change is detected.  Then the debugger asks the user for a
         command or prints out information.
         """
-        self.first_run = True
+        self.first_run = False
         while True:
             try:
                 if self.state == DebuggerState.RUNNING:
@@ -68,7 +71,7 @@ class Debugger:
                     or (self.state == DebuggerState.BREAKPOINT)
                 ):
                     command = self.input_handler()
-                    parsed_command = Command(command)
+                    parsed_command = Command(command, eval_enabled=self.eval_enabled)
                     parsed_command.execute(self)
             except CPUStateChange as e:
                 self.logger.debug("CPUState changed: {}".format(e.state))
@@ -80,10 +83,8 @@ class Debugger:
                     self.logger.debug("set debugger state to running")
             except CPUBreakpoint as bp:
                 self.logger.debug("Breakpoint reached: 0x{:04x}".format(bp.args[0]))
-                # When stepping through code, breakpoints are printed
-                # but "ignored" and execution is not stopped.
-                if self.state != DebuggerState.STEPPING:
-                    self.state = DebuggerState.BREAKPOINT
+                self.state = DebuggerState.BREAKPOINT
+                self.output_handler("Breakpoint")
                 self.print_next_instruction()
             except DebuggerStateChange as dsc:
                 raise dsc

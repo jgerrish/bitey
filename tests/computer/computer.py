@@ -44,8 +44,7 @@ def init_computer():
     flags = computer.cpu.flags
     assert flags["Z"].status is False
 
-    assert computer.cpu.registers["PC"].get() == 1
-    computer.cpu.registers["PC"].set(0x00)
+    assert computer.cpu.registers["PC"].get() == 0x01
 
     return computer
 

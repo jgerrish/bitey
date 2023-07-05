@@ -26,11 +26,6 @@ def init_computer():
     flags = computer.cpu.flags
     assert flags["Z"].status is False
 
-    # The reset code in the CPU loads the first instruction EOR
-    # increments the PC by one
-    # TODO: These tests should be simplified to not rely on that
-    assert computer.cpu.registers["PC"].get() == 1
-
     return computer
 
 
@@ -57,7 +52,7 @@ def execute_instruction(
 ):
     "Execute the instruction based on an opcode"
     flags = computer.cpu.flags
-    i1 = EOR("EOR", opcode, "Load Accumulator with Memory")
+    i1 = EOR("EOR", opcode, "Exclusive OR Memory with Accumulator")
 
     try:
         i1.execute(computer.cpu, computer.memory)

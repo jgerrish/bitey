@@ -42,7 +42,13 @@ def get_computer():
 )
 @click.option("--config", "-c", is_flag=False, type=str, help="CPU config file")
 @click.option("--debug", "-d", is_flag=True, type=bool, help="Enable debugger")
-def cli(filename, pc, reset, config, debug):  # noqa: C901
+@click.option(
+    "--eval-enabled",
+    is_flag=True,
+    type=bool,
+    help="Enable eval in debugger.  WARNING: Security risk",
+)
+def cli(filename, pc, reset, config, debug, eval_enabled):  # noqa: C901
     "Load a program into memory and run it"
 
     setup_logger()
@@ -69,7 +75,7 @@ def cli(filename, pc, reset, config, debug):  # noqa: C901
             print("Setting PC to 0x{}".format(pc))
             computer.cpu.registers["PC"].set(pc)
 
-        computer.cpu.reset(computer.memory)
+        computer.cpu.reset(computer.memory, False, False)
 
         print("Computer PC: {}".format(computer.cpu.registers["PC"].get()))
         print(
@@ -79,19 +85,25 @@ def cli(filename, pc, reset, config, debug):  # noqa: C901
         )
 
         debugger = None
-        # The cpu reset routine loads but DOESN'T run the first instruction in memory,
-        # so this should be computer.cpu.num_instructions_loaded - 1
+        # The previous behavior of the 6502 emulator was to load the
+        # first instruction but not execute it.
+        # This run script doesn't load the first instruction, so the program
+        # starts with PC at the start of your routine and nothing loaded.
+        #
+        # In addition, no CPU "housekeeping" is done, so no instructions count toward
+        # the loaded or executed limit.
+        #
+        # This behavior may change as additional features are added to
+        # the emulator or additional systems are implemented.
         instructions_loaded_limit = (
-            min(len(data), 100000) + computer.cpu.num_instructions_loaded - 1
+            min(len(data), 100000) + computer.cpu.num_instructions_loaded
         )
-        # The cpu reset routine loads but DOESN'T run the first instruction in memory,
-        # so this should be computer.cpu.num_instructions_loaded
         instructions_executed_limit = (
             min(len(data), 100000) + computer.cpu.num_instructions_executed
         )
 
         if (debug is not None) and debug:
-            debugger = CLIDebugger(computer, DebuggerState.STEPPING)
+            debugger = CLIDebugger(computer, DebuggerState.STEPPING, eval_enabled)
             if debug_config is not None:
                 print("applying debugger configuration data:\n{}".format(debug_config))
                 debug_config.apply(debugger)
