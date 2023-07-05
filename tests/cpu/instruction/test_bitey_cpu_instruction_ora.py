@@ -57,7 +57,7 @@ def execute_instruction(
 ):
     "Execute the instruction based on an opcode"
     flags = computer.cpu.flags
-    i1 = ORA("ORA", opcode, "Load Accumulator with Memory")
+    i1 = ORA("ORA", opcode, "OR Memory with Accumulator")
 
     try:
         i1.execute(computer.cpu, computer.memory)
@@ -76,7 +76,7 @@ def test_cpu_instruction_ora_immediate(setup):
     computer.cpu.registers["A"].set(0b101100)
     init_memory(computer.memory, [(1, 0b101011)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    i1_opcode = Opcode(0x09, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0b101111, False, False)
 
 
@@ -88,7 +88,7 @@ def test_cpu_instruction_ora_immediate_zero(setup):
     computer.cpu.registers["A"].set(0x00)
     init_memory(computer.memory, [(1, 0x00)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    i1_opcode = Opcode(0x09, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0x00, True, False)
 
 
@@ -100,7 +100,7 @@ def test_cpu_instruction_ora_immediate_nonnegative(setup):
     computer.cpu.registers["A"].set(0b01111111)
     init_memory(computer.memory, [(1, 0b00000001)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    i1_opcode = Opcode(0x09, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0b01111111, False, False)
 
 
@@ -112,5 +112,5 @@ def test_cpu_instruction_ora_immediate_zero_negative(setup):
     computer.cpu.registers["A"].set(0b10000000)
     init_memory(computer.memory, [(1, 0b10000001)])
 
-    i1_opcode = Opcode(169, ImmediateAddressingMode())
+    i1_opcode = Opcode(0x09, ImmediateAddressingMode())
     execute_instruction(computer, i1_opcode, 0b10000001, False, True)
