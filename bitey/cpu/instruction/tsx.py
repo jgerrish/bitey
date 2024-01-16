@@ -23,8 +23,12 @@ class TSX(Instruction):
 
     def set_flags(self, flags, registers):
         """
-        Set the zero flag if the accumulator is zero as the result of the TSX.
-        Resets the zero flag if the accumulator is not zero as the result of the TSX.
+        Set the zero flag if the X index register is zero as the
+        result of the TSX.
+
+        Resets the zero flag if the X index register is not zero as
+        the result of the TSX.
+
         Sets the negative (N) flag if bit 7 is one.
         """
         flags["N"].test_register_result(registers["X"])
