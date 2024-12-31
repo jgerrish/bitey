@@ -13,3 +13,11 @@ class PLP(Instruction):
 
     def instruction_execute(self, cpu, memory, value, address=None):
         cpu.registers["P"].set(cpu.stack_pop(memory))
+
+        # Set flags
+        self.set_flags(cpu.flags, cpu.registers)
+
+    def set_flags(self, flags, registers):
+        "Set the flags"
+        flags["E"].set()
+        flags["B"].clear()

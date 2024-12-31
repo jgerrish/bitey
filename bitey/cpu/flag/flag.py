@@ -127,7 +127,7 @@ class Flags(Watcher):
         # Update the individual flags
         for flag in self.flags:
             bfp = flag.bit_field_pos
-            bit = 2 ** bfp
+            bit = 2**bfp
             if (self.data & bit) != 0:
                 flag.set(False)
             else:

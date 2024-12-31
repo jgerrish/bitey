@@ -39,7 +39,14 @@ class BRK(Instruction):
         cpu.stack_push_address(memory, pc)
 
         # save all the flags on the stack
-        cpu.stack_push(memory, cpu.registers["P"].get() & 0xFF)
+        #
+        # TODO: Describe the reason for the OR with 0b00110000 (the
+        # Break and Expansion flags)
+        #
+        # https://github.com/Klaus2m5/6502_65C02_functional_tests/issues/13
+        # http://forum.6502.org/viewtopic.php?f=2&t=2241&hilit=request+for+verification&start=30#p20914
+        # https://www.nesdev.org/wiki/Visual6502wiki/6502_BRK_and_B_bit
+        cpu.stack_push(memory, (cpu.registers["P"].get() & 0xFF) | 0x30)
 
         # Push the break flag on the top of the stack so the interrupt
         # handler can process it
@@ -53,10 +60,13 @@ class BRK(Instruction):
         cpu.registers["PC"].set(address)
 
     def set_flags(self, flags, registers):
-        "Set the Interrupt Disable and Break flags"
+        "Set the Interrupt Disable, Break flags and Reserved"
 
         # Set the Interrupt Disable flag to disable interrupts
         flags["I"].set()
 
         # Set the Break flag to indicate a software interrupt
         flags["B"].set()
+
+        # Set the Reserved flag
+        flags["E"].set()

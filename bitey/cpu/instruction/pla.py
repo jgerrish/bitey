@@ -12,4 +12,22 @@ class PLA(Instruction):
     """
 
     def instruction_execute(self, cpu, memory, value, address=None):
-        cpu.registers["A"].set(cpu.stack_pop(memory))
+        value = cpu.stack_pop(memory)
+
+        cpu.registers["A"].set(value)
+
+        # set the flags
+        self.set_flags(cpu.flags, cpu.registers)
+
+    def set_flags(self, flags, registers):
+        """
+        Set the zero flag if the A register is zero as the
+        result of the PLA.
+
+        Resets the zero flag if the A register is not zero as
+        the result of the PLA.
+
+        Sets the negative (N) flag if bit 7 is one.
+        """
+        flags["N"].test_register_result(registers["A"])
+        flags["Z"].test_register_result(registers["A"])

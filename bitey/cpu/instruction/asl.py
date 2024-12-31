@@ -34,7 +34,8 @@ class ASL(Instruction):
                 cpu.flags["C"].clear()
 
             self.result = (value << 1) & 0xFF
-            if type(self.opcode.addressing_mode) == AccumulatorAddressingMode:
+            # if type(self.opcode.addressing_mode) == AccumulatorAddressingMode:
+            if isinstance(self.opcode.addressing_mode, AccumulatorAddressingMode):
                 cpu.registers["A"].set(self.result)
             elif address is not None:
                 memory.write(address, self.result)

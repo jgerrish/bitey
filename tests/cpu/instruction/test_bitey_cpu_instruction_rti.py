@@ -49,8 +49,8 @@ def test_build_cpu_instruction_rti(setup):
 
     assert computer.memory.read(0x1FF) == 0x00
     assert computer.memory.read(0x1FE) == 0x01
-    # Interrupt Disable and Break should be set
-    assert computer.memory.read(0x1FD) == 0b00010100
+    # Interrupt Disable, Break and Extension should be set
+    assert computer.memory.read(0x1FD) == 0b00110100
 
     computer.cpu.registers["P"].set(0xFF)
     assert computer.cpu.registers["P"].get() == 0xFF
@@ -64,4 +64,5 @@ def test_build_cpu_instruction_rti(setup):
     # process status register)
     assert computer.cpu.registers["S"].get() == 0xFF
 
-    assert computer.cpu.registers["P"].get() == 0b00010000
+    # Break and Expansion flags should be set
+    assert computer.cpu.registers["P"].get() == 0b00110000

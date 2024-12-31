@@ -237,6 +237,10 @@ class CPU:
         # This is dependent on the application,
         self.flags.data = 0
 
+        # The processor starts with the Break and Expansion flags set
+        self.flags["B"].set()
+        self.flags["E"].set()
+
         #   TODO: Start the user's program
 
     def set_state(self, state):

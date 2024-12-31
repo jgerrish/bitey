@@ -32,14 +32,14 @@ class BIT(Instruction):
 
     def set_flags(self, flags, registers):
         if self.value is not None:
-            # The Negative flag is set based on the value in the memory location, not the
-            # final result of the AND
+            # The Negative flag is set based on the value in the
+            # memory location, not the final result of the AND
             if (self.value & 0x80) != 0x00:
                 flags["N"].set()
             else:
                 flags["N"].clear()
-            # The Overflow flag is set based on the value in the memory location, not them
-            # final result of the AND
+            # The Overflow flag is set based on the value in the
+            # memory location, not the final result of the AND
             if (self.value & 0x40) != 0x00:
                 flags["V"].set()
             else:

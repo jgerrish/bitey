@@ -36,7 +36,7 @@ def setup():
 
 def test_cpu_addressing_mode_implied_get_value():
     iam = ImpliedAddressingMode()
-    assert type(iam) == ImpliedAddressingMode
+    assert isinstance(iam, ImpliedAddressingMode)
     assert iam.get_value(None, None, None) == (None, None)
 
 
@@ -51,7 +51,7 @@ def test_cpu_addressing_mode_absolute_get_value(setup):
     computer.cpu.registers["PC"].set(0x0B)
 
     aam = AbsoluteAddressingMode()
-    assert type(aam) == AbsoluteAddressingMode
+    assert isinstance(aam, AbsoluteAddressingMode)
 
     value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
     assert aam.adl == 0x10
@@ -78,7 +78,7 @@ def test_cpu_addressing_mode_absolute_indirect_get_value(setup):
     computer.cpu.registers["PC"].set(0x0B)
 
     aam = AbsoluteIndirectAddressingMode()
-    assert type(aam) == AbsoluteIndirectAddressingMode
+    assert isinstance(aam, AbsoluteIndirectAddressingMode)
 
     value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
@@ -101,7 +101,7 @@ def test_cpu_addressing_mode_immediate_get_value(setup):
     computer.cpu.registers["PC"].set(0x0B)
 
     zpam = ZeroPageAddressingMode()
-    assert type(zpam) == ZeroPageAddressingMode
+    assert isinstance(zpam, ZeroPageAddressingMode)
 
     value = zpam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
     assert value == (0x10, 0x33)
@@ -122,7 +122,7 @@ def test_cpu_addressing_mode_zeropagex_get_value(setup):
     computer.cpu.registers["X"].set(0x41)
 
     zpxam = ZeroPageXAddressingMode()
-    assert type(zpxam) == ZeroPageXAddressingMode
+    assert isinstance(zpxam, ZeroPageXAddressingMode)
 
     (address, value) = zpxam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -147,7 +147,7 @@ def test_cpu_addressing_mode_zeropagex_get_value_wrap(setup):
     computer.cpu.registers["X"].set(0xF5)
 
     zpxam = ZeroPageXAddressingMode()
-    assert type(zpxam) == ZeroPageXAddressingMode
+    assert isinstance(zpxam, ZeroPageXAddressingMode)
 
     (address, value) = zpxam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -175,7 +175,7 @@ def test_cpu_addressing_mode_zeropagex_get_value_wrap_on_255(setup):
     # The sum should be 0xFF
 
     zpxam = ZeroPageXAddressingMode()
-    assert type(zpxam) == ZeroPageXAddressingMode
+    assert isinstance(zpxam, ZeroPageXAddressingMode)
 
     (address, value) = zpxam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -200,7 +200,7 @@ def test_cpu_addressing_mode_zeropagey_get_value(setup):
     computer.cpu.registers["Y"].set(0x41)
 
     zpyam = ZeroPageYAddressingMode()
-    assert type(zpyam) == ZeroPageYAddressingMode
+    assert isinstance(zpyam, ZeroPageYAddressingMode)
 
     (address, value) = zpyam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -224,7 +224,7 @@ def test_cpu_addressing_mode_zeropagey_get_value_wrap(setup):
     computer.cpu.registers["Y"].set(0xF5)
 
     zpyam = ZeroPageYAddressingMode()
-    assert type(zpyam) == ZeroPageYAddressingMode
+    assert isinstance(zpyam, ZeroPageYAddressingMode)
 
     (address, value) = zpyam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -248,7 +248,7 @@ def test_cpu_addressing_mode_zeropagey_get_value_nowrap_ff(setup):
     computer.cpu.registers["Y"].set(0xEF)
 
     zpyam = ZeroPageYAddressingMode()
-    assert type(zpyam) == ZeroPageYAddressingMode
+    assert isinstance(zpyam, ZeroPageYAddressingMode)
 
     (address, value) = zpyam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -268,7 +268,7 @@ def test_cpu_addressing_mode_relative_get_value(setup):
     computer.cpu.registers["PC"].set(0xA0)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -288,7 +288,7 @@ def test_cpu_addressing_mode_relative_get_value_negative(setup):
     computer.cpu.registers["PC"].set(0x70)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -308,7 +308,7 @@ def test_cpu_addressing_mode_relative_get_value_negative_lt_zero(setup):
     computer.cpu.registers["PC"].set(0x20)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -328,7 +328,7 @@ def test_cpu_addressing_mode_relative_get_value_negative_page_crossing(setup):
     computer.cpu.registers["PC"].set(0x70)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -348,7 +348,7 @@ def test_cpu_addressing_mode_relative_get_value_page_crossing(setup):
     computer.cpu.registers["PC"].set(0xA0)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -368,7 +368,7 @@ def test_cpu_addressing_mode_relative_get_value_gt_16_bit(setup):
     computer.cpu.registers["PC"].set(0xFFC0)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -388,7 +388,7 @@ def test_cpu_addressing_mode_relative_get_value_lt_zero(setup):
     computer.cpu.registers["PC"].set(0x0003)
 
     rel = RelativeAddressingMode()
-    assert type(rel) == RelativeAddressingMode
+    assert isinstance(rel, RelativeAddressingMode)
 
     (addr, value) = rel.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -413,7 +413,7 @@ def test_cpu_addressing_mode_indirect_indexed(setup):
     computer.cpu.registers["Y"].set(0x05)
 
     am = IndirectIndexedAddressingMode()
-    assert type(am) == IndirectIndexedAddressingMode
+    assert isinstance(am, IndirectIndexedAddressingMode)
 
     value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
@@ -435,7 +435,7 @@ def test_cpu_addressing_mode_indirect_indexed_page_rollover(setup):
     computer.cpu.registers["Y"].set(0x99)
 
     am = IndirectIndexedAddressingMode()
-    assert type(am) == IndirectIndexedAddressingMode
+    assert isinstance(am, IndirectIndexedAddressingMode)
 
     (address, value) = am.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -460,7 +460,7 @@ def test_cpu_addressing_mode_indirect_indexed_page_norollover_ffff(setup):
     computer.cpu.registers["Y"].set(0x8F)
 
     am = IndirectIndexedAddressingMode()
-    assert type(am) == IndirectIndexedAddressingMode
+    assert isinstance(am, IndirectIndexedAddressingMode)
 
     (address, value) = am.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -485,7 +485,7 @@ def test_cpu_addressing_mode_indexed_indirect(setup):
     computer.cpu.registers["X"].set(0x04)
 
     am = IndexedIndirectAddressingMode()
-    assert type(am) == IndexedIndirectAddressingMode
+    assert isinstance(am, IndexedIndirectAddressingMode)
 
     value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
@@ -508,7 +508,7 @@ def test_cpu_addressing_mode_indexed_indirect_incorrect_wrap(setup):
     computer.cpu.registers["X"].set(0x04)
 
     am = IndexedIndirectAddressingMode()
-    assert type(am) == IndexedIndirectAddressingMode
+    assert isinstance(am, IndexedIndirectAddressingMode)
 
     value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
@@ -527,7 +527,7 @@ def test_cpu_addressing_mode_absolute_x(setup):
     computer.cpu.registers["X"].set(0x05)
 
     axam = AbsoluteXAddressingMode()
-    assert type(axam) == AbsoluteXAddressingMode
+    assert isinstance(axam, AbsoluteXAddressingMode)
 
     value = axam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
     assert axam.adl == 0x10
@@ -549,7 +549,7 @@ def test_cpu_addressing_mode_absolute_x_page_crossing(setup):
     computer.cpu.registers["X"].set(0xF5)
 
     axam = AbsoluteXAddressingMode()
-    assert type(axam) == AbsoluteXAddressingMode
+    assert isinstance(axam, AbsoluteXAddressingMode)
 
     value = axam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
     assert axam.adl == 0x10
@@ -571,7 +571,7 @@ def test_cpu_addressing_mode_absolute_x_eom_wrap(setup):
     computer.cpu.registers["X"].set(0xF5)
 
     axam = AbsoluteXAddressingMode()
-    assert type(axam) == AbsoluteXAddressingMode
+    assert isinstance(axam, AbsoluteXAddressingMode)
 
     (address, value) = axam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -597,7 +597,7 @@ def test_cpu_addressing_mode_absolute_x_eom_nowrap_ffff(setup):
     computer.cpu.registers["X"].set(0xEF)
 
     axam = AbsoluteXAddressingMode()
-    assert type(axam) == AbsoluteXAddressingMode
+    assert isinstance(axam, AbsoluteXAddressingMode)
 
     (address, value) = axam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -622,7 +622,7 @@ def test_cpu_addressing_mode_absolute_y(setup):
     computer.cpu.registers["Y"].set(0x13)
 
     ayam = AbsoluteYAddressingMode()
-    assert type(ayam) == AbsoluteYAddressingMode
+    assert isinstance(ayam, AbsoluteYAddressingMode)
 
     (address, value) = ayam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -647,7 +647,7 @@ def test_cpu_addressing_mode_absolute_y_page_crossing(setup):
     computer.cpu.registers["Y"].set(0xF5)
 
     ayam = AbsoluteYAddressingMode()
-    assert type(ayam) == AbsoluteYAddressingMode
+    assert isinstance(ayam, AbsoluteYAddressingMode)
 
     (address, value) = ayam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -672,7 +672,7 @@ def test_cpu_addressing_mode_absolute_y_eom_wrap(setup):
     computer.cpu.registers["Y"].set(0xF5)
 
     ayam = AbsoluteYAddressingMode()
-    assert type(ayam) == AbsoluteYAddressingMode
+    assert isinstance(ayam, AbsoluteYAddressingMode)
 
     (address, value) = ayam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -697,7 +697,7 @@ def test_cpu_addressing_mode_absolute_y_eom_nowrap_ffff(setup):
     computer.cpu.registers["Y"].set(0xEF)
 
     ayam = AbsoluteYAddressingMode()
-    assert type(ayam) == AbsoluteYAddressingMode
+    assert isinstance(ayam, AbsoluteYAddressingMode)
 
     (address, value) = ayam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -747,7 +747,7 @@ def test_cpu_addressing_mode_accumulator(setup):
         computer.cpu.flags, computer.cpu.registers, computer.memory
     )
 
-    assert type(aam) == AccumulatorAddressingMode
+    assert isinstance(aam, AccumulatorAddressingMode)
 
     (address, value) = aam.get_value(
         computer.cpu.flags, computer.cpu.registers, computer.memory
@@ -776,7 +776,7 @@ def test_cpu_addressing_mode_absolute_indirect_page_boundary_bug_get_value(setup
     computer.cpu.registers["PC"].set(0x0B)
 
     aam = AbsoluteIndirectPageBoundaryBugAddressingMode(3)
-    assert type(aam) == AbsoluteIndirectPageBoundaryBugAddressingMode
+    assert isinstance(aam, AbsoluteIndirectPageBoundaryBugAddressingMode)
 
     value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 
@@ -806,7 +806,7 @@ def test_cpu_addressing_mode_absolute_indirect_page_boundary_bug_wrap_get_value(
     computer.cpu.registers["PC"].set(0x00FF)
 
     aam = AbsoluteIndirectPageBoundaryBugAddressingMode(3)
-    assert type(aam) == AbsoluteIndirectPageBoundaryBugAddressingMode
+    assert isinstance(aam, AbsoluteIndirectPageBoundaryBugAddressingMode)
 
     value = aam.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
 

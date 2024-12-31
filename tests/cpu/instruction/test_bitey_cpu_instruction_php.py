@@ -33,4 +33,4 @@ def test_cpu_instruction_php(setup):
     assert computer.cpu.registers["S"].get() == 0xFF - 0x001
 
     # Process Status Register should have been pushed on the stack
-    assert computer.memory.read(0x1FF) == 0x49
+    assert computer.memory.read(0x1FF) == 0x79  # 0b01111001

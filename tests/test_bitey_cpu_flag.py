@@ -16,7 +16,7 @@ def test_cpu_flags_init():
     f2 = Flag("Z", "Zero Result", 1, False)
     flags = Flags([f1, f2], 0)
     assert len(flags.flags) == 2
-    assert type(flags.data) == int
+    assert isinstance(flags.data, int)
     assert flags.data == 0
     assert flags["C"] == f1
     assert flags["Z"] == f2
@@ -27,7 +27,7 @@ def test_cpu_flags_post_init():
     f2 = Flag("Z", "Zero Result", 1, False)
     flags = Flags([f1, f2], 0)
     assert len(flags.flags) == 2
-    assert type(flags.data) == int
+    assert isinstance(flags.data, int)
     assert flags.data == 0
     assert flags["C"] == f1
     assert flags["Z"] == f2

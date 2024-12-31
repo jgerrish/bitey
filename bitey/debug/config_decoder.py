@@ -19,9 +19,9 @@ class ConfigDecoder(JSONDecoder):
                 new_bp = {}
                 new_bp["description"] = bp["description"]
                 if "address" in bp:
-                    if type(bp["address"]) == str:
+                    if isinstance(bp["address"], str):
                         new_bp["address"] = int(bp["address"], 0)
-                    elif type(bp["address"]) == int:
+                    elif isinstance(bp["address"], int):
                         new_bp["address"] = bp["address"]
                     breakpoints.append(new_bp)
         return breakpoints
@@ -33,9 +33,9 @@ class ConfigDecoder(JSONDecoder):
                 new_wp = {}
                 new_wp["description"] = wp["description"]
                 if "address" in wp:
-                    if type(wp["address"]) == str:
+                    if isinstance(wp["address"], str):
                         new_wp["address"] = int(wp["address"], 0)
-                    elif type(wp["address"]) == int:
+                    elif isinstance(wp["address"], int):
                         new_wp["address"] = wp["address"]
                     watchpoints.append(new_wp)
         return watchpoints

@@ -24,7 +24,7 @@ def cli(filename, count, skip):
     if skip is not None:
         computed_skip = skip
     if count is not None:
-        subset = data[computed_skip:computed_skip + count]
+        subset = data[computed_skip : computed_skip + count]  # noqa: E203
     else:
         subset = data[computed_skip:]
 

@@ -61,7 +61,7 @@ class Register(Watcher):
         """
         # TODO: Maybe wrap the flag with bounds checking too, read expected
         # behavior
-        if (self.value + 1) >= (2 ** self.size):
+        if (self.value + 1) >= (2**self.size):
             self.value = 0x00
             # raise RegisterOverflowException
         else:
@@ -76,7 +76,7 @@ class Register(Watcher):
         # TODO: Maybe wrap the flag with bounds checking too, read expected
         # behavior
         if (self.value - 1) < 0:
-            self.value = (2 ** self.size) - 1
+            self.value = (2**self.size) - 1
             # raise RegisterOverflowException
         else:
             self.value -= 1
@@ -100,7 +100,7 @@ class Register(Watcher):
 
     def add(self, amt):
         "Add an amount to the register's value"
-        if (self.value + amt) >= (2 ** self.size):
+        if (self.value + amt) >= (2**self.size):
             raise Exception
 
         self.value += amt

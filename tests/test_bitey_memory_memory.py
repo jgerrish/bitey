@@ -6,12 +6,12 @@ def test_memory_init():
     assert str(type(memory.memory)) == "<class 'bytearray'>"
     assert len(memory.memory) == 0
 
-    memory = Memory(2 ** 16)
+    memory = Memory(2**16)
     assert len(memory.memory) == 65536
 
 
 def test_memory_get_16bit_value():
-    memory = Memory(2 ** 16)
+    memory = Memory(2**16)
     assert len(memory.memory) == 65536
 
     # Test zero case
@@ -41,7 +41,7 @@ def test_memory_get_16bit_value():
 
 
 def test_memory_memory_out_of_range():
-    memory = Memory(2 ** 16)
+    memory = Memory(2**16)
     assert len(memory.memory) == 65536
 
     # Try at beginning of memory
@@ -74,7 +74,7 @@ def test_memory_memory_out_of_range():
 
 
 def test_memory_memory_read_range():
-    memory = Memory(2 ** 16)
+    memory = Memory(2**16)
     assert len(memory.memory) == 65536
 
     # Try at beginning of memory

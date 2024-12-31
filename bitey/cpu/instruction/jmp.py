@@ -32,7 +32,7 @@ class JMP(Instruction):
             # Replace the addressing mode if this is an old JMP
             # TODO: Still need to fix this pattern, the environment isn't good
             for opc in opcode:
-                if type(opc.addressing_mode) == AbsoluteIndirectAddressingMode:
+                if isinstance(opc.addressing_mode, AbsoluteIndirectAddressingMode):
                     opc.addressing_mode = AbsoluteIndirectPageBoundaryBugAddressingMode(
                         3
                     )

@@ -65,11 +65,13 @@
 	    "short_name": "B",
 	    "name": "Break Command",
 	    "bit_field_pos": 4,
-	    "status": 0
+	    "status": 1
 	},
 	{
+	    "short_name": "E",
 	    "name": "Expansion",
-	    "bit_field_pos": 5
+	    "bit_field_pos": 5,
+	    "status": 1
 	},
 	{
 	    "short_name": "V",

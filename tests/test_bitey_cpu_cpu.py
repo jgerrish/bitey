@@ -39,7 +39,7 @@ def test_cpu_builder():
 def test_cpu_cpu_init():
     cpu = build_cpu()
 
-    assert len(cpu.flags.flags) == 7
+    assert len(cpu.flags.flags) == 8
     assert len(cpu.registers.registers) == 6
     assert len(cpu.instruction_set.instructions) == 56
 
@@ -264,6 +264,7 @@ def test_cpu_cpu_set_state_no_change():
 
 
 # Tests around processor limits and auditing
+
 
 # Test a processor instruction load limit of 0 instructions
 def test_cpu_cpu_num_instructions_loaded_limit_0():

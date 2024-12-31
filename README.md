@@ -157,14 +157,14 @@ $ pytest-3
 ### Running external functional tests ###
 
 There are several collections of full functional tests for 6502
-processors.  One example is Running Adam Barnes' cc65 port of Klaus
+processors.  One example is running Adam Barnes' cc65 port of Klaus
 Dormann's 6502 functional tests:
 
 [Adam Barnes' cc65 port of Klaus Dormann's 6502 65C02 functional tests](https://github.com/amb5l/6502_65C02_functional_tests.git)
 
 Running the tests:
 
-PYTHONPATH=. python3 examples/run.py --debug --pc 1024 6502_functional_test.bin
+PYTHONPATH=. python3 examples/run.py --debug --pc 1024 -r 1024 6502_functional_test.bin
 
 Then press "c" to continue.
 

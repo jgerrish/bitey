@@ -37,7 +37,7 @@ def test_cpu_instruction_pha(setup):
     assert computer.cpu.registers["S"].get() == 0xFF - 0x001
 
     # Process Status Register should have been pushed on the stack
-    assert computer.memory.read(0x1FF) == 0x49
+    assert computer.memory.read(0x1FF) == 0x79  # 0b01111001
 
     # Pop the stack and test the process status register
     computer.cpu.registers["P"].set(0x00)
@@ -52,4 +52,4 @@ def test_cpu_instruction_pha(setup):
     assert computer.cpu.registers["S"].get() == 0xFF
 
     # Process Status Register should be the popped value
-    assert computer.cpu.registers["P"].get() == 0x49
+    assert computer.cpu.registers["P"].get() == 0x69  # 0b01101001

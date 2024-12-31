@@ -48,7 +48,7 @@ class ROL(Instruction):
 
             self.set_flags(cpu.flags, cpu.registers)
 
-        if type(self.opcode.addressing_mode) == AccumulatorAddressingMode:
+        if isinstance(self.opcode.addressing_mode, AccumulatorAddressingMode):
             cpu.registers["A"].set(self.result)
         elif address is not None:
             memory.write(address, self.result)
