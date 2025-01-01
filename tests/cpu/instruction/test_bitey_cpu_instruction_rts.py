@@ -46,7 +46,7 @@ def test_cpu_instruction_rts():
     # The stack should contain the old address
     assert computer.cpu.registers["S"].get() == 0xFF - 0x02
     assert computer.memory.read(CPU.stack_base + 0xFF) == 0x00
-    assert computer.memory.read(CPU.stack_base + 0xFE) == 0x03
+    assert computer.memory.read(CPU.stack_base + 0xFE) == 0x02
 
     # Executing the next instruction (RTS) should return to 0x03
     instruction = computer.cpu.get_next_instruction(computer.memory)

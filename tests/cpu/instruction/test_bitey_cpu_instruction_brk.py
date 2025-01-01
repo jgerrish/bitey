@@ -45,6 +45,6 @@ def test_build_cpu_instruction_brk(setup):
     assert computer.cpu.registers["S"] == 0xFF - 0x003
 
     assert computer.memory.read(0x1FF) == 0x00
-    assert computer.memory.read(0x1FE) == 0x01
+    assert computer.memory.read(0x1FE) == 0x02
     # Interrupt Disable, Break and Expansion should be set
-    assert computer.memory.read(0x1FD) == 0b00110100
+    assert computer.memory.read(0x1FD) == 0b00110000

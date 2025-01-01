@@ -18,7 +18,7 @@ class JSR(Instruction):
         # JSR is always an absolute addressing mode instruction, so it's always three
         # bytes
         if address is not None:
-            cpu.stack_push_address(memory, cpu.registers["PC"].get())
+            cpu.stack_push_address(memory, cpu.registers["PC"].get() - 1)
             cpu.registers["PC"].set(address)
         else:
             raise IncompleteInstruction

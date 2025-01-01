@@ -36,7 +36,7 @@ class BRK(Instruction):
         # super().execute(cpu, memory)
         # Push the instruction after the next on the stack
         pc = cpu.registers["PC"].get()
-        cpu.stack_push_address(memory, pc)
+        cpu.stack_push_address(memory, pc + 1)
 
         # save all the flags on the stack
         #
@@ -47,6 +47,11 @@ class BRK(Instruction):
         # http://forum.6502.org/viewtopic.php?f=2&t=2241&hilit=request+for+verification&start=30#p20914
         # https://www.nesdev.org/wiki/Visual6502wiki/6502_BRK_and_B_bit
         cpu.stack_push(memory, (cpu.registers["P"].get() & 0xFF) | 0x30)
+
+        # Set the Interrupt Disable flag to disable interrupts
+        # This gets set here after the status register is pushed, but
+        # before the other flags are set.
+        cpu.flags["I"].set()
 
         # Push the break flag on the top of the stack so the interrupt
         # handler can process it
@@ -61,9 +66,6 @@ class BRK(Instruction):
 
     def set_flags(self, flags, registers):
         "Set the Interrupt Disable, Break flags and Reserved"
-
-        # Set the Interrupt Disable flag to disable interrupts
-        flags["I"].set()
 
         # Set the Break flag to indicate a software interrupt
         flags["B"].set()

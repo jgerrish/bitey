@@ -48,9 +48,9 @@ def test_build_cpu_instruction_rti(setup):
     assert computer.cpu.registers["S"] == 0xFF - 0x003
 
     assert computer.memory.read(0x1FF) == 0x00
-    assert computer.memory.read(0x1FE) == 0x01
+    assert computer.memory.read(0x1FE) == 0x02
     # Interrupt Disable, Break and Extension should be set
-    assert computer.memory.read(0x1FD) == 0b00110100
+    assert computer.memory.read(0x1FD) == 0b00110000
 
     computer.cpu.registers["P"].set(0xFF)
     assert computer.cpu.registers["P"].get() == 0xFF
@@ -59,10 +59,10 @@ def test_build_cpu_instruction_rti(setup):
     computer.cpu.step(computer.memory)
 
     # The PC should now be 0x05
-    assert computer.cpu.registers["PC"].get() == 0x0001
+    assert computer.cpu.registers["PC"].get() == 0x0002
     # Stack should be down three (two bytes for address, one for
     # process status register)
     assert computer.cpu.registers["S"].get() == 0xFF
 
     # Break and Expansion flags should be set
-    assert computer.cpu.registers["P"].get() == 0b00110000
+    assert computer.cpu.registers["P"].get() == 0b00100000  # 0b00110000

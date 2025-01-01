@@ -20,6 +20,7 @@ class DE(Instruction):
         self.set_flags(cpu.flags, cpu.registers)
 
     def set_flags(self, flags, registers):
+        flags["N"].test_register_result(registers[self.register])
         flags["Z"].test_register_result(registers[self.register])
 
 
@@ -54,6 +55,7 @@ class DEC(Instruction):
             raise IncompleteInstruction
 
     def set_flags(self, flags, registers, value):
-        # The zero flag is set when the value is zero, not necessarily on a wrap
-        if value == 0x00:
-            flags["Z"].set()
+        flags["N"].test_result(value)
+        # The zero flag is set when the value is zero, not necessarily
+        # on a wrap
+        flags["Z"].test_result(value)

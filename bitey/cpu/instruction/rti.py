@@ -18,12 +18,13 @@ class RTI(Instruction):
         # The interrupt stores the flag data on top of the stack
         cpu.registers["P"].set(cpu.stack_pop(memory))
 
-        # The interrupt stores the return address after the flag data
-        cpu.registers["PC"].set(cpu.stack_pop_address(memory))
-
         # Set flags
         self.set_flags(cpu.flags, cpu.registers)
 
+        # The interrupt stores the return address after the flag data
+        cpu.registers["PC"].set(cpu.stack_pop_address(memory))
+
     def set_flags(self, flags, registers):
-        "Clear the Interrupt Disable flag"
-        flags["I"].clear()
+        "Set and clear relevant flags"
+        flags["E"].set()
+        flags["B"].clear()

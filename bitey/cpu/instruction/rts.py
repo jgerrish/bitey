@@ -11,4 +11,4 @@ class RTS(Instruction):
         Execute the instruction, getting the return address from the stack
         and jumping there.
         """
-        cpu.registers["PC"].set(cpu.stack_pop_address(memory))
+        cpu.registers["PC"].set(cpu.stack_pop_address(memory) + 1)

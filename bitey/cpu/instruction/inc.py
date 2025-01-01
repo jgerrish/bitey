@@ -20,6 +20,7 @@ class IN(Instruction):
         self.set_flags(cpu.flags, cpu.registers)
 
     def set_flags(self, flags, registers):
+        flags["N"].test_register_result(registers[self.register])
         flags["Z"].test_register_result(registers[self.register])
 
 
@@ -52,5 +53,5 @@ class INC(Instruction):
             raise IncompleteInstruction
 
     def set_flags(self, flags, registers, value):
-        if value == 0x00:
-            flags["Z"].set()
+        flags["N"].test_result(value)
+        flags["Z"].test_result(value)
