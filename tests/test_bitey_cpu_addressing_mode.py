@@ -402,14 +402,23 @@ def test_cpu_addressing_mode_indirect_indexed(setup):
     computer = setup
     computer.reset()
 
-    # Zero Page ADL
-    computer.memory.write(0x10, 0x70)
+    # PC that points to the zero page address
+    # TODO: Refactor these tests putting the PC in a "standard"
+    # code / exectuable page so they're more clear
+    computer.memory.write(0x0400, 0x60)
+
+    # Zero Page ADH : stupid head, zero page has no high byte
+    # computer.memory.write(0x11, 0x0B)
+
+    # Write to zero page
+    computer.memory.write(0x60, 0x70)
     # Zero Page ADH
-    computer.memory.write(0x11, 0x0B)
+    computer.memory.write(0x61, 0x0B)
+
     # Final address
     computer.memory.write(0x0B75, 0x73)
 
-    computer.cpu.registers["PC"].set(0x10)
+    computer.cpu.registers["PC"].set(0x0400)
     computer.cpu.registers["Y"].set(0x05)
 
     am = IndirectIndexedAddressingMode()
@@ -424,14 +433,19 @@ def test_cpu_addressing_mode_indirect_indexed_page_rollover(setup):
     computer = setup
     computer.reset()
 
+    # PC that points to the zero page address
+    # TODO: Refactor these tests putting the PC in a "standard"
+    # code / exectuable page so they're more clear
+    computer.memory.write(0x0400, 0x60)
+
     # Zero Page ADL
-    computer.memory.write(0x10, 0x70)
+    computer.memory.write(0x60, 0x70)
     # Zero Page ADH
-    computer.memory.write(0x11, 0xFF)
+    computer.memory.write(0x61, 0xFF)
     # Final address
     computer.memory.write(0x0009, 0x73)
 
-    computer.cpu.registers["PC"].set(0x10)
+    computer.cpu.registers["PC"].set(0x0400)
     computer.cpu.registers["Y"].set(0x99)
 
     am = IndirectIndexedAddressingMode()
@@ -449,14 +463,19 @@ def test_cpu_addressing_mode_indirect_indexed_page_norollover_ffff(setup):
     computer = setup
     computer.reset()
 
+    # PC that points to the zero page address
+    # TODO: Refactor these tests putting the PC in a "standard"
+    # code / exectuable page so they're more clear
+    computer.memory.write(0x0400, 0x60)
+
     # Zero Page ADL
-    computer.memory.write(0x10, 0x70)
+    computer.memory.write(0x60, 0x70)
     # Zero Page ADH
-    computer.memory.write(0x11, 0xFF)
+    computer.memory.write(0x61, 0xFF)
     # Final address
     computer.memory.write(0xFFFF, 0x73)
 
-    computer.cpu.registers["PC"].set(0x10)
+    computer.cpu.registers["PC"].set(0x0400)
     computer.cpu.registers["Y"].set(0x8F)
 
     am = IndirectIndexedAddressingMode()
@@ -466,6 +485,7 @@ def test_cpu_addressing_mode_indirect_indexed_page_norollover_ffff(setup):
         computer.cpu.flags, computer.cpu.registers, computer.memory
     )
     assert address == 0xFFFF
+    # assert address == 0x8F
 
     assert value == 0x73
 
@@ -474,6 +494,11 @@ def test_cpu_addressing_mode_indexed_indirect(setup):
     computer = setup
     computer.reset()
 
+    # PC that points to the zero page address
+    # TODO: Refactor these tests putting the PC in a "standard"
+    # code / exectuable page so they're more clear
+    computer.memory.write(0x0400, 0x10)
+
     # Zero Page ADL
     computer.memory.write(0x14, 0x70)
     # Zero Page ADH
@@ -481,7 +506,7 @@ def test_cpu_addressing_mode_indexed_indirect(setup):
     # Final address
     computer.memory.write(0x0B70, 0x73)
 
-    computer.cpu.registers["PC"].set(0x10)
+    computer.cpu.registers["PC"].set(0x0400)
     computer.cpu.registers["X"].set(0x04)
 
     am = IndexedIndirectAddressingMode()
@@ -497,6 +522,11 @@ def test_cpu_addressing_mode_indexed_indirect_incorrect_wrap(setup):
     computer = setup
     computer.reset()
 
+    # PC that points to the zero page address
+    # TODO: Refactor these tests putting the PC in a "standard"
+    # code / exectuable page so they're more clear
+    computer.memory.write(0x0400, 0xFB)
+
     # Zero Page ADL
     computer.memory.write(0xFF, 0x70)
     # Zero Page ADH
@@ -504,7 +534,7 @@ def test_cpu_addressing_mode_indexed_indirect_incorrect_wrap(setup):
     # Final address
     computer.memory.write(0x0B70, 0x73)
 
-    computer.cpu.registers["PC"].set(0xFB)
+    computer.cpu.registers["PC"].set(0x0400)
     computer.cpu.registers["X"].set(0x04)
 
     am = IndexedIndirectAddressingMode()

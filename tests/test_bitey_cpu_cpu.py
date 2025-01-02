@@ -73,6 +73,11 @@ def test_cpu_cpu_stack_push():
 
 
 def test_cpu_cpu_stack_push_stack_overflow():
+    """
+    Test for stack overflow.
+
+    Current behavior has the stack wrapping on overflow.
+    """
     cpu = build_cpu()
     memory = Memory(bytearray(65536))
     cpu.stack_init()
@@ -80,21 +85,30 @@ def test_cpu_cpu_stack_push_stack_overflow():
     cpu.registers["S"].value = 0x00
     try:
         cpu.stack_push(memory, 3)
-        assert False
+        assert memory.read(0x100) == 3
     except StackOverflow:
-        assert True
+        assert False
 
 
 def test_cpu_cpu_stack_push_stack_underflow():
+    """
+    Test for stack overflow.
+
+    Current behavior has the stack wrapping on underflow.
+    """
     cpu = build_cpu()
     memory = Memory(bytearray(65536))
+    for x in range(65536):
+        memory.memory[x] = x % 256
+
     cpu.stack_init()
 
     try:
-        cpu.stack_pop(memory)
-        assert False
+        result = cpu.stack_pop(memory)
+        assert result == 0x01
+        assert cpu.registers["S"].value == 0x01
     except StackUnderflow:
-        assert True
+        assert False
 
 
 def test_cpu_cpu_stack_pop():

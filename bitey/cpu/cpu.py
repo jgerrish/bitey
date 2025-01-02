@@ -387,13 +387,14 @@ class CPU:
     def stack_push(self, memory, value):
         "Push a value on the stack"
         stack_register = self.registers["S"].value
-        if (CPU.stack_size - stack_register) > 0xFF:
-            raise StackOverflow
+        if (CPU.stack_size - stack_register) > 0x0100:
+            # raise StackOverflow
+            stack_register = 0xFF
 
         stack_pointer = CPU.stack_base + stack_register
         memory.write(stack_pointer, value)
 
-        self.registers["S"].value = self.registers["S"].value - 1
+        self.registers["S"].value = stack_register - 1
 
     def stack_push_address(self, memory, address):
         """
@@ -413,9 +414,10 @@ class CPU:
         "Pop a  value off the stack"
         stack_register = self.registers["S"].value
         if (CPU.stack_size - stack_register) <= 0x01:
-            raise StackUnderflow
+            # raise StackUnderflow
+            stack_register = 0x00
 
-        self.registers["S"].value = self.registers["S"].value + 1
+        self.registers["S"].value = stack_register + 1
         stack_register = self.registers["S"].value
         stack_pointer = CPU.stack_base + stack_register
 

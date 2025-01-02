@@ -89,7 +89,7 @@ class AbsoluteAddressingMode(AddressingMode):
     def get_inst_str(self, flags, registers, memory):
         # address = self.get_address(flags, registers, memory)
         address = self.get_address(flags, registers, memory)
-        self.logger.debug("AbsoluteAddressing get_value address: {}".format(address))
+
         if address is not None:
             return "${0:04x}".format(address)
         else:
@@ -433,6 +433,8 @@ class IndexedIndirectAddressingMode(AddressingMode):
 
     def get_address(self, flags, registers, memory):
         zero_page_address = registers["PC"].get()
+        zero_page_address = memory.read(zero_page_address)
+
         registers["PC"].inc()
 
         # X register size is 8-bits
@@ -477,7 +479,10 @@ class IndirectIndexedAddressingMode(AddressingMode):
 
     def get_address(self, flags, registers, memory):
         zero_page_address = registers["PC"].get()
+
         registers["PC"].inc()
+
+        zero_page_address = memory.read(zero_page_address)
 
         adl = zero_page_address
         # TODO: Test for case we go beyond the page boundary
@@ -519,7 +524,7 @@ class IndirectXAddressingMode(AddressingMode):
         return self.am.get_address(flags, registers, memory)
 
     def get_value(self, flags, registers, memory):
-        return (self, self.am.get_value(flags, registers, memory))
+        return self.am.get_value(flags, registers, memory)
 
     def get_inst_str(self, flags, registers, memory):
         return self.am.get_inst_str(flags, registers, memory)

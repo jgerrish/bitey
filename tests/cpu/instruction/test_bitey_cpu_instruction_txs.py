@@ -69,7 +69,10 @@ def test_cpu_instruction_txs_different(setup):
 
 
 def test_cpu_instruction_txs_stack_overflow(setup):
-    "Test that a StackOverflow is still thrown after changing the stack pointer"
+    """
+    The stack now wraps when there is a stack overflow.
+    Test that behavior.
+    """
     computer = setup
     computer.reset()
 
@@ -97,7 +100,8 @@ def test_cpu_instruction_txs_stack_overflow(setup):
 
     try:
         for i in range(257):
-            computer.cpu.stack_push(computer.memory, i)
-        assert False
+            computer.cpu.stack_push(computer.memory, i % 256)
+            assert computer.memory.read(0x1FF - i) == i % 256
+        assert computer.memory.read(0x100) == 0xFF
     except StackOverflow:
-        assert True
+        assert False
