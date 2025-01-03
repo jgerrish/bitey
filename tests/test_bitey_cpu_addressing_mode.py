@@ -545,6 +545,33 @@ def test_cpu_addressing_mode_indexed_indirect_incorrect_wrap(setup):
     assert value == (0x0B70, 0x73)
 
 
+def test_cpu_addressing_mode_indexed_indirect_wrap_after_add_x(setup):
+    "Test for correct wrapping after adding the X register for indexed indirect adddressing"
+    computer = setup
+    computer.reset()
+
+    # PC that points to the zero page address
+    computer.memory.write(0x0400, 0xFF)
+
+    # The correct Zero Page ADL
+    computer.memory.write(0x03, 0x70)
+
+    # The correct Zero Page ADH
+    computer.memory.write(0x04, 0x0B)
+
+    computer.memory.write(0x0B70, 0x73)
+
+    computer.cpu.registers["PC"].set(0x0400)
+    computer.cpu.registers["X"].set(0x04)
+
+    am = IndexedIndirectAddressingMode()
+    assert isinstance(am, IndexedIndirectAddressingMode)
+
+    value = am.get_value(computer.cpu.flags, computer.cpu.registers, computer.memory)
+
+    assert value == (0x0B70, 0x73)
+
+
 def test_cpu_addressing_mode_absolute_x(setup):
     computer = setup
     computer.reset()

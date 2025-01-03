@@ -73,7 +73,7 @@ class Instruction:
         # and provides an index to look up opcodes.
         # The InstructionFactory accepts an opcode and returns an
         # instruction wired up to execute that opcode
-        self.logger.debug("Executing instruction: {}".format(self))
+        # self.logger.debug("Executing instruction: {}".format(self))
 
         # self.execute_opcode()
         # The instruction execution pattern is as follows:

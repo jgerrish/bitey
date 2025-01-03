@@ -292,8 +292,6 @@ class AbsoluteXAddressingMode(AddressingMode):
 
     def get_address(self, flags, registers, memory):
         self.adl = memory.read(registers["PC"].get())
-        # TODO: Maybe wrap the flag with bounds checking too, read expected
-        # behavior
         registers["PC"].inc()
         self.adh = memory.read(registers["PC"].get())
         registers["PC"].inc()
@@ -302,7 +300,6 @@ class AbsoluteXAddressingMode(AddressingMode):
         address += registers["X"].get()
 
         # Wrap at end of memory
-        # address = address % 0xFFFF
         address = address % 0x10000
 
         return address
@@ -438,7 +435,9 @@ class IndexedIndirectAddressingMode(AddressingMode):
         registers["PC"].inc()
 
         # X register size is 8-bits
-        zero_page_address += registers["X"].get()
+        # wrap to make sure the zero page pointer is always in
+        # zero-page
+        zero_page_address = (zero_page_address + registers["X"].get()) % 0x0100
 
         adl = zero_page_address
         # TODO: Test for case we go beyond the page boundary
@@ -447,7 +446,7 @@ class IndexedIndirectAddressingMode(AddressingMode):
         # TODO: Use one of the native functional test suites like
         # https://github.com/Klaus2m5/6502_65C02_functional_tests.git
         # after implementation
-        adh = (zero_page_address + 1) % 0x100
+        adh = (zero_page_address + 1) % 0x0100
         address = memory.get_16bit_value(adl, adh)
 
         return address
