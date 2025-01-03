@@ -34,14 +34,24 @@ class BRK(Instruction):
         self.set_flags(cpu.flags, cpu.registers)
 
         # super().execute(cpu, memory)
+
         # Push the instruction after the next on the stack
+        # The BRK instruction is two bytes long
+        # The second byte is padding that can be thrown away
+        #
+        # But we explicitly increment the PC here to make it clear
+        # what is happening
+        cpu.registers["PC"].inc()
         pc = cpu.registers["PC"].get()
-        cpu.stack_push_address(memory, pc + 1)
+
+        cpu.stack_push_address(memory, pc)
 
         # save all the flags on the stack
         #
-        # TODO: Describe the reason for the OR with 0b00110000 (the
-        # Break and Expansion flags)
+        # The behavior of the Break flag (B) and Expansion or Reserved
+        # flag (E) is not fully specified in official documentation.
+        # But Visual6502 shows it as being set and several external
+        # tests assume that it is set, so we set it for PHP and BRK.
         #
         # https://github.com/Klaus2m5/6502_65C02_functional_tests/issues/13
         # http://forum.6502.org/viewtopic.php?f=2&t=2241&hilit=request+for+verification&start=30#p20914

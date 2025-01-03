@@ -12,8 +12,10 @@ class PHP(Instruction):
     """
 
     def instruction_execute(self, cpu, memory, value, address=None):
-        # TODO: Describe the reason for the OR with 0b00110000 (the
-        # Break and Expansion flags)
+        # The behavior of the Break flag (B) and Expansion or Reserved
+        # flag (E) during PHP is not documented behavior but
+        # Visual6502 shows it as being set and several external tests
+        # assume that it is set, so we set it for PHP and BRK.
         #
         # https://github.com/Klaus2m5/6502_65C02_functional_tests/issues/13
         # http://forum.6502.org/viewtopic.php?f=2&t=2241&hilit=request+for+verification&start=30#p20914

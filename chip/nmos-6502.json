@@ -303,7 +303,7 @@
 		{
 		    "opcode": 0,
 		    "addressing_mode": "implied",
-		    "bytes": 1
+		    "bytes": 2
 		}
 	    ]
 	},
