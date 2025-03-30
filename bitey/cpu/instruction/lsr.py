@@ -1,5 +1,5 @@
-from bitey.cpu.addressing_mode import AccumulatorAddressingMode
-from bitey.cpu.instruction.instruction import Instruction, IncompleteInstruction
+from bitey.cpu.instruction.instruction import Instruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 
 
 class LSR(Instruction):
@@ -38,12 +38,10 @@ class LSR(Instruction):
                 cpu.flags["C"].clear()
 
             self.result = (value >> 1) & 0xFF
-            if isinstance(self.opcode.addressing_mode, AccumulatorAddressingMode):
-                cpu.registers["A"].set(self.result)
-            elif address is not None:
-                memory.write(address, self.result)
-            else:
-                raise IncompleteInstruction
+
+            self.opcode.addressing_mode.write(
+                cpu.flags, cpu.registers, memory, address, self.result
+            )
 
             self.set_flags(cpu.flags, cpu.registers)
         else:

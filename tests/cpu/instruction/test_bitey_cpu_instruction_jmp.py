@@ -182,8 +182,15 @@ def test_cpu_instruction_jmp_nmos_wrap():
     assert computer.cpu.current_instruction.opcode.opcode == 0x6C
 
     # Check this has a bug
-    assert "page_boundary_bug" in computer.cpu.current_instruction.options
-    assert computer.cpu.current_instruction.options["page_boundary_bug"]
+    assert "bugs" in computer.cpu.current_instruction.options
+    assert "page_boundary_bug" in computer.cpu.current_instruction.options["bugs"]
+    assert (
+        "exists"
+        in computer.cpu.current_instruction.options["bugs"]["page_boundary_bug"]
+    )
+    assert computer.cpu.current_instruction.options["bugs"]["page_boundary_bug"][
+        "exists"
+    ]
 
     # execute the instruction
     computer.cpu.execute_instruction(computer.memory)
@@ -209,8 +216,15 @@ def test_cpu_instruction_jmp_nmos_nowrap():
     assert computer.cpu.current_instruction.opcode.opcode == 0x6C
 
     # Check this has a bug
-    assert "page_boundary_bug" in computer.cpu.current_instruction.options
-    assert computer.cpu.current_instruction.options["page_boundary_bug"]
+    assert "bugs" in computer.cpu.current_instruction.options
+    assert "page_boundary_bug" in computer.cpu.current_instruction.options["bugs"]
+    assert (
+        "exists"
+        in computer.cpu.current_instruction.options["bugs"]["page_boundary_bug"]
+    )
+    assert computer.cpu.current_instruction.options["bugs"]["page_boundary_bug"][
+        "exists"
+    ]
 
     # execute the instruction
     computer.cpu.execute_instruction(computer.memory)

@@ -5,7 +5,7 @@ from bitey.cpu.addressing_mode import ImpliedAddressingMode
 import tests.computer.computer
 import tests.memory.memory
 
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.tsx import TSX
 

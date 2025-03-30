@@ -4,7 +4,7 @@ import tests.computer.computer
 
 # TODO Maybe refactor so these are not needed
 from bitey.cpu.addressing_mode import ImmediateAddressingMode
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.ora import ORA
 

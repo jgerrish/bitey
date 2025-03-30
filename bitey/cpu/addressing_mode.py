@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import logging
 from typing import ClassVar
 from bitey.cpu.arch import EightBitArch
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 
 
 @dataclass
@@ -43,6 +44,43 @@ class AddressingMode:
             return "${0:02x}".format(address)
         else:
             return ""
+
+    def write(self, flags, registers, memory, address, value):
+        """
+        Perform the addressing mode's write function.
+
+        The AddressingMode write member function is executed inside
+        the instruction_execute method in several instructions.
+
+        instruction_execute is called by the execute method on
+        Instruction.  It is implemented by each Instruction subclass
+        to perform instruction-specific logic.
+
+        At this point in the instruction execution cycle, we should
+        have computed an address.  This is done in execute in
+        Instruction.
+
+        The default behavior of most addressing modes is to write to
+        memory.  Where in memory depends on the addressing mode.
+
+        The exception is Accumulator Addressing Mode, where we
+        override this method to write to the A register.
+
+        We could actually call this method in almost every
+        instruction.  Currently it is only called in the following
+        instructions because they have Accumulator Addressing Mode
+        opcodes: ROL, ASL, LSR and ROR.
+
+        It may be more clear to actually put the following code in
+        every concrete AddressingMode subclass except
+        AccumulatorAddressingMode.  Maybe putting it here in the base
+        class puts some memory-specific addressing mode logic in a
+        class that shouldn't know that.
+        """
+        if address is not None:
+            memory.write(address, value)
+        else:
+            raise IncompleteInstruction
 
 
 @dataclass
@@ -119,6 +157,13 @@ class AccumulatorAddressingMode(AddressingMode):
     def get_inst_str(self, flags, registers, memory):
         self.get_address(flags, registers, memory)
         return ""
+
+    def write(self, flags, registers, memory, address, value):
+        """
+        Override the write method for AccumulatorAddressingMode.
+        Write to the accumulator instead of memory.
+        """
+        registers["A"].set(value)
 
 
 @dataclass

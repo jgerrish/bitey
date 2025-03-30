@@ -306,6 +306,7 @@ class CPU:
 
     def load_opcode(self, memory):
         "Load the opcode pointed to by the PC from memory"
+
         self.logger.debug(
             "Loading opcode at 0x{:04X}".format(self.registers["PC"].get())
         )

@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from bitey.cpu.addressing_mode import AccumulatorAddressingMode
-from bitey.cpu.instruction.instruction import (
-    Instruction,
-    IncompleteInstruction,
-)
+from bitey.cpu.instruction.instruction import Instruction
 
 
 @dataclass
@@ -48,12 +44,11 @@ class ROL(Instruction):
 
             self.set_flags(cpu.flags, cpu.registers)
 
-        if isinstance(self.opcode.addressing_mode, AccumulatorAddressingMode):
-            cpu.registers["A"].set(self.result)
-        elif address is not None:
-            memory.write(address, self.result)
-        else:
-            raise IncompleteInstruction
+        # TODO: Some of the instructions have this inside the "value is not None" check, some
+        # don't.  Fix it and make it consistent.
+        self.opcode.addressing_mode.write(
+            cpu.flags, cpu.registers, memory, address, self.result
+        )
 
     def set_flags(self, flags, registers):
         """

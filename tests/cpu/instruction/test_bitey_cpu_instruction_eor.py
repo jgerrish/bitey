@@ -3,7 +3,7 @@ import pytest
 # TODO Maybe refactor so these are not needed
 from bitey.cpu.addressing_mode import ImmediateAddressingMode
 from bitey.computer.computer import Computer
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.eor import EOR
 

@@ -15,10 +15,6 @@ class UnimplementedInstruction(Exception):
     "The instruction is unimplemented"
 
 
-class IncompleteInstruction(Exception):
-    "The instruction is incomplete"
-
-
 class UntestedInstruction(Exception):
     "The instruction is untested"
 

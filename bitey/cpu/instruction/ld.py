@@ -1,7 +1,5 @@
-from bitey.cpu.instruction.instruction import (
-    IncompleteInstruction,
-    Instruction,
-)
+from bitey.cpu.instruction.instruction import Instruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 
 
 class LD(Instruction):

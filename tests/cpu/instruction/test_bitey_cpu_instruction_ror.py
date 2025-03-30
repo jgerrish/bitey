@@ -6,7 +6,7 @@ import tests.memory.memory
 
 # TODO Maybe refactor so these are not needed
 from bitey.cpu.addressing_mode import AccumulatorAddressingMode
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.ror import ROR
 

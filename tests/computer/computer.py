@@ -1,7 +1,7 @@
 import re
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.addressing_mode import ImmediateAddressingMode
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.computer.computer import Computer
 from bitey.cpu.instruction.adc import ADCCMOS, ADCNMOS
 from bitey.cpu.instruction.sbc import SBCCMOS, SBCNMOS

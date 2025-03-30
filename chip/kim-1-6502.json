@@ -616,7 +616,12 @@
 		}
 	    ],
 	    "options": {
-		"page_boundary_bug": true
+		"bugs": {
+		    "page_boundary_bug": {
+			"exists": true,
+			"patch": true
+		    }
+		}
 	    }
 	},
 	{

@@ -8,7 +8,7 @@ from bitey.cpu.addressing_mode import (
 )
 import tests.computer.computer
 
-from bitey.cpu.instruction.instruction import IncompleteInstruction
+from bitey.cpu.instruction.incomplete_instruction import IncompleteInstruction
 from bitey.cpu.instruction.opcode import Opcode
 from bitey.cpu.instruction.ld import LDX
 

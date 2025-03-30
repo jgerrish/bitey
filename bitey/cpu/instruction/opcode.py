@@ -29,6 +29,15 @@ class Opcode:
     def set_flags(self, flags, registers):
         return
 
+    def patch_bugs(self, cpu_options=None):
+        """
+        If there are any bugs on this CPU patch them here.
+
+        Any addressing modes that have bugs should override this
+        method.
+        """
+        return
+
 
 @dataclass
 class Opcodes:

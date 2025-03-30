@@ -486,6 +486,12 @@ class InstructionClassFactory:
                         try:
                             if opcode in custom_instruction_classes:
                                 instruction_class = custom_instruction_classes[opcode]
+                                logger = logging.getLogger(
+                                    "bitey.cpu.instruction.instruction_factory.InstructionFactory"
+                                )
+                                logger.debug(
+                                    "Creating instruction for opcode: {}".format(opcode)
+                                )
                                 inst = instruction_class(
                                     name, opcodes, description, options
                                 )
